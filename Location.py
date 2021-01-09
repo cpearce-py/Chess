@@ -1,4 +1,4 @@
-class Location():
+class Location:
     """Base location class."""
 
     def __init__(self, file, rank):
