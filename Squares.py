@@ -15,6 +15,9 @@ class Square:
     def reset(self):
         self._isOccupied = False
 
+   # def __array__(self):
+   #     return np.array([self._Location.file, self._Location.rank])
+
     @property
     def SquareColor(self):
         return self._SquareColor
@@ -24,4 +27,4 @@ class Square:
         return self._Location
 
     def __repr__(self):
-        return f'Square({self._SquareColor}, {self._Location}, {self._isOccupied})'
+        return f'{self.__class__.__name__}({self._SquareColor}, {self._Location}, {self._isOccupied})'
