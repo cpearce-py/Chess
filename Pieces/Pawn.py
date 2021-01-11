@@ -1,6 +1,6 @@
 from AbstractPiece import AbstractPiece
 from Location import Location
-from LocationFactory import LocationFactory
+import logic
 
 
 class Pawn(AbstractPiece):
@@ -11,20 +11,17 @@ class Pawn(AbstractPiece):
     def getValidMoves(self, board):
 
         moveCandidates = []
-        moveCandidates.append(LocationFactory.build(self.square, fileOffset=0,
-                                                    rankOffset=1))
+        moveCandidates.append(logic.build(self.square, fileOffset=0,
+                                          rankOffset=1))
         if self._isFirstMove:
-            moveCandidates.append(LocationFactory.build(self.square,
-                                                        fileOffset=0,
-                                                        rankOffset=2))
-        moveCandidates.append(LocationFactory.build(self.square, fileOffset=1,
-                                                    rankOffset=1))
-        moveCandidates.append(LocationFactory.build(self.square, fileOffset=-1,
-                                                    rankOffset=1))
-#        possibleMoves = []
-#        if candidate in moveCandidates:
-#            if board.map.get(candidate):
-#                possibleMoves.append(candidate)
+            moveCandidates.append(logic.build(self.square,
+                                              fileOffset=0,
+                                              rankOffset=2))
+        moveCandidates.append(logic.build(self.square, fileOffset=1,
+                                          rankOffset=1))
+        moveCandidates.append(logic.build(self.square, fileOffset=-1,
+                                          rankOffset=1))
 
+        # Filter out only valid moves
         filter(lambda x: board.map.get(x), moveCandidates)
         return moveCandidates

@@ -20,3 +20,6 @@ class Game():
 
 game = Game()
 p = Pawn("light")
+pos = Location(Files.F, 5)
+p.square = pos
+print(p.getValidMoves(game.board))
