@@ -9,6 +9,10 @@ class AbstractPiece:
         self._pieceColor = pieceColor
         self._square = None
 
+    def __repr__(self):
+        return (f'{self.__class__.__name__}({self._name}, {self._pieceColor},'
+                f' {self._square})')
+
     @property
     def name(self):
         return self._name
@@ -27,6 +31,8 @@ class AbstractPiece:
             raise ValueError("Pass Square location as a Location class}")
         self._square = value
 
-    def __repr__(self):
-        return (f'{self.__class__.__name__}({self._name}, {self._pieceColor},'
-                f' {self._square})')
+    def getValidMoves(self, board, square):
+        pass
+
+    def move(self, square):
+        pass

@@ -1,5 +1,5 @@
 from Board import Board
-from Pieces import Pawn, Queen
+from Pieces import Pawn, Queen, King, Knight, Rook, Bishop
 
 
 class Game():
