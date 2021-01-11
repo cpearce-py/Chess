@@ -1,4 +1,5 @@
 from Board import Board
+from Pieces import Pawn, Queen
 
 
 class Game():
@@ -10,6 +11,12 @@ class Game():
     def board(self):
         return self._board
 
+    @staticmethod
+    def printPieces(*piece):
+        print(*piece)
+
 
 game = Game()
-print(game.board)
+pawn = Pawn("DARK")
+q = Queen("LIGHT")
+game.printPieces(pawn, q)
