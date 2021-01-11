@@ -25,16 +25,16 @@ class Board():
     def __repr__(self):
         return str(np.array(self._BOARD))
 
-    def row(self, row):
-        return self._BOARD[row]
+    def rank(self, row):
+        i = len(self._BOARD) - row
+        return self._BOARD[i]
 
     def coloum(self, col):
         for row in self._BOARD:
             yield row[col]
 
-    @staticmethod
     def printBoard(self):
-        pass
+        return
 
     @property
     def board(self):
