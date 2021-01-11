@@ -1,3 +1,6 @@
+from Files import Files
+
+
 class Location:
     """Base location class."""
 

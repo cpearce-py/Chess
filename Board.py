@@ -1,26 +1,35 @@
 from Squares import Square
 from Location import Location
 import numpy as np
-
-RANKS = ["1", "2", "3", "4", "5", "6", "7", "8"]
-FILES = ["a", "b", "c", "d", "e", "f", "g", "h"]
-RANKS.reverse()
+from Files import Files, RANKS
 
 
 class Board():
 
     def __init__(self):
-        self._BOARD = []
+        #        self._BOARD = self._createBoard()
+        #        self._map = {}
+        self._createBoard()
+
+    def _createBoard(self):
+        _BOARD = []
+        _map = {}
         for x, rank in enumerate(RANKS):
             _strip = []
             colour = "dark" if not x % 2 == 0 else "light"
-            for i, file in enumerate(FILES):
-                pos = Location(file, rank)
+            for i, file in enumerate(Files):
+
+                pos = Location(file.name, rank)
                 _square = Square(colour, pos)
+
                 _strip.append(_square)
+                _map[pos] = _square
 
                 colour = "light" if colour == "dark" else "dark"
-            self._BOARD.append(_strip)
+
+            _BOARD.append(_strip)
+        self._BOARD = _BOARD
+        self._map = _map
 
     def __repr__(self):
         return str(np.array(self._BOARD))
@@ -29,12 +38,18 @@ class Board():
         i = len(self._BOARD) - row
         return self._BOARD[i]
 
-    def coloum(self, col):
+    def file(self, col):
+        file = []
         for row in self._BOARD:
-            yield row[col]
+            file.append(row[col])
+        return file
 
     def printBoard(self):
         return
+
+    @property
+    def map(self):
+        return self._map
 
     @property
     def board(self):

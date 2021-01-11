@@ -8,11 +8,19 @@ class AbstractPiece:
         self._name = name
         self._pieceColor = pieceColor
         self._square = None
-        self._isFirstMove = False
+        self._isFirstMove = True
 
     def __repr__(self):
         return (f'{self.__class__.__name__}({self._name}, {self._pieceColor},'
                 f' {self._square})')
+
+    @property
+    def isFirstMove(self):
+        return self._isFirstMove
+
+    @isFirstMove.setter
+    def isFirstMove(self, value):
+        self._isFirstMove = value
 
     @property
     def name(self):
@@ -24,7 +32,7 @@ class AbstractPiece:
 
     @property
     def square(self):
-        return self._square
+        return self._square.location
 
     @square.setter
     def square(self, value):

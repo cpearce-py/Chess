@@ -17,6 +17,4 @@ class Game():
 
 
 game = Game()
-pawn = Pawn("DARK")
-q = Queen("LIGHT")
-game.printPieces(pawn, q)
+print(game.board.map)

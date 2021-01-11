@@ -27,12 +27,13 @@ class Square:
         self._isOccupied = True
 
     @property
-    def pos(self):
-        return f'{self._Location.file}{self._Location.rank}'
+    def location(self):
+        return self._Location
 
     @property
     def color(self):
         return self._SquareColor
 
     def __repr__(self):
-        return f'{self.__class__.__name__}(COLOR={self._SquareColor}, {self._Location}), {self._isOccupied}'
+        return (f'{self.__class__.__name__}(COLOR={self._SquareColor},'
+                f'{self._Location}), {self._isOccupied})')
