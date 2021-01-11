@@ -1,5 +1,7 @@
 from Board import Board
 from Pieces import Pawn, Queen, King, Knight, Rook, Bishop
+from Location import Location
+from Files import Files
 
 
 class Game():
@@ -17,4 +19,4 @@ class Game():
 
 
 game = Game()
-print(game.board.map)
+p = Pawn("light")

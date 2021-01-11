@@ -32,11 +32,11 @@ class AbstractPiece:
 
     @property
     def square(self):
-        return self._square.location
+        return self._square
 
     @square.setter
     def square(self, value):
-        if not isinstance(value, Square):
+        if not isinstance(value, Location):
             raise ValueError("Pass Square location as a Location class}")
         self._square = value
 

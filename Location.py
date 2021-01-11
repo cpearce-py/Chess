@@ -9,7 +9,7 @@ class Location:
         self._rank = rank
 
     def __repr__(self):
-        return f'{self.__class__.__name__}(FILE={self._file}, RANK={self._rank})'
+        return f'{self.__class__.__name__}(FILE={self._file.name}, RANK={self._rank})'
 
     @property
     def file(self):
@@ -21,4 +21,4 @@ class Location:
 
     @property
     def pos(self):
-        return [self._file, self._rank]
+        return (self._file, self._rank)
