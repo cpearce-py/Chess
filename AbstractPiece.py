@@ -8,6 +8,7 @@ class AbstractPiece:
         self._name = name
         self._pieceColor = pieceColor
         self._square = None
+        self._isFirstMove = False
 
     def __repr__(self):
         return (f'{self.__class__.__name__}({self._name}, {self._pieceColor},'

@@ -11,9 +11,20 @@ class Square:
         self._SquareColor = SquareColor
         self._Location = pos
         self._isOccupied = False
+        self._piece = None
 
     def reset(self):
+        self._piece = None
         self._isOccupied = False
+
+    @property
+    def currentPiece(self):
+        return self._piece
+
+    @currentPiece.setter
+    def currentPiece(self, value):
+        self._piece = value
+        self._isOccupied = True
 
     @property
     def pos(self):
