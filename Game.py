@@ -19,6 +19,6 @@ class Game():
 
 
 game = Game()
-p = Pawn(Color.LIGHT)
-p.square = Location(Files.A, 2)
-print(game.board)
+r = Rook(Color.DARK)
+r.square = Location(Files.C, 1)
+print(r.getValidMoves(game.board))

@@ -34,7 +34,7 @@ class Pawn(AbstractPiece):
         moveCandidates = list(
             filter(lambda x: x.file == self.square.file and not board.map.get(x).isOccupied, moveCandidates))
 
-        moveCandidates = list(
-            filter(lambda x: board.map.get(x).currentPiece.color == self.color, moveCandidates))
+        # moveCandidates = list(
+        #    filter(lambda x: board.map.get(x).currentPiece.color == self.color, moveCandidates))
 
         return moveCandidates
