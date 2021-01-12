@@ -39,5 +39,5 @@ class Square:
         return self._SquareColor
 
     def __repr__(self):
-        return (f'{self.__class__.__name__}(COLOR={self._SquareColor},'
+        return (f'{self.__class__.__name__}(COLOR={self._SquareColor.name},'
                 f'{self._Location}), {self._isOccupied})')

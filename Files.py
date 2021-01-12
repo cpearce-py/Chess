@@ -12,3 +12,8 @@ class Files(Enum):
     F = 6
     G = 7
     H = 8
+
+
+class Color(Enum):
+    LIGHT = 1
+    DARK = 2

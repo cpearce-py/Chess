@@ -1,7 +1,7 @@
 from Board import Board
 from Pieces import Pawn, Queen, King, Knight, Rook, Bishop
 from Location import Location
-from Files import Files
+from Files import Files, Color
 
 
 class Game():
@@ -19,6 +19,6 @@ class Game():
 
 
 game = Game()
-p = Pawn("light")
+p = Pawn(Color.LIGHT)
 p.square = Location(Files.A, 2)
-print(p.getValidMoves(game.board))
+print(game.board)

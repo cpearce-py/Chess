@@ -1,11 +1,14 @@
 from Squares import Square
 from Location import Location
+from Files import Color
 
 
 class AbstractPiece:
 
     def __init__(self, name, pieceColor):
         self._name = name
+        if not isinstance(pieceColor, Color):
+            raise ValueError("Please pass pieceColor as Enum Color.")
         self._pieceColor = pieceColor
         self._square = None
         self._isFirstMove = True

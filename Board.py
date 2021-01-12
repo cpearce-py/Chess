@@ -1,7 +1,7 @@
 from Squares import Square
 from Location import Location
 import numpy as np
-from Files import Files, RANKS
+from Files import Files, RANKS, Color
 
 
 class Board():
@@ -14,7 +14,7 @@ class Board():
         _map = {}
         for x, rank in enumerate(RANKS):
             _strip = []
-            colour = "dark" if not x % 2 == 0 else "light"
+            colour = Color.DARK if not x % 2 == 0 else Color.LIGHT
             for i, file in enumerate(Files):
 
                 pos = Location(file, rank)
@@ -23,7 +23,7 @@ class Board():
                 _strip.append(_square)
                 _map[pos] = _square
 
-                colour = "light" if colour == "dark" else "dark"
+                colour = Color.LIGHT if colour == Color.DARK else Color.DARK
 
             _BOARD.append(_strip)
         self._BOARD = _BOARD

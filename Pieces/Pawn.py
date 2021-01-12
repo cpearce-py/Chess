@@ -1,6 +1,7 @@
 from AbstractPiece import AbstractPiece
 from Location import Location
 import logic
+from Files import Color, Files
 
 
 class Pawn(AbstractPiece):
@@ -25,11 +26,15 @@ class Pawn(AbstractPiece):
             self.square, fileOffset=-1, rankOffset=1))
 
         # Filter out None (s)
+        # Leaves only valid Board squares
         moveCandidates = list(
             filter(lambda x: board.map.get(x, False), moveCandidates))
 
-        # for candidate in moveCandidates:
-        #    if candidate.file == self.square.file and board.map.get(candidate).isOccupied:
-        #        moveCandidates.remove(candidate)
+        # Check board if there is a piece in the way.
+        moveCandidates = list(
+            filter(lambda x: x.file == self.square.file and not board.map.get(x).isOccupied, moveCandidates))
+
+        moveCandidates = list(
+            filter(lambda x: board.map.get(x).currentPiece.color == self.color, moveCandidates))
 
         return moveCandidates
