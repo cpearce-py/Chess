@@ -32,6 +32,8 @@ class AbstractPiece:
 
     @property
     def square(self):
+        """ Property for what Square the piece is on.
+        Returns: Location(Enum.File, Rank)"""
         return self._square
 
     @square.setter

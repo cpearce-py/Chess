@@ -11,17 +11,25 @@ class Pawn(AbstractPiece):
     def getValidMoves(self, board):
 
         moveCandidates = []
-        moveCandidates.append(logic.build(self.square, fileOffset=0,
-                                          rankOffset=1))
-        if self._isFirstMove:
-            moveCandidates.append(logic.build(self.square,
-                                              fileOffset=0,
-                                              rankOffset=2))
-        moveCandidates.append(logic.build(self.square, fileOffset=1,
-                                          rankOffset=1))
-        moveCandidates.append(logic.build(self.square, fileOffset=-1,
-                                          rankOffset=1))
+        moveCandidates.append(logic.build(
+            self.square, fileOffset=0, rankOffset=1))
 
-        # Filter out only valid moves
-        filter(lambda x: board.map.get(x), moveCandidates)
+        if self._isFirstMove:
+            moveCandidates.append(logic.build(
+                self.square, fileOffset=0, rankOffset=2))
+
+        moveCandidates.append(logic.build(
+            self.square, fileOffset=1, rankOffset=1))
+
+        moveCandidates.append(logic.build(
+            self.square, fileOffset=-1, rankOffset=1))
+
+        # Filter out None (s)
+        moveCandidates = list(
+            filter(lambda x: board.map.get(x, False), moveCandidates))
+
+        # for candidate in moveCandidates:
+        #    if candidate.file == self.square.file and board.map.get(candidate).isOccupied:
+        #        moveCandidates.remove(candidate)
+
         return moveCandidates

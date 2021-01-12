@@ -7,8 +7,6 @@ from Files import Files, RANKS
 class Board():
 
     def __init__(self):
-        #        self._BOARD = self._createBoard()
-        #        self._map = {}
         self._createBoard()
 
     def _createBoard(self):
@@ -19,7 +17,7 @@ class Board():
             colour = "dark" if not x % 2 == 0 else "light"
             for i, file in enumerate(Files):
 
-                pos = Location(file.name, rank)
+                pos = Location(file, rank)
                 _square = Square(colour, pos)
 
                 _strip.append(_square)
@@ -53,4 +51,4 @@ class Board():
 
     @property
     def board(self):
-        return np.array(self._BOARD)
+        return self._BOARD

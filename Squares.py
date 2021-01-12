@@ -18,6 +18,10 @@ class Square:
         self._isOccupied = False
 
     @property
+    def isOccupied(self):
+        return self._isOccupied
+
+    @property
     def currentPiece(self):
         return self._piece
 

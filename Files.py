@@ -1,6 +1,6 @@
 from enum import Enum
 
-RANKS = ["8", "7", "6", "5", "4", "3", "2", "1"]
+RANKS = [8, 7, 6, 5, 4, 3, 2, 1]
 
 
 class Files(Enum):
