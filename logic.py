@@ -7,7 +7,7 @@ def build(current, fileOffset, rankOffset):
     Generates a new Location class for where a given Location will end up
     based on a given file and rank offset.
 
-    current: Location()
+    current: Location(Files.FILES, int Rank})
     fileOffset: Int
     rankOffset: Int
 

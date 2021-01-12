@@ -11,57 +11,59 @@ class Rook(AbstractPiece):
 
     def getValidMoves(self, board):
         moveCandidates = []
-        moveCandidates.append(self._getFileCandidates(board))
-        moveCandidates.append(self._getFileCandidates(board, offset=-1))
-        moveCandidates.append(self._getRankCandidates(board))
-        moveCandidates.append(self._getRankCandidates(board, offset=-1))
+
+        for x in self._getFileCandidates(board):
+            moveCandidates.append(x)
+        for x in self._getFileCandidates(board, offset=-1):
+            moveCandidates.append(x)
+        for x in self._getRankCandidates(board):
+            moveCandidates.append(x)
+        for x in self._getRankCandidates(board, offset=-1):
+            moveCandidates.append(x)
+
         return moveCandidates
 
-    def _getFileCandidates(self, board, offset=1):
-        """
-        Method to return available position in a straight file.
-        Offset determines forward or backwards direction from piece.
-
-        Returns: `list` type: Location
-        """
-        moveCandidates = []
-        nextMove = logic.build(
-            self.square, offset, rankOffset=0)
-        while board.map.get(nextMove, False):
-            if board.map.get(nextMove).isOccupied:
-                if board.map.get(nextMove).currentPiece.color == self.color:
-                    break
-                moveCandidates.append(nextMove)
-                break
-            moveCandidates.append(nextMove)
-
-            try:
-                nextMove = logic.build(nextMove, offset, rankOffset=0)
-            except ValueError:
-                break
-        return moveCandidates
-
-    def _getRankCandidates(self, board, offset=1):
-        """
-        Method to return available position in a straight rank.
-        Offset determines forward or backwards direction from piece.
-
-        Returns: `list` type: Location
-        """
-        moveCandidates = []
-        nextMove = logic.build(
-            self.square, rankOffset=offset, fileOffset=0,)
-        while board.map.get(nextMove, False):
-            if board.map.get(nextMove).isOccupied:
-                if board.map.get(nextMove.currentPiece.color) == self.color:
-                    break
-                moveCandidates.append(nextMove)
-                break
-            moveCandidates.append(nextMove)
-
-            try:
-                nextMove = logic.build(
-                    nextMove, fileOffset=0, rankOffset=offset)
-            except ValueError:
-                break
-        return moveCandidates
+#    def _getFileCandidates(self, board, offset=1):
+#        """
+#        Method to return available position in a straight file.
+#        Offset determines forward or backwards direction from piece.
+#
+#        Yeild: Location
+#        """
+#        nextMove = logic.build(
+#            self.square, offset, rankOffset=0)
+#        while board.map.get(nextMove, False):
+#            if board.map.get(nextMove).isOccupied:
+#                if board.map.get(nextMove).currentPiece.color == self.color:
+#                    break
+#                yield nextMove
+#                break
+#            yield nextMove
+#
+#            try:
+#                nextMove = logic.build(nextMove, offset, rankOffset=0)
+#            except ValueError:
+#                break
+#
+#    def _getRankCandidates(self, board, offset=1):
+#        """
+#        Method to return available position in a straight rank.
+#        Offset determines forward or backwards direction from piece.
+#
+#        Yeild: Location
+#        """
+#        nextMove = logic.build(
+#            self.square, rankOffset=offset, fileOffset=0,)
+#        while board.map.get(nextMove, False):
+#            if board.map.get(nextMove).isOccupied:
+#                if board.map.get(nextMove.currentPiece.color) == self.color:
+#                    break
+#                yield nextMove
+#                break
+#            yield nextMove
+#
+#            try:
+#                nextMove = logic.build(
+#                    nextMove, fileOffset=0, rankOffset=offset)
+#            except ValueError:
+#                break

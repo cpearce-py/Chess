@@ -1,7 +1,7 @@
-from AbstractPiece import AbstractPiece
-from Location import Location
 import logic
+from AbstractPiece import AbstractPiece
 from Files import Color, Files
+from Location import Location
 
 
 class Pawn(AbstractPiece):
@@ -12,29 +12,27 @@ class Pawn(AbstractPiece):
     def getValidMoves(self, board):
 
         moveCandidates = []
-        moveCandidates.append(logic.build(
-            self.square, fileOffset=0, rankOffset=1))
 
-        if self._isFirstMove:
-            moveCandidates.append(logic.build(
-                self.square, fileOffset=0, rankOffset=2))
+        for move in self._getAllValidMoves(board):
+            if not board.map.get(move):
+                continue
+            if move.file != self.square.file and not board.map.get(move).isOccupied:
+                continue
+            if move.file == self.square.file and board.map.get(move).isOccupied:
+                continue
+            if move.file != self.square.file and board.map.get(move).isOccupied:
+                if board.map.get(move).currentPiece.color == self.color:
+                    continue
 
-        moveCandidates.append(logic.build(
-            self.square, fileOffset=1, rankOffset=1))
-
-        moveCandidates.append(logic.build(
-            self.square, fileOffset=-1, rankOffset=1))
-
-        # Filter out None (s)
-        # Leaves only valid Board squares
-        moveCandidates = list(
-            filter(lambda x: board.map.get(x, False), moveCandidates))
-
-        # Check board if there is a piece in the way.
-        moveCandidates = list(
-            filter(lambda x: x.file == self.square.file and not board.map.get(x).isOccupied, moveCandidates))
-
-        # moveCandidates = list(
-        #    filter(lambda x: board.map.get(x).currentPiece.color == self.color, moveCandidates))
+            moveCandidates.append(move)
 
         return moveCandidates
+
+    def _getAllValidMoves(self, board):
+
+        if self.isFirstMove:
+            yield logic.build(self.square, fileOffset=0, rankOffset=2)
+
+        yield logic.build(self.square, fileOffset=0, rankOffset=1)
+        yield logic.build(self.square, fileOffset=1, rankOffset=1)
+        yield logic.build(self.square, fileOffset=-1, rankOffset=1)

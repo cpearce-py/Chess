@@ -1,6 +1,7 @@
 from Squares import Square
 from Location import Location
 from Files import Color
+import logic
 
 
 class AbstractPiece:
@@ -43,8 +44,50 @@ class AbstractPiece:
             raise ValueError("Pass Square location as a Location class}")
         self._square = value
 
-    def getValidMoves(self, board, square):
-        pass
+    def _getRankCandidates(self, board, offset=1):
+        """
+        Method to return available position in a straight rank.
+        Offset determines forward or backwards direction from piece.
+
+        Yeild: Location
+        """
+        nextMove = logic.build(
+            self.square, rankOffset=offset, fileOffset=0,)
+        while board.map.get(nextMove, False):
+            if board.map.get(nextMove).isOccupied:
+                if board.map.get(nextMove.currentPiece.color) == self.color:
+                    break
+                yield nextMove
+                break
+            yield nextMove
+
+            try:
+                nextMove = logic.build(
+                    nextMove, fileOffset=0, rankOffset=offset)
+            except ValueError:
+                break
+
+    def _getFileCandidates(self, board, offset=1):
+        """
+        Method to return available position in a straight file.
+        Offset determines forward or backwards direction from piece.
+
+        Yeild: Location
+        """
+        nextMove = logic.build(
+            self.square, offset, rankOffset=0)
+        while board.map.get(nextMove, False):
+            if board.map.get(nextMove).isOccupied:
+                if board.map.get(nextMove).currentPiece.color == self.color:
+                    break
+                yield nextMove
+                break
+            yield nextMove
+
+            try:
+                nextMove = logic.build(nextMove, offset, rankOffset=0)
+            except ValueError:
+                break
 
     def move(self, square):
         pass
