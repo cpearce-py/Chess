@@ -39,7 +39,21 @@ class Board():
         return file
 
     def printBoard(self):
-        return
+        for i in range(len(self._BOARD)):
+            line = " "
+            line += f'{len(self._BOARD) - i} '
+            for j in range(len(self._BOARD[i])):
+                if self._BOARD[i][j].isOccupied:
+                    piece = self._BOARD[i][j].currentPiece
+                    line += f'{piece.name[0]} '
+                else:
+                    # Empty Square
+                    line += f'- '
+            print(line)
+        line = "   "
+        for file in Files:
+            line += f'{file.name} '
+        print(line)
 
     @property
     def map(self):

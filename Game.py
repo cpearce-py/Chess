@@ -19,7 +19,4 @@ class Game():
 
 
 game = Game()
-
-r = Rook(Color.DARK)
-r.square = Location(Files.H, 1)
-print(r.getValidMoves(game.board))
+game.board.printBoard()

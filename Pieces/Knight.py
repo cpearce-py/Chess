@@ -11,7 +11,6 @@ class Knight(AbstractPiece):
 
     def getValidMoves(self, board):
         moveCandidates = []
-        _map = board.map
         current = self.square
         choices = [2, -2, 1, -1]
         for i in choices:
