@@ -46,7 +46,7 @@ class AbstractPiece:
     def square(self, value):
         self._square = value
 
-    def move(self, square):
+    def moveTo(self, square):
         self.square.reset()
         self.square = square
         square.currentPiece = self
