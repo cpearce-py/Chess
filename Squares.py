@@ -12,10 +12,6 @@ class Square:
         self._isOccupied = False
         self._piece = None
 
-    def reset(self):
-        self._piece = None
-        self._isOccupied = False
-
     def __eq__(self, other):
         return (isinstance(other, Square) and
                 other._SquareColor == self._SquareColor and
@@ -24,6 +20,10 @@ class Square:
 
     def __hash__(self):
         return hash((self._SquareColor, self._Location))
+
+    def reset(self):
+        self._piece = None
+        self._isOccupied = False
 
     @property
     def isOccupied(self):

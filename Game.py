@@ -29,10 +29,12 @@ class Game():
             toSq = self.board.map.get(end)
             piece = fromSq.currentPiece
 
-            fromSq.currentPiece.square = toSq
-            toSq.currentPiece = piece
+            piece.moveTo(toSq)
 
-            fromSq.reset()
+            # fromSq.currentPiece.square = toSq
+            # toSq.currentPiece = piece
+
+            # fromSq.reset()
 
     @property
     def board(self):

@@ -46,6 +46,11 @@ class AbstractPiece:
     def square(self, value):
         self._square = value
 
+    def move(self, square):
+        self.square.reset()
+        self.square = square
+        square.currentPiece = self
+
     def _getDiagonalCandidates(self, moves, _map,
                                current, rankOffset, fileOffset):
         """
