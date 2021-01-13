@@ -24,10 +24,7 @@ r.square = Location(Files.C, 4)
 
 b = Bishop(Color.DARK)
 b.square = Location(Files.D, 3)
-print(r.getValidMoves(game.board))
-print(b.getValidMoves(game.board))
 
-p = Pawn(Color.LIGHT)
-p.square = Location(Files.D, 2)
-p.isFirstMove = False
-# print(p.getValidMoves(game.board))
+q = Queen(Color.LIGHT)
+q.square = Location(Files.E, 5)
+print(q.getValidMoves(game.board))
