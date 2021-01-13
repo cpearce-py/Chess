@@ -21,5 +21,6 @@ class Game():
 game = Game()
 game.board.printBoard()
 
-r = game.board.map.get(Location(Files.A, 1)).currentPiece
-print(r.getValidMoves(game.board))
+p1 = game.board.map.get(Location(Files.A, 2)).currentPiece
+p = game.board.map.get(Location(Files.B, 7)).currentPiece
+print(p1.getValidMoves(game.board))

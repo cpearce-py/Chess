@@ -31,8 +31,8 @@ class Pawn(AbstractPiece):
     def _getAllValidMoves(self, board):
 
         if self.isFirstMove:
-            yield logic.build(self.square, fileOffset=0, rankOffset=2)
+            yield logic.build(self.location, fileOffset=0, rankOffset=2)
 
-        yield logic.build(self.square, fileOffset=0, rankOffset=1)
-        yield logic.build(self.square, fileOffset=1, rankOffset=1)
-        yield logic.build(self.square, fileOffset=-1, rankOffset=1)
+        yield logic.build(self.location, fileOffset=0, rankOffset=1)
+        yield logic.build(self.location, fileOffset=1, rankOffset=1)
+        yield logic.build(self.location, fileOffset=-1, rankOffset=1)

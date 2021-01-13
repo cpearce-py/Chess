@@ -1,9 +1,8 @@
 from Location import Location
+from Files import Files, Color, RANKS
 
 
 class Square:
-
-    Color = ['DARK', 'LIGHT']
 
     def __init__(self, SquareColor, pos):
         if not isinstance(pos, Location):
@@ -16,6 +15,15 @@ class Square:
     def reset(self):
         self._piece = None
         self._isOccupied = False
+
+    def __eq__(self, other):
+        return (isinstance(other, Square) and
+                other._SquareColor == self._SquareColor and
+                other._Location == self._Location
+                )
+
+    def __hash__(self):
+        return hash((self._SquareColor, self._Location))
 
     @property
     def isOccupied(self):
@@ -33,6 +41,14 @@ class Square:
     @property
     def location(self):
         return self._Location
+
+    @property
+    def file(self):
+        return self._Location.file
+
+    @property
+    def rank(self):
+        return self._Location.rank
 
     @property
     def color(self):

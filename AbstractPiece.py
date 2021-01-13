@@ -36,12 +36,6 @@ class AbstractPiece:
     def location(self):
         return self._square.location
 
-    @location.setter
-    def location(self, value):
-        if not isinstance(value, Location):
-            raise ValueError("Pass Location as Location class")
-        self._square.location = value
-
     @property
     def square(self):
         """ Property for what Square the piece is on.
