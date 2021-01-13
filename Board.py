@@ -1,15 +1,11 @@
 from Squares import Square
 from Location import Location
-import numpy as np
 from Files import Files, RANKS, Color
 
 
 class Board():
 
     def __init__(self):
-        self._createBoard()
-
-    def _createBoard(self):
         _BOARD = []
         _map = {}
         for x, rank in enumerate(RANKS):
@@ -30,7 +26,7 @@ class Board():
         self._map = _map
 
     def __repr__(self):
-        return str(np.array(self._BOARD))
+        return f'{self.__class__.__name__}'
 
     def rank(self, row):
         i = len(self._BOARD) - row

@@ -1,7 +1,7 @@
-from Squares import Square
-from Location import Location
-from Files import Color
 import logic
+from Files import Color
+from Location import Location
+from Squares import Square
 
 
 class AbstractPiece:
