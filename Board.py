@@ -9,6 +9,8 @@ from Pieces import *
 class Board():
 
     def __init__(self):
+        self._lightPieces = []
+        self._darkPieces = []
         _BOARD = []
         _pieces = self._initialize()
         _map = {}
@@ -24,6 +26,10 @@ class Board():
                     piece = _pieces.get(pos)
                     _square.currentPiece = piece
                     piece.square = _square
+                    if piece.color == Color.DARK:
+                        self.darkPieces.append(piece)
+                    else:
+                        self.lightPieces.append(piece)
                 _strip.append(_square)
                 _map[pos] = _square
 
@@ -71,6 +77,14 @@ class Board():
     @property
     def board(self):
         return self._BOARD
+
+    @property
+    def lightPieces(self):
+        return self._lightPieces
+
+    @property
+    def darkPieces(self):
+        return self._darkPieces
 
     @staticmethod
     def _initialize():
