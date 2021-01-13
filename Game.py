@@ -19,12 +19,7 @@ class Game():
 
 
 game = Game()
+
 r = Rook(Color.DARK)
-r.square = Location(Files.C, 4)
-
-b = Bishop(Color.DARK)
-b.square = Location(Files.D, 3)
-
-q = Queen(Color.LIGHT)
-q.square = Location(Files.E, 5)
-print(q.getValidMoves(game.board))
+r.square = Location(Files.H, 1)
+print(r.getValidMoves(game.board))
