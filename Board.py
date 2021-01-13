@@ -1,9 +1,8 @@
-from Squares import Square
-from Location import Location
-from Files import Files, RANKS, Color
 import logic
-
+from Files import RANKS, Color, Files
+from Location import Location
 from Pieces import *
+from Squares import Square
 
 
 class Board():
