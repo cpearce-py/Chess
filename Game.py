@@ -21,7 +21,12 @@ class Game():
 game = Game()
 r = Rook(Color.DARK)
 r.square = Location(Files.C, 4)
-print(r.getValidMoves(game.board))
+
+
+q = Queen(Color.DARK)
+q.square = Location(Flies.F, 7)
+print(q.getValidMoves(game.board))
+
 
 p = Pawn(Color.LIGHT)
 p.square = Location(Files.D, 2)

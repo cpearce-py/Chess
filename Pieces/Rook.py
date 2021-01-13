@@ -1,7 +1,7 @@
-from AbstractPiece import AbstractPiece
-from Location import Location
 import logic
+from AbstractPiece import AbstractPiece
 from Files import Color, Files
+from Location import Location
 
 
 class Rook(AbstractPiece):
@@ -11,59 +11,56 @@ class Rook(AbstractPiece):
 
     def getValidMoves(self, board):
         moveCandidates = []
-
-        for x in self._getFileCandidates(board):
-            moveCandidates.append(x)
-        for x in self._getFileCandidates(board, offset=-1):
-            moveCandidates.append(x)
-        for x in self._getRankCandidates(board):
-            moveCandidates.append(x)
-        for x in self._getRankCandidates(board, offset=-1):
-            moveCandidates.append(x)
-
+        _map = board.map
+        current = self.square
+        self._getFileCandidates(
+            moveCandidates, _map, current, offset=1)
+        self._getFileCandidates(
+            moveCandidates, _map, current, offset=-1)
+        self._getRankCandidates(
+            moveCandidates, _map, current, offset=1)
+        self._getRankCandidates(
+            moveCandidates, _map, current, offset=-1)
         return moveCandidates
 
-#    def _getFileCandidates(self, board, offset=1):
-#        """
-#        Method to return available position in a straight file.
-#        Offset determines forward or backwards direction from piece.
-#
-#        Yeild: Location
-#        """
-#        nextMove = logic.build(
-#            self.square, offset, rankOffset=0)
-#        while board.map.get(nextMove, False):
-#            if board.map.get(nextMove).isOccupied:
-#                if board.map.get(nextMove).currentPiece.color == self.color:
-#                    break
-#                yield nextMove
-#                break
-#            yield nextMove
-#
-#            try:
-#                nextMove = logic.build(nextMove, offset, rankOffset=0)
-#            except ValueError:
-#                break
-#
-#    def _getRankCandidates(self, board, offset=1):
-#        """
-#        Method to return available position in a straight rank.
-#        Offset determines forward or backwards direction from piece.
-#
-#        Yeild: Location
-#        """
-#        nextMove = logic.build(
-#            self.square, rankOffset=offset, fileOffset=0,)
-#        while board.map.get(nextMove, False):
-#            if board.map.get(nextMove).isOccupied:
-#                if board.map.get(nextMove.currentPiece.color) == self.color:
-#                    break
-#                yield nextMove
-#                break
-#            yield nextMove
-#
-#            try:
-#                nextMove = logic.build(
-#                    nextMove, fileOffset=0, rankOffset=offset)
-#            except ValueError:
-#                break
+    def _getFileCandidates(self, moves, _map, current, offset):
+        """
+        Method to append a position, type:`Location`, to given list.
+        Offset determines forward or backwards direction from piece.
+
+        moves: type `list`
+        Yeild: Location
+        """
+        nextMove = logic.build(current, offset, rankOffset=0)
+        while _map.get(nextMove):
+            if _map.get(nextMove).isOccupied:
+                if _map.get(nextMove).currentPiece.color == self.color:
+                    break
+                moves.append(nextMove)
+                break
+            moves.append(nextMove)
+            try:
+                nextMove = logic.build(nextMove, offset, rankOffset=0)
+            except ValueError:
+                break
+
+    def _getRankCandidates(self, moves, _map, current, offset):
+        """
+        Method to append a position, type:`Location`, to given list.
+        Offset determines forward or backwards direction from piece.
+
+        moves: type `list`
+        Offset determines forward or backwards direction from piece.
+        """
+        nextMove = logic.build(current, 0, offset)
+        while _map.get(nextMove):
+            if _map.get(nextMove).isOccupied:
+                if _map.get(nextMove).currentPiece.color == self.color:
+                    break
+                moves.append(nextMove)
+                break
+            moves.append(nextMove)
+            try:
+                nextMove = logic.build(nextMove, 0, offset)
+            except ValueError:
+                break
