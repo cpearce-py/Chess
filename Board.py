@@ -1,12 +1,14 @@
 from Squares import Square
 from Location import Location
 from Files import Files, RANKS, Color
+import logic
 
 
 class Board():
 
     def __init__(self):
         _BOARD = []
+        _pieces = logic.initialize()
         _map = {}
         for x, rank in enumerate(RANKS):
             _strip = []
@@ -15,7 +17,10 @@ class Board():
 
                 pos = Location(file, rank)
                 _square = Square(colour, pos)
-
+                if _pieces.get(pos):
+                    piece = _pieces.get(pos)
+                    _square.currentPiece = piece
+                    piece.square = _square
                 _strip.append(_square)
                 _map[pos] = _square
 

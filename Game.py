@@ -20,3 +20,6 @@ class Game():
 
 game = Game()
 game.board.printBoard()
+
+r = game.board.map.get(Location(Files.A, 1)).currentPiece
+print(r.getValidMoves(game.board))

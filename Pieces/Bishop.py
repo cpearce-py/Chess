@@ -12,7 +12,7 @@ class Bishop(AbstractPiece):
     def getValidMoves(self, board):
         moveCandidates = []
         _map = board.map
-        current = self.square
+        current = self.location
         self._getDiagonalCandidates(moveCandidates, _map, current, 1, 1)
         self._getDiagonalCandidates(moveCandidates, _map, current, 1, -1)
         self._getDiagonalCandidates(moveCandidates, _map, current, -1, -1)

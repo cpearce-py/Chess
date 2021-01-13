@@ -13,7 +13,7 @@ class AbstractPiece:
         self._isFirstMove = True
 
     def __repr__(self):
-        return (f'{self.__class__.__name__}({self._name}, {self._pieceColor},'
+        return (f'{self.__class__.__name__}({self._pieceColor},'
                 f' {self._square})')
 
     @property
@@ -33,6 +33,16 @@ class AbstractPiece:
         return self._pieceColor
 
     @property
+    def location(self):
+        return self._square.location
+
+    @location.setter
+    def location(self, value):
+        if not isinstance(value, Location):
+            raise ValueError("Pass Location as Location class")
+        self._square.location = value
+
+    @property
     def square(self):
         """ Property for what Square the piece is on.
         Returns: Location(Enum.File, Rank)"""
@@ -40,8 +50,6 @@ class AbstractPiece:
 
     @square.setter
     def square(self, value):
-        if not isinstance(value, Location):
-            raise ValueError("Pass Square location as a Location class}")
         self._square = value
 
     def _getDiagonalCandidates(self, moves, _map,
@@ -61,10 +69,7 @@ class AbstractPiece:
                 moves.append(nextMove)
                 break
             moves.append(nextMove)
-            try:
-                nextMove = logic.build(nextMove, fileOffset, rankOffset)
-            except ValueError:
-                break
+            nextMove = logic.build(nextMove, fileOffset, rankOffset)
 
     def _getFileCandidates(self, moves, _map, current, offset):
         """
@@ -82,10 +87,7 @@ class AbstractPiece:
                 moves.append(nextMove)
                 break
             moves.append(nextMove)
-            try:
-                nextMove = logic.build(nextMove, offset, rankOffset=0)
-            except ValueError:
-                break
+            nextMove = logic.build(nextMove, offset, rankOffset=0)
 
     def _getRankCandidates(self, moves, _map, current, offset):
         """
@@ -102,7 +104,4 @@ class AbstractPiece:
                 moves.append(nextMove)
                 break
             moves.append(nextMove)
-            try:
-                nextMove = logic.build(nextMove, 0, offset)
-            except ValueError:
-                break
+            nextMove = logic.build(nextMove, 0, offset)

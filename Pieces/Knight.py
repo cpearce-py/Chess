@@ -6,12 +6,12 @@ from Location import Location
 
 class Knight(AbstractPiece):
 
-    def __init__(self, pieceColor, name="Knight"):
+    def __init__(self, pieceColor, name="knight"):
         super().__init__(name, pieceColor)
 
     def getValidMoves(self, board):
         moveCandidates = []
-        current = self.square
+        current = self.location
         choices = [2, -2, 1, -1]
         for i in choices:
             for j in choices:

@@ -27,7 +27,3 @@ class Location:
     @property
     def rank(self):
         return self._rank
-
-    @property
-    def pos(self):
-        return (self._file, self._rank)

@@ -12,7 +12,7 @@ class Rook(AbstractPiece):
     def getValidMoves(self, board):
         moveCandidates = []
         _map = board.map
-        current = self.square
+        current = self.location
         self._getFileCandidates(
             moveCandidates, _map, current, offset=1)
         self._getFileCandidates(
