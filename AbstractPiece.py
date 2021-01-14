@@ -5,6 +5,12 @@ from Squares import Square
 
 
 class AbstractPiece:
+    """
+    Base Piece class.
+
+    :param name: `String` used to store name of subclassed pieces.
+    :param pieceColor: `Color` Enum. (Color.LIGHT/Color.DARK).
+    """
 
     def __init__(self, name, pieceColor):
         self._name = name
@@ -34,30 +40,49 @@ class AbstractPiece:
 
     @property
     def location(self):
+        """Property returns `Location` object for current square."""
         return self._square.location
 
     @property
     def square(self):
         """ Property for what Square the piece is on.
-        Returns: Location(Enum.File, Rank)"""
+        Returns `Square` object."""
         return self._square
 
     @square.setter
     def square(self, value):
         self._square = value
 
-    def moveTo(self, square):
-        self.square.reset()
-        self.square = square
-        square.currentPiece = self
+    def moveTo(self, square, moves):
+        """Move current piece to given square. Deals with cleanup.
+
+        :param square: type `Square` square to move to.
+        :returns: ValueError if piece cannot move to given square.
+        """
+        if square.location in moves:
+            self.square.reset()
+            self.square = square
+            square.currentPiece = self
+            if self.isFirstMove:
+                self.isFirstMove = False
+        else:
+            raise ValueError("Piece cannot move to that square.")
+
+    def getValidMoves(self, board):
+        """ Method to get available moves. MUST be used in each subclass."""
+        pass
 
     def _getDiagonalCandidates(self, moves, _map,
                                current, rankOffset, fileOffset):
         """
-        Method to append possible diagonal moves. type: `Location`
-        Offset determines forward or backwards direction
+        Method to append possible diagonal moves.
+        Offset determines forward or backwards direction (1 or -1)
 
-        moves: type `list`
+        :param moves: type `list` moves appended to this object.
+        :param _map: type `dict`
+        :param current: type `Location` Current Pieces square.
+        :param rankOffset: type `Int` + or - 1 for direction.
+        :param fileOffset: type `Int` + or - 1 for direction.
 
         """
         nextMove = logic.build(current, fileOffset, rankOffset)
@@ -75,8 +100,10 @@ class AbstractPiece:
         Method to append a position, type:`Location`, to given list.
         Offset determines forward or backwards direction from piece.
 
-        moves: type `list`
-        Yeild: Location
+        :param moves: type `list` moves appended to this object.
+        :param _map: type `dict`
+        :param current: type `Location` Current Pieces square.
+        :param offset: type `Int` + or - 1 for direction.
         """
         nextMove = logic.build(current, offset, rankOffset=0)
         while _map.get(nextMove):
@@ -93,7 +120,10 @@ class AbstractPiece:
         Method to append a position, type:`Location`, to given list.
         Offset determines forward or backwards direction from piece.
 
-        moves: type `list`
+        :param moves: type `list` moves appended to this object.
+        :param _map: type `dict`
+        :param current: type `Location` Current Pieces square.
+        :param offset: type `Int` + or - 1 for direction.
         """
         nextMove = logic.build(current, 0, offset)
         while _map.get(nextMove):

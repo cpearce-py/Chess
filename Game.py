@@ -14,7 +14,7 @@ class Game():
 
         while True:
             self.board.printBoard()
-
+            print("")
             start = input("Move square: ")
             file = start[0].upper()
             rank = int(start[1])
@@ -29,12 +29,11 @@ class Game():
             toSq = self.board.map.get(end)
             piece = fromSq.currentPiece
 
-            piece.moveTo(toSq)
-
-            # fromSq.currentPiece.square = toSq
-            # toSq.currentPiece = piece
-
-            # fromSq.reset()
+            try:
+                possibleMoves = piece.getValidMoves(self.board)
+                piece.moveTo(toSq, possibleMoves)
+            except ValueError:
+                print(f"{piece.name} cannot move to that square. ")
 
     @property
     def board(self):

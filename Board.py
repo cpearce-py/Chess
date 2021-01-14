@@ -6,6 +6,9 @@ from Squares import Square
 
 
 class Board():
+    """
+    Representation of Chess Board. Manage piece movement and board display.
+    """
 
     def __init__(self):
         self._lightPieces = []
@@ -87,6 +90,7 @@ class Board():
 
     @staticmethod
     def _initialize():
+        """ Initialise board in standard chess configuration."""
         pieces = {}
 
         # Rooks
