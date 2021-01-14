@@ -46,7 +46,7 @@ class AbstractPiece:
     @property
     def square(self):
         """ Property for what Square the piece is on.
-        Returns `Square` object."""
+        Returns: :class:`Square`."""
         return self._square
 
     @square.setter
@@ -56,7 +56,7 @@ class AbstractPiece:
     def moveTo(self, square, moves):
         """Move current piece to given square. Deals with cleanup.
 
-        :param square: type `Square` square to move to.
+        :param square: Instance of :class:`Square` square to move to.
         :returns: ValueError if piece cannot move to given square.
         """
         if square.location in moves:

@@ -3,7 +3,7 @@ from enum import Enum
 
 
 class Location:
-    """Base location class."""
+    """Base Location class."""
 
     def __init__(self, file, rank):
         if not isinstance(file, Enum):
@@ -16,10 +16,15 @@ class Location:
                 f'RANK={self._rank})')
 
     def __eq__(self, other):
+        """Compare with Location.
+
+        :param other: Instance of :class:`Location`
+        """
         return (isinstance(other, Location) and
                 other.file == self.file and other.rank == self.rank)
 
     def __hash__(self):
+        """Compute hash for location"""
         return hash((self._file, self._rank))
 
     @property
