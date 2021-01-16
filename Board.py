@@ -8,6 +8,17 @@ from Squares import Square
 class Board():
     """
     Representation of Chess Board. Manage piece movement and board display.
+    board.map attribute is a dictionary pairing each instance of Location, to
+    an instance of a square. This allows us to quickly access information on a
+    square by it's given location.
+
+    board.map = {Location(FIlE=A, RANK=1): Square(LOCATION(FILE=A, RANK=1))}
+
+    Example:
+        board.map.get(Location(A,1)).currentPiece
+
+    Returns:
+        Rook(Color=LIGHT, Location(A,1))
     """
 
     def __init__(self):
