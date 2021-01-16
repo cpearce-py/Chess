@@ -59,6 +59,8 @@ class AbstractPiece:
         :param square: Instance of :class:`Square` square to move to.
         :returns: ValueError if piece cannot move to given square.
         """
+        if not moves:
+            raise ValueError("No possible moves!")
         if square.location in moves:
             self.square.reset()
             self.square = square

@@ -26,3 +26,6 @@ class Queen(AbstractPiece):
         self._getDiagonalCandidates(moveCandidates, _map, current, -1, -1)
         self._getDiagonalCandidates(moveCandidates, _map, current, -1, 1)
         return moveCandidates
+
+    def getAttackMoves(self, board):
+        return self.getValidMoves(board)

@@ -22,3 +22,6 @@ class Rook(AbstractPiece):
         self._getRankCandidates(
             moveCandidates, _map, current, offset=-1)
         return moveCandidates
+
+    def getAttackMoves(self, board):
+        return self.getValidMoves(board)
