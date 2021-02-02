@@ -22,6 +22,7 @@ def build(current, fileOffset, rankOffset):
 
     # To avoid Enums ValueError if file not located.
     try:
-        return Location(Files(currentFile + fileOffset), current.rank + rankOffset)
+        return Location(Files(currentFile + fileOffset),
+                        current.rank + rankOffset)
     except ValueError:
         return None
