@@ -1,10 +1,11 @@
 import logic
+from abc import abstractmethod, ABC
 from Files import Color
 from Location import Location
 from Squares import Square
 
 
-class AbstractPiece:
+class AbstractPiece(ABC):
     """
     Base Piece class.
 
@@ -70,9 +71,10 @@ class AbstractPiece:
         else:
             raise ValueError("Piece cannot move to that square.")
 
+    @abstractmethod
     def getValidMoves(self, board):
         """ Method to get available moves. MUST be used in each subclass."""
-        pass
+        raise NotImplementedError
 
     def _getDiagonalCandidates(self, moves, _map,
                                current, rankOffset, fileOffset):
