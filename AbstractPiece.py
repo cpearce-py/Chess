@@ -59,6 +59,9 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
     def square(self, value):
         self._square = value
 
+    def update(self):
+        pass
+
     def moveTo(self, square, moves):
         """Move current piece to given square. Deals with cleanup.
 
