@@ -24,9 +24,15 @@ class Color(Enum):
     DARK = 2
 
 
-IMAGES = {}
-pieces = ['wp', 'wR', 'wN', 'wB', 'wK', 'wQ',
-          'bp', 'bR', 'bN', 'bB', 'bK', 'bQ']
-for piece in pieces:
-    IMAGES[piece] = pygame.transform.scale(
-        pygame.image.load(f'IMG/{piece}.png'), (SQ_SIZE, SQ_SIZE))
+def _setupImages():
+    _IMAGES = {}
+    pieces = ['wp', 'wR', 'wN', 'wB', 'wK', 'wQ',
+              'bp', 'bR', 'bN', 'bB', 'bK', 'bQ']
+    for piece in pieces:
+        _IMAGES[piece] = pygame.transform.scale(
+            pygame.image.load(f'IMG/{piece}.png'), (SQ_SIZE, SQ_SIZE))
+
+    return _IMAGES
+
+
+IMAGES = _setupImages()
