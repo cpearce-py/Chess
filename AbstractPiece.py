@@ -14,14 +14,13 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
     :param pieceColor: `Color` Enum. (Color.LIGHT/Color.DARK).
     """
 
-    def __init__(self, name, pieceColor, imageLocation):
+    def __init__(self, name, pieceColor, image):
         pygame.sprite.Sprite.__init__(self)
         self._name = name
         self._pieceColor = pieceColor
 
-        self.image, self.rect = pygame.image.load(imageLocation)
-        screen = pygame.display.get_surface()
-        self.area = screen.get_rect()
+        self.image = image
+        self.rect = self.image.get_rect(center=[100, 100])
         self._square = None
         self._isFirstMove = True
 

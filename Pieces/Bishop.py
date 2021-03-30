@@ -1,5 +1,5 @@
 import logic
-from Files import Color, Files
+from Files import Color, Files, IMAGES
 from AbstractPiece import AbstractPiece
 from Location import Location
 
@@ -7,9 +7,8 @@ from Location import Location
 class Bishop(AbstractPiece):
 
     def __init__(self, pieceColor, name="Bishop"):
-        
-        img = "IMG/bB.png" if pieceColor == Color.DARK else "IMG/wB.png"
-        super().__init__(name, pieceColor, imageLocation=img)
+        img = IMAGES['bB'] if pieceColor == Color.DARK else IMAGES['wB']
+        super().__init__(name, pieceColor, image=img)
 
     def getValidMoves(self, board):
         moveCandidates = []

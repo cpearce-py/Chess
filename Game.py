@@ -1,8 +1,11 @@
 import sys
+
+import pygame
+
 from Board import Board
-from Pieces import Pawn, Queen, King, Knight, Rook, Bishop
+from Files import Color, Files
 from Location import Location
-from Files import Files, Color
+from Pieces import Bishop, King, Knight, Pawn, Queen, Rook
 
 
 class Game():
@@ -11,8 +14,8 @@ class Game():
         self._board = Board()
 
     def play(self):
-
-        while True:
+        _running = True
+        while _running:
             self.board.printBoard()
             print("")
             start = input("Move square: ")
