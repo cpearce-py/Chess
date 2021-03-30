@@ -7,7 +7,9 @@ from Location import Location
 class Bishop(AbstractPiece):
 
     def __init__(self, pieceColor, name="Bishop"):
-        super().__init__(name, pieceColor)
+        
+        img = "IMG/bB.png" if pieceColor == Color.DARK else "IMG/wB.png"
+        super().__init__(name, pieceColor, imageLocation=img)
 
     def getValidMoves(self, board):
         moveCandidates = []
