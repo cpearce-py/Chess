@@ -1,13 +1,14 @@
 import logic
 from AbstractPiece import AbstractPiece
-from Files import Color, Files
+from Files import Color, Files, IMAGES
 from Location import Location
 
 
 class Queen(AbstractPiece):
 
     def __init__(self, pieceColor, name="Queen"):
-        super().__init__(name, pieceColor)
+        img = IMAGES['bQ'] if pieceColor == Color.DARK else IMAGES['wQ']
+        super().__init__(name, pieceColor, image=img)
 
     def getValidMoves(self, board):
         moveCandidates = []

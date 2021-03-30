@@ -1,13 +1,14 @@
 import logic
 from AbstractPiece import AbstractPiece
-from Files import Color, Files
+from Files import Color, Files, IMAGES
 from Location import Location
 
 
 class Pawn(AbstractPiece):
 
     def __init__(self, pieceColor, name="Pawn"):
-        super().__init__(name, pieceColor)
+        img = IMAGES['bp'] if pieceColor == Color.DARK else IMAGES['wp']
+        super().__init__(name, pieceColor, image=img)
 
     def getValidMoves(self, board):
 
