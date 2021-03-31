@@ -1,8 +1,8 @@
 from Location import Location
 from Files import Files, Color, RANKS
+import pygame
 
-
-class Square:
+class Square(pygame.sprite.Sprite):
 
     def __init__(self, SquareColor, pos):
         if not isinstance(pos, Location):

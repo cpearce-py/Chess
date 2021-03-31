@@ -31,7 +31,7 @@ class Board():
         for x, rank in enumerate(RANKS):
             _strip = []
             colour = Color.DARK if not x % 2 == 0 else Color.LIGHT
-            for i, file in enumerate(Files):
+            for file in Files:
 
                 pos = Location(file, rank)
                 _square = Square(colour, pos)

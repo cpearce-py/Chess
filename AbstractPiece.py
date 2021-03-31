@@ -21,8 +21,10 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
 
         self.image = image
         self.rect = self.image.get_rect(center=[100, 100])
+
         self._square = None
         self._isFirstMove = True
+        self._selected = False
 
     def __repr__(self):
         return (f'{self.__class__.__name__}({self._pieceColor},'
@@ -35,6 +37,14 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
     @isFirstMove.setter
     def isFirstMove(self, value):
         self._isFirstMove = value
+
+    @property
+    def selected(self):
+        return self._selected
+
+    @selected.setter
+    def selected(self, value):
+        self._selected = value
 
     @property
     def name(self):
@@ -58,9 +68,6 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
     @square.setter
     def square(self, value):
         self._square = value
-
-    def update(self):
-        pass
 
     def moveTo(self, square, moves):
         """Move current piece to given square. Deals with cleanup.
@@ -146,3 +153,6 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
                 break
             moves.append(nextMove)
             nextMove = logic.build(nextMove, 0, offset)
+
+    def update(self):
+        self.rect.center = pygame.mouse.get_pos()

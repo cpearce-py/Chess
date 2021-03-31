@@ -1,7 +1,5 @@
 from Location import Location
 from Files import Files, RANKS, Color
-from Pieces import *
-
 
 def build(current, fileOffset, rankOffset):
     """
@@ -17,8 +15,6 @@ def build(current, fileOffset, rankOffset):
     if not isinstance(current, Location):
         raise ValueError("Please pass current position as Location class")
     currentFile = current.file.value
-    newFile = currentFile + fileOffset
-    newRank = current.rank + rankOffset
 
     # To avoid Enums ValueError if file not located.
     try:
