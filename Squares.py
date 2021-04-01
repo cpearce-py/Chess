@@ -1,16 +1,25 @@
 from Location import Location
 from Files import Files, Color, RANKS
 import pygame
+from Files import WIDTH, HEIGHT, DIMENSIONS, SQ_SIZE
+
 
 class Square(pygame.sprite.Sprite):
 
-    def __init__(self, SquareColor, pos):
+    def __init__(self, SquareColor, pos, rect):
+        pygame.sprite.Sprite.__init__(self)
         if not isinstance(pos, Location):
             raise ValueError("please pass pos, as class Location")
         self._SquareColor = SquareColor
         self._Location = pos
         self._isOccupied = False
         self._piece = None
+
+        self.image = pygame.Surface([WIDTH, HEIGHT])
+        color = (232, 235, 239) if SquareColor == Color.LIGHT else (
+            125, 135, 150)
+        self.image.fill(color)
+        self.rect = rect
 
     def __eq__(self, other):
         return (isinstance(other, Square) and
