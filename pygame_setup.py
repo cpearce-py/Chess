@@ -10,7 +10,6 @@ clock = pygame.time.Clock()
 
 piece = Bishop(Color.LIGHT)
 
-
 screen = pygame.display.set_mode((1000, 1000))
 
 pieces_grp = pygame.sprite.Group()
@@ -23,7 +22,7 @@ while running:
 
     screen.fill((255, 255, 255))
 
-    pieces_grp.draw(screen)  
+    pieces_grp.draw(screen)
 
 
     mx, my = pygame.mouse.get_pos()
@@ -35,7 +34,7 @@ while running:
             if e.button == 1:
                 clicking = True
                 pieces_grp.update()
-        
+
         if e.type == MOUSEBUTTONUP:
             if e.button == 1:
                 clicking = False
