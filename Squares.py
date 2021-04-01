@@ -16,9 +16,9 @@ class Square(pygame.sprite.Sprite):
         self._piece = None
 
         self.image = pygame.Surface([WIDTH, HEIGHT])
-        color = (232, 235, 239) if SquareColor == Color.LIGHT else (
+        self._orig_color = (232, 235, 239) if SquareColor == Color.LIGHT else (
             125, 135, 150)
-        self.image.fill(color)
+        self.image.fill(self._orig_color)
         self.rect = rect
 
         self._selected = False
@@ -39,7 +39,8 @@ class Square(pygame.sprite.Sprite):
     def update(self):
         if self._selected:
             self.image.fill((255, 255, 0))
-        self.image
+        else:
+            self.image.fill(self._orig_color)
 
     @property
     def isOccupied(self):

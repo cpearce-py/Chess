@@ -69,7 +69,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
     def square(self, value):
         self._square = value
 
-    def moveTo(self, square, moves):
+    def moveToSquare(self, square, moves):
         """Move current piece to given square. Deals with cleanup.
 
         :param square: Instance of :class:`Square` square to move to.
@@ -81,10 +81,12 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
             self.square.reset()
             self.square = square
             square.currentPiece = self
-            if self.isFirstMove:
-                self.isFirstMove = False
+            self.isFirstMove = False
+            self.rect.center = square.rect.center
         else:
             raise ValueError("Piece cannot move to that square.")
+        # toSquareCenter = square.rect.center
+        # self.rect.center = toSquareCenter
 
     @abstractmethod
     def getValidMoves(self, board):
@@ -160,8 +162,8 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         else:
             self.rect.center
 
-    def moveToSquare(self, square):
-        if not isinstance(square, Square):
-            raise ValueError(f'moveToSquare handed {type(square)}')
-        toSquareCenter = square.rect.center
-        self.rect.center = toSquareCenter
+    # def moveToSquare(self, square):
+    #    if not isinstance(square, Square):
+    #        raise ValueError(f'moveToSquare handed {type(square)}')
+    #    toSquareCenter = square.rect.center
+    #    self.rect.center = toSquareCenter

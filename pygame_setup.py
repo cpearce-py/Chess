@@ -12,7 +12,7 @@ class game:
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.board = Board()
         self._running = False
-        self._playerClicks = []
+        self._playerClicked = []
 
     def play(self):
 
@@ -20,7 +20,7 @@ class game:
         self._running = True
 
         screen = self.screen
-        playerClicked = self._playerClicks
+        playerClicked = self._playerClicked
         board = self.board
 
         while self._running:
@@ -35,24 +35,27 @@ class game:
 
                     if e.button == 1:
                         mx, my = e.pos
-                        for square in board:
+                        for square in self.board:
                             if square.rect.collidepoint(mx, my):
                                 print(square, square.isSelected)
                                 if square.isSelected:  # User already selected
                                     self.resetActions()
                                 else:
                                     square.select()
-                                    playerClicked.append(square)
-                                if len(playerClicked) == 2:
-                                    fromSq = playerClicked[0]
-                                    toSq = playerClicked[1]
+                                    self._playerClicked.append(square)
+                                if len(self._playerClicked) == 2:
+                                    fromSq = self._playerClicked[0]
+                                    toSq = self._playerClicked[1]
 
                                     try:
                                         piece = board.map.get(
                                             fromSq.location).currentPiece
-                                        piece.moveToSquare(toSq)
+                                        possibleMoves = piece.getValidMoves(
+                                            board)
+                                        piece.moveToSquare(toSq, possibleMoves)
                                         self.resetActions()
-                                    except AttributeError:
+                                    except (AttributeError, ValueError) as e:
+                                        print(e)
                                         self.resetActions()
 
                         board.draw(screen)
@@ -62,7 +65,7 @@ class game:
 
     def resetActions(self):
         self.board.deselect()
-        self._playerClicks = []
+        self._playerClicked = []
 
 
 game = game()
