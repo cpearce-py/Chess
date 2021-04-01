@@ -28,20 +28,20 @@ while running:
     board.draw(screen)
     pieces_grp.draw(screen)
 
-    mx, my = pygame.mouse.get_pos()
-
     # Button events
     for e in pygame.event.get():
         if e.type == QUIT:
             running = False
         if e.type == MOUSEBUTTONDOWN:
             if e.button == 1:
+
                 clicking = True
+                mx, my = e.pos
+
                 for square in board:
                     if square.rect.collidepoint(mx, my):
                         for piece in pieces_grp:
                             piece.moveToSquare(square)
-
                 pieces_grp.update()
 
         if e.type == MOUSEBUTTONUP:
