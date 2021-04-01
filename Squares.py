@@ -1,16 +1,27 @@
 from Location import Location
 from Files import Files, Color, RANKS
 import pygame
+from Files import WIDTH, HEIGHT, DIMENSIONS, SQ_SIZE
+
 
 class Square(pygame.sprite.Sprite):
 
-    def __init__(self, SquareColor, pos):
+    def __init__(self, SquareColor, pos, rect):
+        pygame.sprite.Sprite.__init__(self)
         if not isinstance(pos, Location):
             raise ValueError("please pass pos, as class Location")
         self._SquareColor = SquareColor
         self._Location = pos
         self._isOccupied = False
         self._piece = None
+
+        self.image = pygame.Surface([WIDTH, HEIGHT])
+        self._orig_color = (232, 235, 239) if SquareColor == Color.LIGHT else (
+            125, 135, 150)
+        self.image.fill(self._orig_color)
+        self.rect = rect
+
+        self._selected = False
 
     def __eq__(self, other):
         return (isinstance(other, Square) and
@@ -24,6 +35,12 @@ class Square(pygame.sprite.Sprite):
     def reset(self):
         self._piece = None
         self._isOccupied = False
+
+    def update(self):
+        if self._selected:
+            self.image.fill((255, 255, 0))
+        else:
+            self.image.fill(self._orig_color)
 
     @property
     def isOccupied(self):
@@ -53,6 +70,20 @@ class Square(pygame.sprite.Sprite):
     @property
     def color(self):
         return self._SquareColor
+
+    @property
+    def isSelected(self):
+        return self._selected
+
+    @isSelected.setter
+    def isSelected(self, value):
+        self._selected = value
+
+    def select(self):
+        self._selected = True
+
+    def deselect(self):
+        self._selected = False
 
     def __repr__(self):
         return (f'{self.__class__.__name__}(COLOR={self._SquareColor.name},'

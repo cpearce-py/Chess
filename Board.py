@@ -1,11 +1,12 @@
 import logic
-from Files import RANKS, Color, Files
+import pygame
+from Files import RANKS, Color, Files, WIDTH, HEIGHT, DIMENSIONS, SQ_SIZE
 from Location import Location
 from Pieces import *
 from Squares import Square
 
 
-class Board():
+class Board(pygame.sprite.Group):
     """
     Representation of Chess Board. Manage piece movement and board display.
     board.map attribute is a dictionary pairing each instance of Location, to
@@ -22,19 +23,21 @@ class Board():
     """
 
     def __init__(self):
+        super().__init__()
         self._lightPieces = []
         self._darkPieces = []
         _BOARD = []
         _pieces = self._initialize()
         _map = {}
 
-        for x, rank in enumerate(RANKS):
+        for x, file in enumerate(Files):
             _strip = []
-            colour = Color.DARK if not x % 2 == 0 else Color.LIGHT
-            for file in Files:
+            colour = Color.DARK if x % 2 == 0 else Color.LIGHT
+            for y, rank in enumerate(RANKS):
+                rect = pygame.Rect(x*SQ_SIZE, y*SQ_SIZE, SQ_SIZE, SQ_SIZE)
 
                 pos = Location(file, rank)
-                _square = Square(colour, pos)
+                _square = Square(colour, pos, rect)
                 if _pieces.get(pos):
                     piece = _pieces.get(pos)
                     _square.currentPiece = piece
@@ -43,6 +46,7 @@ class Board():
                         self.darkPieces.append(piece)
                     else:
                         self.lightPieces.append(piece)
+                self.add(_square)
                 _strip.append(_square)
                 _map[pos] = _square
 
@@ -55,6 +59,14 @@ class Board():
 
     def __repr__(self):
         return f'{self.__class__.__name__}'
+
+    def draw(self, surface):
+        for sqr in self.sprites():
+            sqr.update()
+            piece = sqr.currentPiece
+            surface.blit(sqr.image, sqr.rect)
+            if piece:
+                surface.blit(piece.image, sqr.rect)
 
     def rank(self, row):
         i = len(self._BOARD) - row
@@ -98,6 +110,10 @@ class Board():
     @property
     def darkPieces(self):
         return self._darkPieces
+
+    def deselect(self):
+        for sqr in self.sprites():
+            sqr.deselect()
 
     @staticmethod
     def _initialize():
