@@ -21,6 +21,8 @@ class Square(pygame.sprite.Sprite):
         self.image.fill(color)
         self.rect = rect
 
+        self._selected = False
+
     def __eq__(self, other):
         return (isinstance(other, Square) and
                 other._SquareColor == self._SquareColor and
@@ -33,6 +35,11 @@ class Square(pygame.sprite.Sprite):
     def reset(self):
         self._piece = None
         self._isOccupied = False
+
+    def update(self):
+        if self._selected:
+            self.image.fill((255, 255, 0))
+        self.image
 
     @property
     def isOccupied(self):
@@ -62,6 +69,20 @@ class Square(pygame.sprite.Sprite):
     @property
     def color(self):
         return self._SquareColor
+
+    @property
+    def isSelected(self):
+        return self._selected
+
+    @isSelected.setter
+    def isSelected(self, value):
+        self._selected = value
+
+    def select(self):
+        self._selected = True
+
+    def deselect(self):
+        self._selected = False
 
     def __repr__(self):
         return (f'{self.__class__.__name__}(COLOR={self._SquareColor.name},'

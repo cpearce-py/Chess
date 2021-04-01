@@ -60,6 +60,14 @@ class Board(pygame.sprite.Group):
     def __repr__(self):
         return f'{self.__class__.__name__}'
 
+    def draw(self, surface):
+        for sqr in self.sprites():
+            sqr.update()
+            piece = sqr.currentPiece
+            surface.blit(sqr.image, sqr.rect)
+            if piece:
+                surface.blit(piece.image, sqr.rect)
+
     def rank(self, row):
         i = len(self._BOARD) - row
         return self._BOARD[i]
@@ -102,6 +110,10 @@ class Board(pygame.sprite.Group):
     @property
     def darkPieces(self):
         return self._darkPieces
+
+    def deselect(self):
+        for sqr in self.sprites():
+            sqr.deselect()
 
     @staticmethod
     def _initialize():

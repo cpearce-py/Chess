@@ -161,6 +161,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
             self.rect.center
 
     def moveToSquare(self, square):
+        if not isinstance(square, Square):
+            raise ValueError(f'moveToSquare handed {type(square)}')
         toSquareCenter = square.rect.center
         self.rect.center = toSquareCenter
-
