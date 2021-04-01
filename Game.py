@@ -43,7 +43,8 @@ class Game:
                                 else:
                                     square.select()
                                     self._playerClicked.append(square)
-                                if len(self._playerClicked) == 2:
+
+                                if len(self._playerClicked) == 2: # Second click
                                     fromSq = self._playerClicked[0]
                                     toSq = self._playerClicked[1]
 

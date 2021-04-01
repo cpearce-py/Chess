@@ -93,7 +93,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         """ Method to get available moves. MUST be used in each subclass."""
         raise NotImplementedError
 
-    def _getDiagonalCandidates(self, moves, _map,
+    def _getDiagonalCandidates(self, moves, map,
                                current, rankOffset, fileOffset):
         """
         Method to append possible diagonal moves.
@@ -107,16 +107,16 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
 
         """
         nextMove = logic.build(current, fileOffset, rankOffset)
-        while _map.get(nextMove):
-            if _map.get(nextMove).isOccupied:
-                if _map.get(nextMove).currentPiece.color == self.color:
+        while map.get(nextMove):
+            if map.get(nextMove).isOccupied:
+                if map.get(nextMove).currentPiece.color == self.color:
                     break
                 moves.append(nextMove)
                 break
             moves.append(nextMove)
             nextMove = logic.build(nextMove, fileOffset, rankOffset)
 
-    def _getFileCandidates(self, moves, _map, current, offset):
+    def _getFileCandidates(self, moves, map, current, offset):
         """
         Method to append a position, type:`Location`, to given list.
         Offset determines forward or backwards direction from piece.
@@ -127,16 +127,16 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         :param offset: type `Int` + or - 1 for direction.
         """
         nextMove = logic.build(current, offset, rankOffset=0)
-        while _map.get(nextMove):
-            if _map.get(nextMove).isOccupied:
-                if _map.get(nextMove).currentPiece.color == self.color:
+        while map.get(nextMove):
+            if map.get(nextMove).isOccupied:
+                if map.get(nextMove).currentPiece.color == self.color:
                     break
                 moves.append(nextMove)
                 break
             moves.append(nextMove)
             nextMove = logic.build(nextMove, offset, rankOffset=0)
 
-    def _getRankCandidates(self, moves, _map, current, offset):
+    def _getRankCandidates(self, moves, map, current, offset):
         """
         Method to append a position, type:`Location`, to given list.
         Offset determines forward or backwards direction from piece.
@@ -147,9 +147,9 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         :param offset: type `Int` + or - 1 for direction.
         """
         nextMove = logic.build(current, 0, offset)
-        while _map.get(nextMove):
-            if _map.get(nextMove).isOccupied:
-                if _map.get(nextMove).currentPiece.color == self.color:
+        while map.get(nextMove):
+            if map.get(nextMove).isOccupied:
+                if map.get(nextMove).currentPiece.color == self.color:
                     break
                 moves.append(nextMove)
                 break
@@ -161,9 +161,3 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
             self.rect.center = pygame.mouse.get_pos()
         else:
             self.rect.center
-
-    # def moveToSquare(self, square):
-    #    if not isinstance(square, Square):
-    #        raise ValueError(f'moveToSquare handed {type(square)}')
-    #    toSquareCenter = square.rect.center
-    #    self.rect.center = toSquareCenter
