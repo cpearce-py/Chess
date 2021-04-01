@@ -9,7 +9,7 @@ class Game:
 
     def __init__(self):
         self.clock = pygame.time.Clock()
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
         self.board = Board()
         self.running = False
         self.playerClicked = []
@@ -30,6 +30,11 @@ class Game:
             for e in pygame.event.get():
                 if e.type == QUIT:
                     self.running = False
+
+
+                if e.type == VIDEORESIZE:
+                    self.screen = pygame.display.set_mode((e.w, e.h),
+                                                            pygame.RESIZABLE)
 
                 if e.type == MOUSEBUTTONDOWN:
 
