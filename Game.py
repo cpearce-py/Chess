@@ -11,25 +11,25 @@ class Game:
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.board = Board()
-        self._running = False
-        self._playerClicked = []
+        self.running = False
+        self.playerClicked = []
 
     def play(self):
 
         pygame.init()
-        self._running = True
+        self.running = True
 
         screen = self.screen
-        playerClicked = self._playerClicked
+        playerClicked = self.playerClicked
         board = self.board
 
-        while self._running:
+        while self.running:
 
             self.board.draw(screen)
 
             for e in pygame.event.get():
                 if e.type == QUIT:
-                    self._running = False
+                    self.running = False
 
                 if e.type == MOUSEBUTTONDOWN:
 
@@ -42,11 +42,11 @@ class Game:
                                     self.resetActions()
                                 else:
                                     square.select()
-                                    self._playerClicked.append(square)
+                                    self.playerClicked.append(square)
 
-                                if len(self._playerClicked) == 2: # Second click
-                                    fromSq = self._playerClicked[0]
-                                    toSq = self._playerClicked[1]
+                                if len(self.playerClicked) == 2: # Second click
+                                    fromSq = self.playerClicked[0]
+                                    toSq = self.playerClicked[1]
 
                                     try:
                                         piece = board.map.get(
@@ -66,7 +66,7 @@ class Game:
 
     def resetActions(self):
         self.board.deselect()
-        self._playerClicked = []
+        self.playerClicked = []
 
 
 game = Game()
