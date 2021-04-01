@@ -9,7 +9,8 @@ class Game:
 
     def __init__(self):
         self.clock = pygame.time.Clock()
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+        self.screen = pygame.display.set_mode(
+            (WIDTH, HEIGHT), pygame.RESIZABLE)
         self.board = Board()
         self.running = False
         self.playerClicked = []
@@ -31,43 +32,48 @@ class Game:
                 if e.type == QUIT:
                     self.running = False
 
-
                 if e.type == VIDEORESIZE:
                     self.screen = pygame.display.set_mode((e.w, e.h),
-                                                            pygame.RESIZABLE)
+                                                          pygame.RESIZABLE)
 
                 if e.type == MOUSEBUTTONDOWN:
 
                     if e.button == 1:
                         mx, my = e.pos
-                        for square in self.board:
-                            if square.rect.collidepoint(mx, my):
-                                print(square, square.isSelected)
-                                if square.isSelected:  # User already selected
+
+                        square = self.hitSquare(e.pos)
+                        if square:
+                            print(square, square.isSelected)
+                            if square.isSelected:  # User already selected
+                                self.resetActions()
+                            else:
+                                square.select()
+                                self.playerClicked.append(square)
+
+                            if len(self.playerClicked) == 2:  # Second click
+                                fromSq = self.playerClicked[0]
+                                toSq = self.playerClicked[1]
+
+                                try:
+                                    piece = board.map.get(
+                                        fromSq.location).currentPiece
+                                    possibleMoves = piece.getValidMoves(
+                                        board)
+                                    piece.moveToSquare(toSq, possibleMoves)
                                     self.resetActions()
-                                else:
-                                    square.select()
-                                    self.playerClicked.append(square)
-
-                                if len(self.playerClicked) == 2: # Second click
-                                    fromSq = self.playerClicked[0]
-                                    toSq = self.playerClicked[1]
-
-                                    try:
-                                        piece = board.map.get(
-                                            fromSq.location).currentPiece
-                                        possibleMoves = piece.getValidMoves(
-                                            board)
-                                        piece.moveToSquare(toSq, possibleMoves)
-                                        self.resetActions()
-                                    except (AttributeError, ValueError) as e:
-                                        print(e)
-                                        self.resetActions()
+                                except (AttributeError, ValueError) as e:
+                                    print(e)
+                                    self.resetActions()
 
                         board.draw(screen)
 
             pygame.display.update()
             self.clock.tick(60)
+
+    def hitSquare(self, pos):
+        for square in self.board:
+            if square.rect.collidepoint(pos):
+                return square
 
     def resetActions(self):
         self.board.deselect()
