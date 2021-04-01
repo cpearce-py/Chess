@@ -39,7 +39,8 @@ while running:
                 clicking = True
                 for square in board:
                     if square.rect.collidepoint(mx, my):
-                        print(square)
+                        for piece in pieces_grp:
+                            piece.moveToSquare(square)
 
                 pieces_grp.update()
 

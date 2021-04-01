@@ -155,4 +155,12 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
             nextMove = logic.build(nextMove, 0, offset)
 
     def update(self):
-        self.rect.center = pygame.mouse.get_pos()
+        if self._selected:
+            self.rect.center = pygame.mouse.get_pos()
+        else:
+            self.rect.center
+
+    def moveToSquare(self, square):
+        toSquareCenter = square.rect.center
+        self.rect.center = toSquareCenter
+
