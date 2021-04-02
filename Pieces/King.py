@@ -30,6 +30,8 @@ class King(AbstractPiece):
             square.currentPiece = self
             self.isFirstMove = False
             self.rect.center = square.rect.center
+        else:
+            raise ValueError("No moves")
 
     def getValidMoves(self, board):
         moveCandidates = []
@@ -79,14 +81,18 @@ class King(AbstractPiece):
 
                     # For each square possible of attacking, we check for
                     # Enemy piece, if so, we can't move there.
+
                     for square in attackers:
                         if m.get(square).isOccupied:
                             if m.get(square).currentPiece.color != self.color:
                                 attacker = m.get(square).currentPiece
                                 if nextMove in attacker.getAttackMoves(board):
+                                    print(
+                                        f'{attacker.name} {attacker.location} attacks this.')
                                     rejected = True
 
                 if not rejected:
                     moveCandidates.append(nextMove)
 
+        print(f'These are the kings possible moves: {moveCandidates}')
         return moveCandidates

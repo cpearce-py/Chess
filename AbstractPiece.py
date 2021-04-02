@@ -92,8 +92,6 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
             self.rect.center = square.rect.center
         else:
             raise ValueError("Piece cannot move to that square.")
-        # toSquareCenter = square.rect.center
-        # self.rect.center = toSquareCenter
 
     @abstractmethod
     def getValidMoves(self, board):

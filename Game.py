@@ -62,12 +62,13 @@ class Game:
                                     if piece.color == turn:
                                         possibleMoves = piece.getValidMoves(
                                             board)
+
                                         piece.moveToSquare(
                                             toSq, possibleMoves, board)
                                         turn = Color.DARK if turn == Color.LIGHT else Color.LIGHT
                                     self.resetActions()
                                 except (AttributeError, ValueError) as e:
-                                    print(e)
+                                    print("From Game.py ", e)
                                     self.resetActions()
 
                         board.draw(screen)
