@@ -98,68 +98,84 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         """ Method to get available moves. MUST be used in each subclass."""
         raise NotImplementedError
 
-    def _getDiagonalCandidates(self, moves, map,
+    def _getDiagonalCandidates(self, moves, boardMap,
                                current, rankOffset, fileOffset):
         """
         Method to append possible diagonal moves.
         Offset determines forward or backwards direction (1 or -1)
 
         :param moves: type `list` moves appended to this object.
-        :param _map: type `dict`
+        :param _boardMap: type `dict`
         :param current: type `Location` Current Pieces square.
         :param rankOffset: type `Int` + or - 1 for direction.
         :param fileOffset: type `Int` + or - 1 for direction.
 
         """
         nextMove = logic.build(current, fileOffset, rankOffset)
-        while map.get(nextMove):
-            if map.get(nextMove).isOccupied:
-                if map.get(nextMove).currentPiece.color == self.color:
+        while boardMap.get(nextMove):
+            if boardMap.get(nextMove).isOccupied:
+                if boardMap.get(nextMove).currentPiece.color == self.color:
                     break
                 moves.append(nextMove)
                 break
             moves.append(nextMove)
             nextMove = logic.build(nextMove, fileOffset, rankOffset)
 
-    def _getFileCandidates(self, moves, map, current, offset):
+    def _getFileCandidates(self, moves, boardMap, current, offset):
         """
         Method to append a position, type:`Location`, to given list.
         Offset determines forward or backwards direction from piece.
 
         :param moves: type `list` moves appended to this object.
-        :param _map: type `dict`
+        :param _boardMap: type `dict`
         :param current: type `Location` Current Pieces square.
         :param offset: type `Int` + or - 1 for direction.
         """
         nextMove = logic.build(current, offset, rankOffset=0)
-        while map.get(nextMove):
-            if map.get(nextMove).isOccupied:
-                if map.get(nextMove).currentPiece.color == self.color:
+        while boardMap.get(nextMove):
+            if boardMap.get(nextMove).isOccupied:
+                if boardMap.get(nextMove).currentPiece.color == self.color:
                     break
                 moves.append(nextMove)
                 break
             moves.append(nextMove)
             nextMove = logic.build(nextMove, offset, rankOffset=0)
 
-    def _getRankCandidates(self, moves, map, current, offset):
+    def _getRankCandidates(self, moves, boardMap, current, offset):
         """
         Method to append a position, type:`Location`, to given list.
         Offset determines forward or backwards direction from piece.
 
         :param moves: type `list` moves appended to this object.
-        :param _map: type `dict`
+        :param _boardMap: type `dict`
         :param current: type `Location` Current Pieces square.
         :param offset: type `Int` + or - 1 for direction.
         """
         nextMove = logic.build(current, 0, offset)
-        while map.get(nextMove):
-            if map.get(nextMove).isOccupied:
-                if map.get(nextMove).currentPiece.color == self.color:
+        while boardMap.get(nextMove):
+            if boardMap.get(nextMove).isOccupied:
+                if boardMap.get(nextMove).currentPiece.color == self.color:
                     break
                 moves.append(nextMove)
                 break
             moves.append(nextMove)
             nextMove = logic.build(nextMove, 0, offset)
+
+    def _getKnightsMove(self, moves, boardMap, current):
+        choices = [2, -2, 1, -1]
+        for i in choices:
+            for j in choices:
+                if abs(j) == abs(i):
+                    continue
+
+                nextMove = logic.build(current, i, j)
+                try:
+                    square = boardMap.get(nextMove)
+                    if square.isOccupied and square.currentPiece.color == self.color:
+                        raise ValueError("Same piece color")
+                    moves.append(nextMove)
+                except:
+                    continue
 
     def update(self):
         if self._selected:

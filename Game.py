@@ -68,7 +68,7 @@ class Game:
                                         turn = Color.DARK if turn == Color.LIGHT else Color.LIGHT
                                     self.resetActions()
                                 except (AttributeError, ValueError) as e:
-                                    print("From Game.py ", e)
+                                    print(e)
                                     self.resetActions()
 
                         board.draw(screen)

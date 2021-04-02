@@ -78,14 +78,18 @@ class King(AbstractPiece):
                     self._getDiagonalCandidates(attackers, m, nextMove, 1, -1)
                     self._getDiagonalCandidates(attackers, m, nextMove, -1, -1)
                     self._getDiagonalCandidates(attackers, m, nextMove, -1, 1)
+                    self._getKnightsMove(attackers, m, nextMove)
+
 
                     # For each square possible of attacking, we check for
                     # Enemy piece, if so, we can't move there.
 
                     for square in attackers:
+                        print(square)
                         if m.get(square).isOccupied:
                             if m.get(square).currentPiece.color != self.color:
                                 attacker = m.get(square).currentPiece
+                                print(f'this is the attacker: {attacker}')
                                 if nextMove in attacker.getAttackMoves(board):
                                     print(
                                         f'{attacker.name} {attacker.location} attacks this.')
