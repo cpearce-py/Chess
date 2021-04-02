@@ -1,5 +1,7 @@
 from Location import Location
 from Files import Files, RANKS, Color
+from Move import Move
+
 
 def build(current, fileOffset, rankOffset):
     """

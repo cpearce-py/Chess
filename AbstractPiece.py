@@ -69,7 +69,14 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
     def square(self, value):
         self._square = value
 
-    def moveToSquare(self, square, moves):
+    def forceMove(self, square):
+        self.square.reset()
+        self.square = square
+        square.currentPiece = self
+        self.isFirstMove = False
+        self.rect.center = square.rect.center
+
+    def moveToSquare(self, square, moves, board=None):
         """Move current piece to given square. Deals with cleanup.
 
         :param square: Instance of :class:`Square` square to move to.

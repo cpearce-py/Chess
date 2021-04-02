@@ -38,6 +38,8 @@ class Board(pygame.sprite.Group):
 
                 pos = Location(file, rank)
                 _square = Square(colour, pos, rect)
+                pos.square = _square
+
                 if _pieces.get(pos):
                     piece = _pieces.get(pos)
                     _square.currentPiece = piece
@@ -60,7 +62,26 @@ class Board(pygame.sprite.Group):
     def __repr__(self):
         return f'{self.__class__.__name__}'
 
+    def getFile(self, square, direction):
+        curFile = Files(square.location.file.value)
+        newFile = Files(curFile.value + direction)
+        newLocation = Location(newFile, square.location.rank)
+        print(f'this is the new location: {newLocation}')
+        return self.map.get(newLocation)
+
+    def getFileUp(self, square):
+        return self.getFile(square, 1)
+
+    def getFileDown(self, square):
+        return self.getFile(square, -1)
+
     def draw(self, surface):
+        """
+        Draw method inherited from pygame.sprite.Group.
+        Updates each square and redraws to given surface.
+
+        :param surface: Type `pygame.Surface` surface to draw to
+        """
         for sqr in self.sprites():
             sqr.update()
             piece = sqr.currentPiece

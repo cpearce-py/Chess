@@ -24,6 +24,8 @@ class Game:
         playerClicked = self.playerClicked
         board = self.board
 
+        turn = Color.LIGHT
+
         while self.running:
 
             self.board.draw(screen)
@@ -42,8 +44,8 @@ class Game:
                         mx, my = e.pos
 
                         square = self.hitSquare(e.pos)
+
                         if square:
-                            print(square, square.isSelected)
                             if square.isSelected:  # User already selected
                                 self.resetActions()
                             else:
@@ -57,9 +59,12 @@ class Game:
                                 try:
                                     piece = board.map.get(
                                         fromSq.location).currentPiece
+                                    # if piece.color == turn:
                                     possibleMoves = piece.getValidMoves(
                                         board)
-                                    piece.moveToSquare(toSq, possibleMoves)
+                                    piece.moveToSquare(
+                                        toSq, possibleMoves, board)
+                                    turn = Color.DARK if turn == Color.LIGHT else Color.LIGHT
                                     self.resetActions()
                                 except (AttributeError, ValueError) as e:
                                     print(e)
