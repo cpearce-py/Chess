@@ -162,6 +162,14 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
             nextMove = logic.build(nextMove, 0, offset)
 
     def _getKnightsMove(self, moves, boardMap, current):
+        """
+        Method to append a position, type:`Location`, to given list. Based on
+        a knights movement.
+
+        :param moves: type `list` moves appended to this object.
+        :param _boardMap: type `dict` Board.Map
+        :param current: type `Location` Current Pieces square.
+        """
         choices = [2, -2, 1, -1]
         for i in choices:
             for j in choices:

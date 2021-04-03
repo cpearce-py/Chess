@@ -29,8 +29,6 @@ class Rook(AbstractPiece):
 
     def castle(self, board):
         curSquare = self.square
-        print(curSquare)
-        print(curSquare.location.file.value)
         if curSquare.location.file.name == 'H':
             destLoc = logic.build(curSquare.location, -2, 0)
             destSquare = board.map.get(destLoc)

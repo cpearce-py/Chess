@@ -85,18 +85,13 @@ class King(AbstractPiece):
                     # Enemy piece, if so, we can't move there.
 
                     for square in attackers:
-                        print(square)
                         if m.get(square).isOccupied:
                             if m.get(square).currentPiece.color != self.color:
                                 attacker = m.get(square).currentPiece
-                                print(f'this is the attacker: {attacker}')
                                 if nextMove in attacker.getAttackMoves(board):
-                                    print(
-                                        f'{attacker.name} {attacker.location} attacks this.')
                                     rejected = True
 
                 if not rejected:
                     moveCandidates.append(nextMove)
 
-        print(f'These are the kings possible moves: {moveCandidates}')
         return moveCandidates

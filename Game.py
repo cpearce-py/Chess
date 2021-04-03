@@ -38,6 +38,7 @@ class Game:
                     self.screen = pygame.display.set_mode((e.w, e.h),
                                                           pygame.RESIZABLE)
 
+
                 if e.type == MOUSEBUTTONDOWN:
 
                     if e.button == 1:
