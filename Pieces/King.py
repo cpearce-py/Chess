@@ -9,7 +9,6 @@ class King(AbstractPiece):
         img = IMAGES['bK'] if pieceColor == Color.DARK else IMAGES['wK']
         super().__init__(name, pieceColor, image=img)
         self.castling = False
-        self.rookSquare = None
 
     def moveToSquare(self, square, moves, board=None):
         if not moves:
@@ -19,9 +18,19 @@ class King(AbstractPiece):
         if self.castling and self.isFirstMove:
             currentFile = self.square.file.value
             destFile = square.file.value
+            print(f'destFile - currentFile = {str(destFile-currentFile)}')
 
-            if abs(currentFile - destFile) > 1:
-                rook = self.rookSquare.currentPiece
+            if (destFile - currentFile ) > 0:
+                rook = logic.build(self.location, 3, 0)
+                rook = board.map.get(rook)
+                rook = rook.currentPiece
+                rook.castle(board)
+
+            else:
+                rook = logic.build(self.location, -4, 0)
+                print(f'Rook = {rook}')
+                rook = board.map.get(rook)
+                rook = rook.currentPiece
                 rook.castle(board)
 
         if square.location in moves:
@@ -41,14 +50,18 @@ class King(AbstractPiece):
 
         # Castling
         if self.isFirstMove:
-            move = logic.build(current, 2, 0)
-            square = board.map.get(move)
-            rookSquare = board.getFileUp(square)
+            for pos in [2, -2]:
+                move = logic.build(current, pos, 0)
+                square = board.map.get(move)
+                if pos > 0:
+                    rookSquare = board.getFileUp(square)
+                else:
+                    rookSquare = board.getFileDown(square)
+                    rookSquare = board.getFileDown(rookSquare)
 
-            if rookSquare.currentPiece.name == "Rook":
-                moveCandidates.append(move)
-                self.rookSquare = rookSquare
-                self.castling = True
+                if rookSquare.currentPiece.name == "Rook":
+                    moveCandidates.append(move)
+                    self.castling = True
 
         for i in choices:
             for j in choices:

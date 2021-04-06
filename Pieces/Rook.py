@@ -33,6 +33,12 @@ class Rook(AbstractPiece):
             destLoc = logic.build(curSquare.location, -2, 0)
             destSquare = board.map.get(destLoc)
             self.forceMove(destSquare)
+        elif curSquare.location.file.name == 'A':
+            destLoc = logic.build(curSquare.location, 3, 0)
+            destSquare = board.map.get(destLoc)
+            self.forceMove(destSquare)
+        else:
+            return False
 
     def new_getValidMoves(self, board):
         moveCandidates = []
