@@ -18,20 +18,14 @@ class King(AbstractPiece):
         if self.castling and self.isFirstMove:
             currentFile = self.square.file.value
             destFile = square.file.value
-            print(f'destFile - currentFile = {str(destFile-currentFile)}')
 
             if (destFile - currentFile ) > 0:
                 rook = logic.build(self.location, 3, 0)
-                rook = board.map.get(rook)
-                rook = rook.currentPiece
-                rook.castle(board)
-
             else:
                 rook = logic.build(self.location, -4, 0)
-                print(f'Rook = {rook}')
-                rook = board.map.get(rook)
-                rook = rook.currentPiece
-                rook.castle(board)
+
+            rook = board.map.get(rook).currentPiece
+            rook.castle(board)
 
         if square.location in moves:
             self.square.reset()

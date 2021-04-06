@@ -80,6 +80,8 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         """Move current piece to given square. Deals with cleanup.
 
         :param square: Instance of :class:`Square` square to move to.
+        :param moves: List of Instances :class:`Location` possible moves a
+            player can choose from.
         :returns: ValueError if piece cannot move to given square.
         """
         if not moves:
