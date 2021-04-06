@@ -30,7 +30,6 @@ class Pawn(AbstractPiece):
             raise ValueError("Piece cannont move to that square.")
 
     def promote(self):
-        print("Promoting from method")
         square = self.square
         self.__class__ = Queen
         self.__init__(self.color)
