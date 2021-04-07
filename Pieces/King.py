@@ -14,14 +14,17 @@ class King(AbstractPiece):
         if not moves:
             raise ValueError("No possible moves!")
 
+        currentFile = self.square.file.value
+        destFile = square.file.value
+
         # Check if castling
-        if self.castling and self.isFirstMove:
+        if self.isFirstMove and abs(destFile - currentFile ) not in [1, 0]:
             currentFile = self.square.file.value
             destFile = square.file.value
 
-            if (destFile - currentFile ) > 0:
+            if (destFile - currentFile ) == 2:
                 rook = logic.build(self.location, 3, 0)
-            else:
+            else: #(destFile - currentFile) == -2:
                 rook = logic.build(self.location, -4, 0)
 
             rook = board.map.get(rook).currentPiece
@@ -35,6 +38,9 @@ class King(AbstractPiece):
             self.rect.center = square.rect.center
         else:
             raise ValueError("No moves")
+
+    def getAttackMoves(self, board):
+        return self.getValidMoves(board)
 
     def getValidMoves(self, board):
         moveCandidates = []
