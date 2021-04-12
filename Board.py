@@ -82,12 +82,16 @@ class Board(pygame.sprite.Group):
 
         :param surface: Type `pygame.Surface` surface to draw to
         """
+        pieces = []
         for sqr in self.sprites():
             sqr.update()
             piece = sqr.currentPiece
             surface.blit(sqr.image, sqr.rect)
             if piece:
-                surface.blit(piece.image, sqr.rect)
+                piece.update()
+                pieces.append(piece)
+        for piece in pieces:
+            surface.blit(piece.image, piece.rect)
 
     def rank(self, row):
         i = len(self._BOARD) - row

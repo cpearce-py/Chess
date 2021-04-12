@@ -80,10 +80,20 @@ class Square(pygame.sprite.Sprite):
         self._selected = value
 
     def select(self):
-        self._selected = True
+        try:
+            self.currentPiece.selected = True
+        except AttributeError:
+            pass
+        finally:
+            self._selected = True
 
     def deselect(self):
-        self._selected = False
+        try:
+            self.currentPiece.selected = False
+        except AttributeError:
+            pass
+        finally:
+            self._selected = False
 
     def __repr__(self):
         return (f'{self.__class__.__name__}(COLOR={self._SquareColor.name},'
