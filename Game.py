@@ -72,7 +72,8 @@ class Game:
                                     print(e)
                                     self.resetActions()
 
-                        board.draw(screen)
+                        screen.fill((0,0,0))
+                        self.board.draw(screen)
 
             pygame.display.update()
             self.clock.tick(60)
@@ -89,3 +90,4 @@ class Game:
 
 game = Game()
 game.play()
+pygame.quit()

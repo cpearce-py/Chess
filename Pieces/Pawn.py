@@ -2,7 +2,18 @@ import logic
 from AbstractPiece import AbstractPiece
 from Files import Color, Files, IMAGES, RANKS
 from Location import Location
-from Pieces import Queen
+from Pieces.Bishop import Bishop
+from Pieces.Queen import Queen
+from Pieces.Knight import Knight
+from Pieces.Rook import Rook
+from ui import Button
+import pygame
+
+CLASSES = {"queen": Queen,
+            "rook": Rook,
+            "knight": Knight,
+            "bishop": Bishop
+            }
 
 class Pawn(AbstractPiece):
 
@@ -18,6 +29,8 @@ class Pawn(AbstractPiece):
 
             # Check for promotion
             if square.location.rank in [1, 8]:
+                btn = Button("Queen", 200, 50, 100, 50)
+
                 self.promote()
 
             self.square.reset()
@@ -29,9 +42,12 @@ class Pawn(AbstractPiece):
         else:
             raise ValueError("Piece cannont move to that square.")
 
-    def promote(self):
+    def promote(self, piece="queen"):
+        if not isinstance(piece, str):
+            raise ValueError("Pass piece as string.")
+        piece = CLASSES.get(piece.lower())
         square = self.square
-        self.__class__ = Queen
+        self.__class__ = piece
         self.__init__(self.color)
         square.reset()
         self.square = square

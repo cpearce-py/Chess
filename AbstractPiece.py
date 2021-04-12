@@ -4,6 +4,7 @@ from Files import Color
 from Location import Location
 from Squares import Square
 import pygame
+from pygame.locals import *
 
 
 class AbstractPiece(ABC, pygame.sprite.Sprite):
@@ -107,7 +108,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         Offset determines forward or backwards direction (1 or -1)
 
         :param moves: type `list` moves appended to this object.
-        :param _boardMap: type `dict`
+        :param boardMap: type `dict`
         :param current: type `Location` Current Pieces square.
         :param rankOffset: type `Int` + or - 1 for direction.
         :param fileOffset: type `Int` + or - 1 for direction.
@@ -129,7 +130,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         Offset determines forward or backwards direction from piece.
 
         :param moves: type `list` moves appended to this object.
-        :param _boardMap: type `dict`
+        :param boardMap: type `dict`
         :param current: type `Location` Current Pieces square.
         :param offset: type `Int` + or - 1 for direction.
         """
@@ -149,7 +150,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         Offset determines forward or backwards direction from piece.
 
         :param moves: type `list` moves appended to this object.
-        :param _boardMap: type `dict`
+        :param boardMap: type `dict`
         :param current: type `Location` Current Pieces square.
         :param offset: type `Int` + or - 1 for direction.
         """
@@ -169,7 +170,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         a knights movement.
 
         :param moves: type `list` moves appended to this object.
-        :param _boardMap: type `dict` Board.Map
+        :param boardMap: type `dict` Board.Map
         :param current: type `Location` Current Pieces square.
         """
         choices = [2, -2, 1, -1]
@@ -191,4 +192,8 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         if self._selected:
             self.rect.center = pygame.mouse.get_pos()
         else:
-            self.rect.center
+            self.rect.center = self.square.rect.center
+
+    def draw(self, surface):
+
+        surface.blit(self.image, self.rect)
