@@ -22,6 +22,7 @@ class Square(pygame.sprite.Sprite):
         self.rect = rect
 
         self._selected = False
+        self._layer = 0
 
     def __eq__(self, other):
         return (isinstance(other, Square) and

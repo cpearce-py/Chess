@@ -23,9 +23,13 @@ class Board(pygame.sprite.Group):
     """
 
     def __init__(self):
-        super().__init__()
+        super().__init__(self)
         self._lightPieces = []
         self._darkPieces = []
+        self.tempPieces = pygame.sprite.Group()
+        self.boardPieces = pygame.sprite.Group()
+        self.selectedPiece = pygame.sprite.GroupSingle()
+        self.takenPieces = pygame.sprite.Group()
         _BOARD = []
         _pieces = self._initialize()
         _map = {}
@@ -38,12 +42,14 @@ class Board(pygame.sprite.Group):
 
                 pos = Location(file, rank)
                 _square = Square(colour, pos, rect)
+                _square.add(self.boardPieces)
                 pos.square = _square
 
                 if _pieces.get(pos):
                     piece = _pieces.get(pos)
                     _square.currentPiece = piece
                     piece.square = _square
+                    piece.add(self.tempPieces)
                     if piece.color == Color.DARK:
                         self.darkPieces.append(piece)
                     else:
@@ -58,6 +64,7 @@ class Board(pygame.sprite.Group):
 
         self._BOARD = _BOARD
         self._map = _map
+        # self.add(self.boardPieces.sprites())
 
     def __repr__(self):
         return f'{self.__class__.__name__}'
@@ -82,16 +89,25 @@ class Board(pygame.sprite.Group):
 
         :param surface: Type `pygame.Surface` surface to draw to
         """
-        pieces = []
-        for sqr in self.sprites():
-            sqr.update()
-            piece = sqr.currentPiece
-            surface.blit(sqr.image, sqr.rect)
-            if piece:
-                piece.update()
-                pieces.append(piece)
-        for piece in pieces:
-            surface.blit(piece.image, piece.rect)
+        self.boardPieces.draw(surface)
+        self.tempPieces.draw(surface)
+        self.selectedPiece.draw(surface)
+        # pieces = []
+        # for sqr in self.sprites():
+        #     sqr.update()
+        #     piece = sqr.currentPiece
+        #     surface.blit(sqr.image, sqr.rect)
+        #     if piece:
+        #         piece.update()
+        #         pieces.append(piece)
+        # for piece in pieces:
+        #     surface.blit(piece.image, piece.rect)
+
+    def update(self):
+        self.tempPieces.update(self.selectedPiece, self.tempPieces)
+        self.selectedPiece.update(self.selectedPiece, self.tempPieces)
+        self.boardPieces.update()
+
 
     def rank(self, row):
         i = len(self._BOARD) - row

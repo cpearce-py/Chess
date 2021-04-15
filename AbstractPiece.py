@@ -15,8 +15,8 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
     :param pieceColor: `Color` Enum. (Color.LIGHT/Color.DARK).
     """
 
-    def __init__(self, name, pieceColor, image):
-        pygame.sprite.Sprite.__init__(self)
+    def __init__(self, name, pieceColor, image, square=None, *groups):
+        pygame.sprite.Sprite.__init__(self, *groups)
         self._name = name
         self._pieceColor = pieceColor
 
@@ -27,9 +27,19 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         self._isFirstMove = True
         self._selected = False
 
+        self._layer = 1
+
     def __repr__(self):
         return (f'{self.__class__.__name__}({self._pieceColor},'
                 f' {self._square})')
+
+    @property
+    def layer(self):
+        return self._layer
+
+    @layer.setter
+    def layer(self, value):
+        self._layer = value
 
     @property
     def isFirstMove(self):
@@ -67,8 +77,9 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         return self._square
 
     @square.setter
-    def square(self, value):
-        self._square = value
+    def square(self, square):
+        self._square = square
+        self.rect.center = square.rect.center
 
     def forceMove(self, square):
         self.square.reset()
@@ -188,9 +199,17 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
                 except:
                     continue
 
-    def update(self):
+    def update(self, selectedGroup, tempPieces):
+        if self.square.currentPiece != self:
+            self.kill()
         if self._selected:
+            if selectedGroup not in self.groups():
+                self.add(selectedGroup)
+                self.remove(tempPieces)
             self.rect.center = pygame.mouse.get_pos()
+        elif tempPieces not in self.groups():
+            self.add(tempPieces)
+            self.rect.center = self.square.rect.center
         else:
             self.rect.center = self.square.rect.center
 

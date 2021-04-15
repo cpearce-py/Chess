@@ -43,6 +43,12 @@ class Pawn(AbstractPiece):
             raise ValueError("Piece cannont move to that square.")
 
     def promote(self, piece="queen"):
+        """
+        Method to promote current instance of `Pawn` to given piece.txt
+
+        :param piece: type `str` name of piece to promote too.
+        default = queen.
+        """
         if not isinstance(piece, str):
             raise ValueError("Pass piece as string.")
         piece = CLASSES.get(piece.lower())

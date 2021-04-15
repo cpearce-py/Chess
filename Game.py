@@ -7,13 +7,14 @@ from Board import Board
 
 class Game:
 
-    def __init__(self):
+    def __init__(self, WIDTH=512, HEIGHT=512):
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode(
             (WIDTH, HEIGHT), pygame.RESIZABLE)
         self.board = Board()
         self.running = False
         self.playerClicked = []
+        self.moving = False
 
     def play(self):
 
@@ -23,7 +24,6 @@ class Game:
         screen = self.screen
         playerClicked = self.playerClicked
         board = self.board
-
         turn = Color.LIGHT
 
         while self.running:
@@ -47,11 +47,15 @@ class Game:
                         square = self.hitSquare(e.pos)
 
                         if square:
+
                             if square.isSelected:  # User already selected
                                 self.resetActions()
-                            else:
+                                continue
+
+                            if len(self.playerClicked) == 0:
                                 square.select()
-                                self.playerClicked.append(square)
+
+                            self.playerClicked.append(square)
 
                             if len(self.playerClicked) == 2:  # Second click
                                 fromSq = self.playerClicked[0]
@@ -60,10 +64,10 @@ class Game:
                                 try:
                                     piece = board.map.get(
                                         fromSq.location).currentPiece
+                                    print( piece.groups() )
                                     if piece.color == turn:
                                         possibleMoves = piece.getValidMoves(
-                                            board)
-
+                                             board)
                                         piece.moveToSquare(
                                             toSq, possibleMoves, board)
                                         turn = Color.DARK if turn == Color.LIGHT else Color.LIGHT
@@ -72,8 +76,9 @@ class Game:
                                     print(e)
                                     self.resetActions()
 
-                        screen.fill((0,0,0))
-                        self.board.draw(screen)
+            self.board.update()
+            screen.fill((0,0,0))
+            self.board.draw(screen)
 
             pygame.display.update()
             self.clock.tick(60)
