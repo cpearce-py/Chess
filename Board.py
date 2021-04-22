@@ -64,7 +64,6 @@ class Board(pygame.sprite.Group):
 
         self._BOARD = _BOARD
         self._map = _map
-        # self.add(self.boardPieces.sprites())
 
     def __repr__(self):
         return f'{self.__class__.__name__}'
@@ -92,16 +91,6 @@ class Board(pygame.sprite.Group):
         self.boardPieces.draw(surface)
         self.tempPieces.draw(surface)
         self.selectedPiece.draw(surface)
-        # pieces = []
-        # for sqr in self.sprites():
-        #     sqr.update()
-        #     piece = sqr.currentPiece
-        #     surface.blit(sqr.image, sqr.rect)
-        #     if piece:
-        #         piece.update()
-        #         pieces.append(piece)
-        # for piece in pieces:
-        #     surface.blit(piece.image, piece.rect)
 
     def update(self):
         self.tempPieces.update(self.selectedPiece, self.tempPieces)

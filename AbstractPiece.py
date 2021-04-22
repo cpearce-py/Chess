@@ -16,22 +16,28 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
     """
 
     def __init__(self, name, pieceColor, image, square=None, *groups):
-        pygame.sprite.Sprite.__init__(self, *groups)
+        super(AbstractPiece, self).__init__()
         self._name = name
         self._pieceColor = pieceColor
-
         self.image = image
         self.rect = self.image.get_rect(center=[100, 100])
-
         self._square = None
         self._isFirstMove = True
         self._selected = False
-
         self._layer = 1
+        self._alive = True
 
     def __repr__(self):
         return (f'{self.__class__.__name__}({self._pieceColor},'
                 f' {self._square})')
+
+    @property
+    def alive(self):
+        return self._alive
+
+    @alive.setter
+    def alive(self, value):
+        self._alive = value
 
     @property
     def layer(self):
@@ -79,12 +85,15 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
     @square.setter
     def square(self, square):
         self._square = square
+        square.currentPiece = self
         self.rect.center = square.rect.center
 
     def forceMove(self, square):
         self.square.reset()
-        self.square = square
+        if square.currentPiece:
+            square.currentPiece.alive = False
         square.currentPiece = self
+        self.square = square
         self.isFirstMove = False
         self.rect.center = square.rect.center
 
@@ -99,11 +108,9 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         if not moves:
             raise ValueError("No possible moves!")
         if square.location in moves:
-            self.square.reset()
-            self.square = square
-            square.currentPiece = self
-            self.isFirstMove = False
-            self.rect.center = square.rect.center
+            if square.currentPiece:
+                square.currentPiece.alive = False
+            self.forceMove(square)
         else:
             raise ValueError("Piece cannot move to that square.")
 
@@ -200,8 +207,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
                     continue
 
     def update(self, selectedGroup, tempPieces):
-        if self.square.currentPiece != self:
-            self.kill()
+
         if self._selected:
             if selectedGroup not in self.groups():
                 self.add(selectedGroup)
@@ -212,7 +218,12 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
             self.rect.center = self.square.rect.center
         else:
             self.rect.center = self.square.rect.center
+        self.updateAlive()
 
     def draw(self, surface):
-
         surface.blit(self.image, self.rect)
+
+    def updateAlive(self):
+        if self.alive == False:
+            print(f'{self.name} is dead')
+            self.kill()

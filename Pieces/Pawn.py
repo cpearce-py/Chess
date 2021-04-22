@@ -32,13 +32,7 @@ class Pawn(AbstractPiece):
                 btn = Button("Queen", 200, 50, 100, 50)
 
                 self.promote()
-
-            self.square.reset()
-            self.square = square
-            square.currentPiece = self
-            self.isFirstMove = False
-            self.rect.center = square.rect.center
-
+            self.forceMove(square)
         else:
             raise ValueError("Piece cannont move to that square.")
 

@@ -38,11 +38,17 @@ class Square(pygame.sprite.Sprite):
         self._isOccupied = False
 
     def update(self):
+        self.updateColor()
+        self.updatePiece()
+
+    def updatePiece(self):
+        pass
+
+    def updateColor(self):
         if self._selected:
             self.image.fill((255, 255, 0))
         else:
             self.image.fill(self._orig_color)
-
     @property
     def isOccupied(self):
         return self._isOccupied
