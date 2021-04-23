@@ -30,8 +30,8 @@ class Pawn(AbstractPiece):
             # Check for promotion
             if square.location.rank in [1, 8]:
                 btn = Button("Queen", 200, 50, 100, 50)
-
                 self.promote()
+
             self.forceMove(square)
         else:
             raise ValueError("Piece cannont move to that square.")

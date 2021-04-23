@@ -23,7 +23,7 @@ class Board(pygame.sprite.Group):
     """
 
     def __init__(self):
-        super().__init__(self)
+        super(Board, self).__init__(self)
         self._lightPieces = []
         self._darkPieces = []
         self.tempPieces = pygame.sprite.Group()
@@ -72,7 +72,6 @@ class Board(pygame.sprite.Group):
         curFile = Files(square.location.file.value)
         newFile = Files(curFile.value + direction)
         newLocation = Location(newFile, square.location.rank)
-        print(f'this is the new location: {newLocation}')
         return self.map.get(newLocation)
 
     def getFileUp(self, square):

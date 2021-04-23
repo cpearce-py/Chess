@@ -4,7 +4,6 @@ import pygame
 WIDTH = HEIGHT = 512
 DIMENSIONS = 8
 SQ_SIZE = HEIGHT // DIMENSIONS
-
 RANKS = [8, 7, 6, 5, 4, 3, 2, 1]
 
 
@@ -23,7 +22,6 @@ class Color(Enum):
     LIGHT = 1
     DARK = 2
 
-
 def _setupImages(path):
     _IMAGES = {}
     pieces = ['wp', 'wR', 'wN', 'wB', 'wK', 'wQ',
@@ -33,6 +31,4 @@ def _setupImages(path):
             pygame.image.load(f'{path}/{piece}.png'), (SQ_SIZE, SQ_SIZE))
 
     return _IMAGES
-
-
 IMAGES = _setupImages('IMG')

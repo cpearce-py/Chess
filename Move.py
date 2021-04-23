@@ -12,6 +12,6 @@ class Move:
 class CastleMove(Move):
 
     def __init__(self, fromSq, destSq, Rook):
-        Move.__init__(fromSq, destSq)
+        super(CastleMove, self).__init__()
         self.rook = Rook
         self.king = fromSq.currentPiece
