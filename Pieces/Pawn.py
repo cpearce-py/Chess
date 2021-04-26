@@ -1,6 +1,6 @@
 import logic
 from AbstractPiece import AbstractPiece
-from Files import Color, Files, IMAGES, RANKS
+from constants import Color, Files, IMAGES, RANKS
 from Location import Location
 from Pieces.Bishop import Bishop
 from Pieces.Queen import Queen

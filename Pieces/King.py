@@ -1,6 +1,6 @@
 import logic
 from AbstractPiece import AbstractPiece
-from Files import IMAGES, Color
+from constants import IMAGES, Color
 
 
 class King(AbstractPiece):
@@ -31,18 +31,14 @@ class King(AbstractPiece):
             rook.castle(board)
 
         if square.location in moves:
-            self.square.reset()
-            self.square = square
-            square.currentPiece = self
-            self.isFirstMove = False
-            self.rect.center = square.rect.center
+            self.forceMove(square)
         else:
             raise ValueError("No moves")
 
-    def getAttackMoves(self, board):
-        return self.getValidMoves(board)
+    # def getAttackMoves(self, board):
+    #     return self.getValidMoves(board)
 
-    def getValidMoves(self, board):
+    def getAttackMoves(self, board):
         moveCandidates = []
         current = self.location
         choices = [1, 0, -1]
@@ -65,7 +61,7 @@ class King(AbstractPiece):
 
         for i in choices:
             for j in choices:
-                rejected = False
+                # rejected = False
                 if (i == j == 0):
                     continue
 
@@ -76,22 +72,36 @@ class King(AbstractPiece):
                         if nextSquare.currentPiece.color == self.color:
                             continue
                         moveCandidates.append(nextMove)
-                        continue
+
+        print(f'Kings attack moves: {moveCandidates}')
+        return moveCandidates
+
+
+    def getValidMoves(self, board):
+        allMoves = self.getAttackMoves(board)
+        possibleMoves = []
+        m = board
+
+        for move in allMoves:
+            if board.map.get(move):
+                rejected = False
+                square = board.map.get(move)
+                if not square.isOccupied:
 
                     # If free square, we'll check for attackers
                     attackers = []
 
                     # Get all possible attacking squares around the free
                     # Square
-                    self._getFileCandidates(attackers, m, nextMove, 1)
-                    self._getFileCandidates(attackers, m, nextMove, -1)
-                    self._getRankCandidates(attackers, m, nextMove, 1)
-                    self._getRankCandidates(attackers, m, nextMove, -1)
-                    self._getDiagonalCandidates(attackers, m, nextMove, 1, 1)
-                    self._getDiagonalCandidates(attackers, m, nextMove, 1, -1)
-                    self._getDiagonalCandidates(attackers, m, nextMove, -1, -1)
-                    self._getDiagonalCandidates(attackers, m, nextMove, -1, 1)
-                    self._getKnightsMove(attackers, m, nextMove)
+                    self._getFileCandidates(attackers, m, move, 1)
+                    self._getFileCandidates(attackers, m, move, -1)
+                    self._getRankCandidates(attackers, m, move, 1)
+                    self._getRankCandidates(attackers, m, move, -1)
+                    self._getDiagonalCandidates(attackers, m, move, 1, 1)
+                    self._getDiagonalCandidates(attackers, m, move, 1, -1)
+                    self._getDiagonalCandidates(attackers, m, move, -1, -1)
+                    self._getDiagonalCandidates(attackers, m, move, -1, 1)
+                    self._getKnightsMove(attackers, m, move)
 
 
                     # For each square possible of attacking, we check for
@@ -101,10 +111,78 @@ class King(AbstractPiece):
                         if m.get(square).isOccupied:
                             if m.get(square).currentPiece.color != self.color:
                                 attacker = m.get(square).currentPiece
-                                if nextMove in attacker.getAttackMoves(board):
+                                if move in attacker.getAttackMoves(board):
                                     rejected = True
 
                 if not rejected:
-                    moveCandidates.append(nextMove)
+                    possibleMoves.append(move)
 
-        return moveCandidates
+        print(f'Kings cleaned possible moves: {possibleMoves}')
+        return possibleMoves
+
+    # def getValidMoves(self, board):
+    #     moveCandidates = []
+    #     current = self.location
+    #     choices = [1, 0, -1]
+    #     m = board.map
+    #
+    #     # Castling
+    #     if self.isFirstMove:
+    #         for pos in [2, -2]:
+    #             move = logic.build(current, pos, 0)
+    #             square = board.map.get(move)
+    #             if pos > 0:
+    #                 rookSquare = board.getFileUp(square)
+    #             else:
+    #                 rookSquare = board.getFileDown(square)
+    #                 rookSquare = board.getFileDown(rookSquare)
+    #
+    #             if rookSquare.currentPiece.name == "Rook":
+    #                 moveCandidates.append(move)
+    #                 self.castling = True
+    #
+    #     for i in choices:
+    #         for j in choices:
+    #             rejected = False
+    #             if (i == j == 0):
+    #                 continue
+    #
+    #             nextMove = logic.build(current, i, j)
+    #             nextSquare = board.map.get(nextMove)
+    #             if nextSquare:
+    #                 if nextSquare.isOccupied:
+    #                     if nextSquare.currentPiece.color == self.color:
+    #                         continue
+    #                     moveCandidates.append(nextMove)
+    #                     continue
+    #
+    #                 # If free square, we'll check for attackers
+    #                 attackers = []
+    #
+    #                 # Get all possible attacking squares around the free
+    #                 # Square
+    #                 self._getFileCandidates(attackers, m, nextMove, 1)
+    #                 self._getFileCandidates(attackers, m, nextMove, -1)
+    #                 self._getRankCandidates(attackers, m, nextMove, 1)
+    #                 self._getRankCandidates(attackers, m, nextMove, -1)
+    #                 self._getDiagonalCandidates(attackers, m, nextMove, 1, 1)
+    #                 self._getDiagonalCandidates(attackers, m, nextMove, 1, -1)
+    #                 self._getDiagonalCandidates(attackers, m, nextMove, -1, -1)
+    #                 self._getDiagonalCandidates(attackers, m, nextMove, -1, 1)
+    #                 self._getKnightsMove(attackers, m, nextMove)
+    #
+    #
+    #                 # For each square possible of attacking, we check for
+    #                 # Enemy piece, if so, we can't move there.
+    #
+    #                 for square in attackers:
+    #                     if m.get(square).isOccupied:
+    #                         if m.get(square).currentPiece.color != self.color:
+    #                             attacker = m.get(square).currentPiece
+    #                             if nextMove in attacker.getAttackMoves(board):
+    #                                 rejected = True
+    #
+    #             if not rejected:
+    #                 moveCandidates.append(nextMove)
+    #
+    #     return moveCandidates

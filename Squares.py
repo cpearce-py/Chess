@@ -1,7 +1,7 @@
 from Location import Location
-from Files import Files, Color, RANKS
+from constants import Files, Color, RANKS, WIDTH, HEIGHT, DIMENSIONS, SQ_SIZE
 import pygame
-from Files import WIDTH, HEIGHT, DIMENSIONS, SQ_SIZE
+
 
 
 class Square(pygame.sprite.Sprite):

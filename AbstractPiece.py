@@ -1,6 +1,6 @@
 import logic
 from abc import abstractmethod, ABC
-from Files import Color
+from constants import Color
 from Location import Location
 from Squares import Square
 import pygame

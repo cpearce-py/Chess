@@ -1,6 +1,6 @@
 import logic
 import pygame
-from Files import RANKS, Color, Files, WIDTH, HEIGHT, DIMENSIONS, SQ_SIZE
+from constants import RANKS, Color, Files, WIDTH, HEIGHT, DIMENSIONS, SQ_SIZE
 from Location import Location
 from Pieces import *
 from Squares import Square

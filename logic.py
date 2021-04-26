@@ -1,5 +1,5 @@
 from Location import Location
-from Files import Files, RANKS, Color
+from constants import Files, RANKS, Color
 from Move import Move
 
 

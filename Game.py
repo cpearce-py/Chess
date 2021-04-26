@@ -1,9 +1,9 @@
 import pygame
 from pygame.locals import *
 from Pieces import Bishop
-from Files import Color, WIDTH, HEIGHT
+from constants import Color, WIDTH, HEIGHT
 from Board import Board
-from event_handler import EventHandler
+from events.event_handler import EventHandler
 
 class Game:
 

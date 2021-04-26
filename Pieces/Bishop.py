@@ -1,5 +1,5 @@
 import logic
-from Files import Color, Files, IMAGES
+from constants import Color, Files, IMAGES
 from AbstractPiece import AbstractPiece
 from Location import Location
 

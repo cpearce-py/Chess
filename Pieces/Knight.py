@@ -1,6 +1,6 @@
 import logic
 from AbstractPiece import AbstractPiece
-from Files import Color, IMAGES
+from constants import Color, IMAGES
 from Location import Location
 
 

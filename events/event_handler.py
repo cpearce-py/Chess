@@ -1,5 +1,26 @@
 import pygame
-from Files import Color
+from constants import Files, Color
+from contextlib import contextmanager
+
+@contextmanager
+def ignore(*exceptions, func=None):
+    try:
+        yield
+    except exceptions as e:
+        print(e)
+        func()
+
+class BaseHandler():
+    def __init__(self):
+        pass
+
+    def on_mbutton_down(self, event):
+        pass
+
+class MenuHandler(BaseHandler):
+    def __init__(self):
+        pass
+
 
 class EventHandler():
     def __init__(self, board, turn=Color.LIGHT):
@@ -19,7 +40,6 @@ class EventHandler():
         board = self.board
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                mx, my = event.pos
                 square = self.hitSquare(event.pos)
                 if square:
                     if square.isSelected:
@@ -32,18 +52,14 @@ class EventHandler():
                     self.clicks.append(square)
 
                     if len(self.clicks) == 2:
-                        fromSq = self.clicks[0]
-                        toSq = self.clicks[1]
+                        fromSq, toSq = self.clicks
 
-                        try:
+                        with ignore(AttributeError, ValueError, func=self.resetActions):
                             piece = board.map.get(fromSq.location).currentPiece
                             if piece.color == self.turn:
                                 possibleMoves = piece.getValidMoves(self.board)
                                 piece.moveToSquare(toSq, possibleMoves, self.board)
                                 self.turn = Color.DARK if self.turn == Color.LIGHT else Color.LIGHT
-                            self.resetActions()
-                        except (AttributeError, ValueError) as e:
-                            print(e)
                             self.resetActions()
 
     def hitSquare(self, pos):
