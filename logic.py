@@ -1,6 +1,6 @@
 from Location import Location
 from constants import Files, RANKS, Color
-from Move import Move
+from move import Move
 
 
 def build(current, fileOffset, rankOffset):

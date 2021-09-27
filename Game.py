@@ -1,46 +1,38 @@
 import pygame
-from pygame.locals import *
-from Pieces import Bishop
 from constants import Color, WIDTH, HEIGHT
 from Board import Board
-from events.event_handler import EventHandler
+from events.event_handler import GameHandler
+from scenes.scenes import Menu
+from ui.gamestates import GameState
 
-class Game:
+def play_game(starting_scene, WIDTH=512, HEIGHT=512, fps=60):
+    pygame.init()
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    clock = pygame.time.Clock()
 
-    def __init__(self, WIDTH=512, HEIGHT=512):
-        self.clock = pygame.time.Clock()
-        self.screen = pygame.display.set_mode(
-            (WIDTH, HEIGHT), pygame.RESIZABLE)
-        self.board = Board()
-        self.running = False
-        self.event_handler = EventHandler(self.board)
+    active_scene = starting_scene()
 
-    def play(self):
+    while active_scene != None:
 
-        pygame.init()
-        self.running = True
+        # Handle event
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
+            active_scene.process_input(event)
 
-        screen = self.screen
-        board = self.board
+        # Update scene states
+        active_scene.update()
 
-        while self.running:
+        # Render states to screen
+        active_scene.render(screen)
+    
+        # Move onto next scene, when ready.
+        active_scene = active_scene.next
 
-            # Clock tick
-            self.clock.tick(60)
-
-            # Handle Events
-            for event in pygame.event.get():
-                self.event_handler.handle_events(event)
-
-            # Update States
-            self.board.update()
-
-            # Render States
-            screen.fill((0,0,0))
-            self.board.draw(screen)
-
-            pygame.display.update()
+        # Flip display and tick clock.
+        pygame.display.flip()
+        clock.tick(fps)
 
 if __name__ == '__main__':
-    game = Game()
-    game.play()
+    game = play_game(Menu)

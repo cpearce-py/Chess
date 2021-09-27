@@ -6,7 +6,6 @@ from Pieces.Bishop import Bishop
 from Pieces.Queen import Queen
 from Pieces.Knight import Knight
 from Pieces.Rook import Rook
-from ui import Button
 import pygame
 
 CLASSES = {"queen": Queen,
@@ -29,7 +28,7 @@ class Pawn(AbstractPiece):
 
             # Check for promotion
             if square.location.rank in [1, 8]:
-                btn = Button("Queen", 200, 50, 100, 50)
+                # btn = Button("Queen", 200, 50, 100, 50)
                 self.promote()
 
             self.forceMove(square)
@@ -38,7 +37,7 @@ class Pawn(AbstractPiece):
 
     def promote(self, piece="queen"):
         """
-        Method to promote current instance of `Pawn` to given piece.txt
+        Method to promote current instance of `Pawn` to given piece
 
         :param piece: type `str` name of piece to promote too.
         default = queen.
@@ -46,12 +45,20 @@ class Pawn(AbstractPiece):
         if not isinstance(piece, str):
             raise ValueError("Pass piece as string.")
         piece = CLASSES.get(piece.lower())
+        # Clean up required for sprite.GroupSingle
+        # Store groups Pawn was in, and then kill itself.
+        groups = self.groups()
+        self.kill()
+
         square = self.square
+        # Changing our class and initalising...
         self.__class__ = piece
         self.__init__(self.color)
+        # Add new Piece to the previous pawns groups!
+        self.add(groups)
+
         square.reset()
         self.square = square
-
 
     def getValidMoves(self, board):
 

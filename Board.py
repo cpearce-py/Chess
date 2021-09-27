@@ -1,10 +1,13 @@
-import logic
 import pygame
+
+import logic
 from constants import RANKS, Color, Files, WIDTH, HEIGHT, DIMENSIONS, SQ_SIZE
 from Location import Location
 from Pieces import *
 from Squares import Square
 
+from ui.gamestates import GameState
+from fen import PositionInfo, load_from_fen, START_FEN
 
 class Board(pygame.sprite.Group):
     """
@@ -24,49 +27,64 @@ class Board(pygame.sprite.Group):
 
     def __init__(self):
         super(Board, self).__init__(self)
-        self._lightPieces = []
-        self._darkPieces = []
+        self._lightPieces = pygame.sprite.Group()
+        self._darkPieces = pygame.sprite.Group()
         self.tempPieces = pygame.sprite.Group()
-        self.boardPieces = pygame.sprite.Group()
+        self.board_squares = pygame.sprite.Group()
         self.selectedPiece = pygame.sprite.GroupSingle()
         self.takenPieces = pygame.sprite.Group()
-        _BOARD = []
-        _pieces = self._initialize()
+        self.state = GameState.GAME
+        self._map = {}
+
+    def init(self, load_position: PositionInfo):
+
+        _pieces = load_position.squares
         _map = {}
 
         for x, file in enumerate(Files):
-            _strip = []
             colour = Color.DARK if x % 2 == 0 else Color.LIGHT
             for y, rank in enumerate(RANKS):
                 rect = pygame.Rect(x*SQ_SIZE, y*SQ_SIZE, SQ_SIZE, SQ_SIZE)
 
                 pos = Location(file, rank)
-                _square = Square(colour, pos, rect)
-                _square.add(self.boardPieces)
-                pos.square = _square
+                square = Square(colour, pos, rect)
+
+                # Add square to the drawable pieces.
+                self.board_squares.add(square)
+
+                pos.square = square
 
                 if _pieces.get(pos):
                     piece = _pieces.get(pos)
-                    _square.currentPiece = piece
-                    piece.square = _square
-                    piece.add(self.tempPieces)
-                    if piece.color == Color.DARK:
-                        self.darkPieces.append(piece)
-                    else:
-                        self.lightPieces.append(piece)
-                self.add(_square)
-                _strip.append(_square)
-                _map[pos] = _square
+                    square.currentPiece = piece
+                    piece.square = square
 
+                    self.tempPieces.add(piece)
+
+                    if piece.color == Color.DARK:
+                        self._darkPieces.add(piece)
+                    else:
+                        self._lightPieces.add(piece)
+
+                self.add(square)
+                _map[pos] = square
                 colour = Color.LIGHT if colour == Color.DARK else Color.DARK
 
-            _BOARD.append(_strip)
-
-        self._BOARD = _BOARD
         self._map = _map
 
     def __repr__(self):
         return f'{self.__class__.__name__}'
+
+    def get_pieces_coloured(self, color):
+        if color == Color.LIGHT:
+            return self.lightPieces
+        elif color == Color.DARK:
+            return self.darkPieces
+        else:
+            raise ValueError(f"{color} doesn't exist!")
+
+    def get_piece_from_loc(self, loc):
+        return self.map.get(loc).currentPiece
 
     def getFile(self, square, direction):
         curFile = Files(square.location.file.value)
@@ -87,15 +105,14 @@ class Board(pygame.sprite.Group):
 
         :param surface: Type `pygame.Surface` surface to draw to
         """
-        self.boardPieces.draw(surface)
+        self.board_squares.draw(surface)
         self.tempPieces.draw(surface)
         self.selectedPiece.draw(surface)
 
     def update(self):
         self.tempPieces.update(self.selectedPiece, self.tempPieces)
         self.selectedPiece.update(self.selectedPiece, self.tempPieces)
-        self.boardPieces.update()
-
+        self.board_squares.update()
 
     def rank(self, row):
         i = len(self._BOARD) - row
@@ -106,23 +123,6 @@ class Board(pygame.sprite.Group):
         for row in self._BOARD:
             file.append(row[col])
         return file
-
-    def printBoard(self):
-        for i in range(len(self._BOARD)):
-            line = " "
-            line += f'{len(self._BOARD) - i} '
-            for j in range(len(self._BOARD[i])):
-                if self._BOARD[i][j].isOccupied:
-                    piece = self._BOARD[i][j].currentPiece
-                    line += f'{piece.name[0]} '
-                else:
-                    # Empty Square
-                    line += f'- '
-            print(line)
-        line = "   "
-        for file in Files:
-            line += f'{file.name} '
-        print(line)
 
     @property
     def map(self):
@@ -144,40 +144,32 @@ class Board(pygame.sprite.Group):
         for sqr in self.sprites():
             sqr.deselect()
 
-    @staticmethod
-    def _initialize():
-        """ Initialise board in standard chess configuration."""
+    def load_from_fen(self, fen):
         pieces = {}
+        pieceTypeFromSymbol = {
+            'k': King,
+            'p': Pawn,
+            'n':  Knight,
+            'b': Bishop,
+            'r': Rook,
+            'q': Queen
+        }
+        fenBoard = fen.split(' ')[0]
+        file = 0
+        rank = 7
 
-        # Rooks
-        pieces[Location(Files.A, 1)] = Rook(Color.LIGHT)
-        pieces[Location(Files.H, 1)] = Rook(Color.LIGHT)
-        pieces[Location(Files.A, 8)] = Rook(Color.DARK)
-        pieces[Location(Files.H, 8)] = Rook(Color.DARK)
-
-        # Knights
-        pieces[Location(Files.B, 1)] = Knight(Color.LIGHT)
-        pieces[Location(Files.G, 1)] = Knight(Color.LIGHT)
-        pieces[Location(Files.B, 8)] = Knight(Color.DARK)
-        pieces[Location(Files.G, 8)] = Knight(Color.DARK)
-
-        # Bishops
-        pieces[Location(Files.C, 1)] = Bishop(Color.LIGHT)
-        pieces[Location(Files.F, 1)] = Bishop(Color.LIGHT)
-        pieces[Location(Files.C, 8)] = Bishop(Color.DARK)
-        pieces[Location(Files.F, 8)] = Bishop(Color.DARK)
-
-        # Queens
-        pieces[Location(Files.D, 1)] = Queen(Color.LIGHT)
-        pieces[Location(Files.D, 8)] = Queen(Color.DARK)
-
-        # Kings
-        pieces[Location(Files.E, 1)] = King(Color.LIGHT)
-        pieces[Location(Files.E, 8)] = King(Color.DARK)
-
-        # Pawns
-        for file in Files:
-            pieces[Location(file, 2)] = Pawn(Color.LIGHT)
-            pieces[Location(file, 7)] = Pawn(Color.DARK)
+        for symbol in fenBoard:
+            if symbol == '/':
+                file = 0
+                rank -= 1
+            else:
+                if symbol.isnumeric():
+                    file += int(symbol)
+                else:
+                    pieceColour = Color.LIGHT if symbol.isupper() else Color.DARK
+                    pieceType = pieceTypeFromSymbol.get(symbol.lower())
+                    loc = Location(Files(file+1), rank+1)
+                    pieces[loc] = pieceType(pieceColour)
+                    file += 1
 
         return pieces

@@ -3,7 +3,6 @@ import pygame.freetype
 from pygame.sprite import Sprite
 from pygame.rect import Rect
 from pygame.sprite import RenderUpdates
-from gamestates import GameState
 
 BLUE = (106, 159, 181)
 WHITE = (255,255, 255)
@@ -15,25 +14,25 @@ def create_surface_with_text(text, font_size, text_rgb, bg_rgb,
     surface, _ = font.render(text=text, fgcolor=text_rgb, bgcolor=bg_rgb)
     return surface.convert_alpha()
 
-class UIElement(Sprite):
+class Button(Sprite):
     def __init__(self, center_position, text, font_size, bg_rgb,
                 text_rgb, action=None):
         self.mouse_over = False
-        default_image = create_surface_with_text(
+        _default_image = create_surface_with_text(
             text=text, font_size=font_size, text_rgb=text_rgb, bg_rgb=bg_rgb
         )
 
-        hightlighted_image = create_surface_with_text(
+        _hightlighted_image = create_surface_with_text(
             text=text, font_size=font_size*1.2, text_rgb=text_rgb, bg_rgb=bg_rgb
         )
 
-        self.images = [default_image, hightlighted_image]
+        self.images = [_default_image, _hightlighted_image]
         self.rects = [
-            default_image.get_rect(center=center_position),
-            hightlighted_image.get_rect(center=center_position)
+            _default_image.get_rect(center=center_position),
+            _hightlighted_image.get_rect(center=center_position)
         ]
         self.action =  action
-        super(UIElement, self).__init__()
+        super(Button, self).__init__()
 
     @property
     def image(self):
@@ -43,56 +42,17 @@ class UIElement(Sprite):
     def rect(self):
         return self.rects[1] if self.mouse_over else self.rects[0]
 
-    def update(self, mouse_pos, mouse_up):
+    def check_click(self, mouse_pos):
+        return self.rect.collidepoint(mouse_pos)
+
+    def update(self, mouse_pos):
         if self.rect.collidepoint(mouse_pos):
             self.mouse_over = True
-            if mouse_up:
-                return self.action
         else:
             self.mouse_over = False
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
-
-# class UIElement(Sprite):
-#     def __init__(self, center_position, text, font_size, bg_rgb,
-#                 text_rgb, action=None):
-#         self.mouse_over = False
-#         default_image = create_surface_with_text(
-#             text=text, font_size=font_size, text_rgb=text_rgb, bg_rgb=bg_rgb
-#         )
-#
-#         hightlighted_image = create_surface_with_text(
-#             text=text, font_size=font_size*1.2, text_rgb=text_rgb, bg_rgb=bg_rgb
-#         )
-#
-#         self.images = [default_image, hightlighted_image]
-#         self.rects = [
-#             default_image.get_rect(center=center_position),
-#             hightlighted_image.get_rect(center=center_position)
-#         ]
-#         self.action =  action
-#         super(UIElement, self).__init__()
-#
-#     @property
-#     def image(self):
-#         return self.images[1] if self.mouse_over else self.images[0]
-#
-#     @property
-#     def rect(self):
-#         return self.rects[1] if self.mouse_over else self.rects[0]
-#
-#     def update(self, mouse_pos, mouse_up):
-#         if self.rect.collidepoint(mouse_pos):
-#             self.mouse_over = True
-#             if mouse_up:
-#                 return self.action
-#         else:
-#             self.mouse_over = False
-#
-#     def draw(self, surface):
-#         surface.blit(self.image, self.rect)
-
 
 def title_screen(screen):
     start_btn = UIElement(

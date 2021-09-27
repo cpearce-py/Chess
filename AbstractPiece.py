@@ -19,7 +19,11 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         super(AbstractPiece, self).__init__()
         self._name = name
         self._pieceColor = pieceColor
-        self.image = image
+        try:
+            self.image = image.convert_alpha()
+        except pygame.error:
+            self.image = image
+
         self.rect = self.image.get_rect(center=[100, 100])
         self._square = None
         self._isFirstMove = True
@@ -120,7 +124,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         raise NotImplementedError
 
     def _getDiagonalCandidates(self, moves, boardMap,
-                               current, rankOffset, fileOffset):
+                               current, rankOffset=0, fileOffset=0):
         """
         Method to append possible diagonal moves.
         Offset determines forward or backwards direction (1 or -1)
