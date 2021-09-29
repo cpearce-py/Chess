@@ -62,16 +62,15 @@ class King(AbstractPiece):
             if square.isOccupied:
                 if pos != 3:
                     break
-                if square.currentPiece.name == "Rook" and square.currentPiece.isFirstMove:
+                if square.currentPiece.isFirstMove:
                     moveCandidates.append(logic.build(current, 2, 0))
                     
-
         for pos in [-1, -2, -3, -4]:
             square = map.get(logic.build(current, pos, 0))
             if square.isOccupied:
                 if pos != -4:
                     break
-                if square.currentPiece.name == "Rook" and square.currentPiece.isFirstMove:
+                if square.currentPiece.isFirstMove:
                     moveCandidates.append(logic.build(current, -2, 0))
 
         return moveCandidates
