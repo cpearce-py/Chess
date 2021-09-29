@@ -7,7 +7,9 @@ from Pieces import *
 from Squares import Square
 
 from ui.gamestates import GameState
-from fen import PositionInfo, load_from_fen, START_FEN
+from fen import PositionInfo, START_FEN, load_from_fen
+
+start_position = load_from_fen(START_FEN)
 
 class Board(pygame.sprite.Group):
     """
@@ -36,7 +38,7 @@ class Board(pygame.sprite.Group):
         self.state = GameState.GAME
         self._map = {}
 
-    def init(self, load_position: PositionInfo):
+    def init(self, load_position: PositionInfo=start_position):
 
         _pieces = load_position.squares
         _map = {}
@@ -73,7 +75,16 @@ class Board(pygame.sprite.Group):
         self._map = _map
 
     def __repr__(self):
-        return f'{self.__class__.__name__}'
+        attrs = (
+            ('Light Pieces', len(self.lightPieces)),
+            ('Dark Pieces', len(self.darkPieces))
+        )
+        inners = ', '.join('%s=%r' % t for t in attrs)
+        return f'<{self.__class__.__name__} {inners}>'
+
+    def reset_squares(self):
+        for square in self.board_squares:
+            square.isAttacked = False
 
     def get_pieces_coloured(self, color):
         if color == Color.LIGHT:

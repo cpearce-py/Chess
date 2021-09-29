@@ -1,18 +1,17 @@
 import pygame
 from constants import Color, WIDTH, HEIGHT
-from Board import Board
-from events.event_handler import GameHandler
-from scenes.scenes import Menu
-from ui.gamestates import GameState
+from scenes.scenes import Menu, GameScene
 
 def play_game(starting_scene, WIDTH=512, HEIGHT=512, fps=60):
+
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
 
     active_scene = starting_scene()
 
-    while active_scene != None:
+    # Overall game loop
+    while active_scene:
 
         # Handle event
         for event in pygame.event.get():

@@ -2,6 +2,11 @@ import logic
 from AbstractPiece import AbstractPiece
 from constants import IMAGES, Color
 
+def _check_square(sqr):
+    if sqr.isOccupied:
+        return False
+    return True
+
 
 class King(AbstractPiece):
 
@@ -13,6 +18,9 @@ class King(AbstractPiece):
     def moveToSquare(self, square, moves, board=None):
         if not moves:
             raise ValueError("No possible moves!")
+
+        if square.location not in moves:
+            raise ValueError("Can't move")
 
         currentFile = self.square.file.value
         destFile = square.file.value
@@ -30,14 +38,43 @@ class King(AbstractPiece):
             rook = board.map.get(rook).currentPiece
             rook.castle(board)
 
-        if square.location in moves:
-            self.forceMove(square)
-        else:
-            raise ValueError("No moves")
+        self.forceMove(square)
 
     def clear_space(self, board):
         loc = board.map.get(self.location)
         loc.currentPiece = None
+
+    def checkCastling(self, map):
+        """
+        Method to check castling possibilities.
+        If King can successfully castle, will return the possible squares (of 2)
+        he can move too. Otherwise will return an empty array.
+        """
+        moveCandidates = []
+
+        if not self.isFirstMove:
+            return moveCandidates
+        
+        current = self.location
+
+        for pos in [1,2,3]:
+            square = map.get(logic.build(current, pos, 0))
+            if square.isOccupied:
+                if pos != 3:
+                    break
+                if square.currentPiece.name == "Rook" and square.currentPiece.isFirstMove:
+                    moveCandidates.append(logic.build(current, 2, 0))
+                    
+
+        for pos in [-1, -2, -3, -4]:
+            square = map.get(logic.build(current, pos, 0))
+            if square.isOccupied:
+                if pos != -4:
+                    break
+                if square.currentPiece.name == "Rook" and square.currentPiece.isFirstMove:
+                    moveCandidates.append(logic.build(current, -2, 0))
+
+        return moveCandidates
 
     def getAttackMoves(self, board):
         moveCandidates = []
@@ -45,21 +82,9 @@ class King(AbstractPiece):
         choices = [1, 0, -1]
         m = board.map
 
-        # Castling
-        if self.isFirstMove:
-            for pos in [2, -2]:
-                move = logic.build(current, pos, 0)
-                square = board.map.get(move)
-                if pos > 0:
-                    rookSquare = board.getFileUp(square)
-                else:
-                    rookSquare = board.getFileDown(square)
-                    rookSquare = board.getFileDown(rookSquare)
+        castling_moves = self.checkCastling(m)
 
-                if rookSquare.currentPiece.name == "Rook":
-                    moveCandidates.append(move)
-                    self.castling = True
-
+        moveCandidates.extend(castling_moves)
         for i in choices:
             for j in choices:
 
@@ -76,7 +101,6 @@ class King(AbstractPiece):
                     moveCandidates.append(nextMove)
 
         return moveCandidates
-
 
     def getValidMoves(self, board):
         allMoves = self.getAttackMoves(board)

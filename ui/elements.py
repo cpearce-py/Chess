@@ -46,16 +46,13 @@ class Button(Sprite):
         return self.rect.collidepoint(mouse_pos)
 
     def update(self, mouse_pos):
-        if self.rect.collidepoint(mouse_pos):
-            self.mouse_over = True
-        else:
-            self.mouse_over = False
-
+        self.mouse_over = self.rect.collidepoint(mouse_pos)
+        
     def draw(self, surface):
         surface.blit(self.image, self.rect)
 
 def title_screen(screen):
-    start_btn = UIElement(
+    start_btn = Button(
         center_position=(400, 400),
         font_size=30,
         bg_rgb=BLUE,
@@ -64,7 +61,7 @@ def title_screen(screen):
         action=GameState.NEWGAME
     )
 
-    quit_btn = UIElement(
+    quit_btn = Button(
         center_position=(140, 570),
         font_size=20,
         bg_rgb=BLUE,
@@ -106,7 +103,7 @@ def main():
             game_state = title_screen(screen)
 
         if game_state == GameState.NEWGAME:
-            game_state = play_level(screen)
+            game_state = title_screen(screen)
 
         if game_state == GameState.QUIT:
             print('quitting')
@@ -114,4 +111,5 @@ def main():
             return
 
 if __name__ == "__main__":
+    from gamestates import GameState
     main()

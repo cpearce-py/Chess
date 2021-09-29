@@ -27,8 +27,8 @@ class GameHandler():
         self.players = {Color.LIGHT: Player(Color.LIGHT, self.board),
                         Color.DARK: Player(Color.DARK, self.board)}
         self.curr_player = self.players.get(self.turn)
-        self.move_handler = MoveHandler(board)
-        self.move_handler.generate_moves(self.turn)
+        self.move_handler = MoveHandler(board, load_position)
+        self.move_handler.generate_moves()
 
     def handle_events(self, event):
         self.check_quit_event(event)
@@ -40,47 +40,50 @@ class GameHandler():
 
     def check_mouse_click_event(self, event):
         board = self.board
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                square = self.hitSquare(event.pos)
-                if not square:
-                    self.resetActions()
-                    return
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            square = self.hitSquare(event.pos)
 
-                if square.isSelected:
-                    self.resetActions()
-                    return
+            if not square:
+                self.resetActions()
+                return
 
-                if len(self.clicks) == 0:
-                    square.select()
+            if square.isSelected:
+                self.resetActions()
+                return
 
-                self.clicks.append(square)
+            if len(self.clicks) == 0:
+                square.select()
 
-                if len(self.clicks) == 2:
-                    fromSq, toSq = self.clicks
-                    move = Move(fromSq.location, toSq.location)
+            self.clicks.append(square)
 
-                    with ignore(AttributeError, ValueError, func=self.resetActions):
-                        piece = board.get_piece_from_loc(fromSq.location)
-                        if piece.color != self.turn:
-                            self.resetActions()
-                            return
-                        possibleMoves = piece.getValidMoves(self.board)
-                        piece.moveToSquare(toSq, possibleMoves, self.board)
-                        self.turn = Color.DARK if self.turn == Color.LIGHT else Color.LIGHT
-                        self.move_handler
-                        self.endTurn(self.turn)
+            if len(self.clicks) == 2:
+                fromSq, toSq = self.clicks
+                move = Move(fromSq.location, toSq.location)
+                
+                with ignore(AttributeError, ValueError, func=self.resetActions):
+                    piece = board.get_piece_from_loc(fromSq.location)
+                    if piece.color != self.turn:
                         self.resetActions()
+                        return
+                    possibleMoves = piece.getValidMoves(self.board)
+                    piece.moveToSquare(toSq, possibleMoves, self.board)
+                    self.turn = Color.DARK if self.turn == Color.LIGHT else Color.LIGHT
+
+                    self.endTurn(self.turn)
+                    self.resetActions()
 
     def hitSquare(self, pos):
         for square in self.board:
             if square.rect.collidepoint(pos):
                 return square
 
-    def endTurn(self, player):
+    def endTurn(self, turn):
         self.board.deselect()
         self.clicks = []
-        self.curr_player = self.players.get(player)
+        self.curr_player = self.players.get(turn)
+        self.move_handler.turn = turn
+        self.move_handler.generate_moves()
+        self.move_handler.highlight_attacked(turn=True)
 
     def resetActions(self):
         self.board.deselect()

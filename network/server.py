@@ -11,6 +11,27 @@ DISCONNECT_MSG = "!DISCONNECT"
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
 
+def threaded_client(conn):
+    conn.send(str.encode("Connected"))
+    reply = ""
+    while True:
+        try:
+            data = conn.recv(2048)
+            reply = data.decode("utf-8")
+
+            if not data:
+                print("Disconnected")
+                break
+            else:
+                print("Recieved: ", reply)
+                print("Sending: ", reply)
+
+            conn.sendall(str.encode(reply))
+        except:
+            break
+    print("Lost connection")
+    conn.close()
+
 
 def handle_client(conn, addr):
     print(f"[NEW CONNECTION] {addr} connected.")
@@ -37,6 +58,6 @@ def start():
         thread.start()
         print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
 
-
-print("[STARTING] server starting..")
-start()
+if __name__ == '__main__':
+    print("[STARTING] server starting..")
+    start()
