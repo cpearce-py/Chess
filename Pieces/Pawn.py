@@ -67,7 +67,7 @@ class Pawn(AbstractPiece):
                 continue
             if (move.file != self.square.file and
                     board.map.get(move).isOccupied):
-                if board.map.get(move).currentPiece.color == self.color:
+                if board.map.get(move).piece.color == self.color:
                     continue
 
             moveCandidates.append(move)

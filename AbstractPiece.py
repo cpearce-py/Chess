@@ -89,7 +89,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
     @square.setter
     def square(self, square):
         self._square = square
-        square.currentPiece = self
+        square.piece = self
         self.rect.center = square.rect.center
 
     def forceMove(self, square):
@@ -100,11 +100,11 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
 
         :param square: Instance of :class:`Square` square to move to.
         """
-        if (piece := square.currentPiece):
+        if (piece := square.piece):
             piece.alive = False
             piece.kill()
         self.square.reset()
-        square.currentPiece = self
+        square.piece = self
         self.square = square
         self.isFirstMove = False
         self.rect.center = square.rect.center
@@ -136,7 +136,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         nextMove = logic.build(current, fileOffset, rankOffset)
         while boardMap.get(nextMove):
             if boardMap.get(nextMove).isOccupied:
-                if boardMap.get(nextMove).currentPiece.color == self.color:
+                if boardMap.get(nextMove).piece.color == self.color:
                     break
                 moves.append(nextMove)
                 break
@@ -156,7 +156,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         nextMove = logic.build(current, offset, rankOffset=0)
         while boardMap.get(nextMove):
             if boardMap.get(nextMove).isOccupied:
-                if boardMap.get(nextMove).currentPiece.color == self.color:
+                if boardMap.get(nextMove).piece.color == self.color:
                     break
                 moves.append(nextMove)
                 break
@@ -176,7 +176,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         nextMove = logic.build(current, 0, offset)
         while boardMap.get(nextMove):
             if boardMap.get(nextMove).isOccupied:
-                if boardMap.get(nextMove).currentPiece.color == self.color:
+                if boardMap.get(nextMove).piece.color == self.color:
                     break
                 moves.append(nextMove)
                 break
@@ -201,7 +201,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
                 nextMove = logic.build(current, i, j)
                 try:
                     square = boardMap.get(nextMove)
-                    if square.isOccupied and square.currentPiece.color == self.color:
+                    if square.isOccupied and square.piece.color == self.color:
                         raise ValueError("Same piece color")
                     moves.append(nextMove)
                 except:

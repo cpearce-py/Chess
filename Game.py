@@ -1,7 +1,7 @@
 import pygame
 
 from constants import HEIGHT, WIDTH, Color
-from scenes.scenes import GameScene, Menu
+from scenes.scenes import Menu
 
 
 def play_game(starting_scene, WIDTH=512, HEIGHT=512, fps=60):

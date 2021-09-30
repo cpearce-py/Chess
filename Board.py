@@ -58,7 +58,7 @@ class Board(pygame.sprite.Group):
 
                 if (piece := _pieces.get(pos)):
 
-                    square.currentPiece = piece
+                    square.piece = piece
                     piece.square = square
 
                     self.tempPieces.add(piece)

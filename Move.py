@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 
 from constants import Color
 from Squares import Square
-
+from AbstractPiece import AbstractPiece
 
 @dataclass
 class Move:
@@ -22,6 +22,13 @@ class Move:
     def squares(self):
         return (self.fromSq, self.toSq)
 
+    def __repr__(self):
+        attrs = (
+            ('from', self.fromSq.location), 
+            ('to', self.toSq.location)
+        )
+        inners = ', '.join('%s=%r' % t for t in attrs)
+        return f'<{self.__class__.__name__} {inners}>'
 
 class MoveHandler:
 
@@ -35,6 +42,7 @@ class MoveHandler:
         self.darks_moves = []
         self._undo_stack = []
         self._redo_stack = []
+        self._history_position = 0
 
     def try_move(self, move):
 
@@ -42,7 +50,7 @@ class MoveHandler:
         turn = self.turn
         board = self.board
 
-        if piece := fromSq.currentPiece:
+        if piece := fromSq.piece:
             if piece.color != turn or toSq.location not in piece.getValidMoves(board):
                 self.reset()
                 return 
@@ -50,10 +58,22 @@ class MoveHandler:
             self.turn = Color.DARK if self.turn == Color.LIGHT else Color.LIGHT
             self.endTurn()
             self._undo_stack.append(move)
-    
-    def undo_move(self, move):
-        pass
+            self._history_position += 1
 
+    def undo(self):
+        if self._history_position > 0:
+            self._history_position -= 1
+            move = self._undo_stack.pop()
+            self._redo_stack.append(move)
+            print(f"move = {move}")
+            if move.capture:
+                print(f"{move.fromSq.piece} captures {move.toSq.piece}")
+        else:
+            print("Nothing to undo")
+
+    def redo(self):
+        pass
+    
     def generate_moves(self, piece=None):
         board = self.board
         self.darks_moves = []
@@ -97,8 +117,3 @@ class MoveHandler:
     def reset(self):
         self.board.deselect()
 
-def main():
-    print("testing")
-
-if __name__ == '__main__':
-    main()

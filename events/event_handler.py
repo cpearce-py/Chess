@@ -1,4 +1,3 @@
-from contextlib import contextmanager
 
 import pygame
 from constants import Color
@@ -6,14 +5,6 @@ from constants import Color
 from player import Player
 from fen import PositionInfo, load_from_fen, START_FEN
 from move import MoveHandler, Move
-
-@contextmanager
-def ignore(*exceptions, func=None):
-    try:
-        yield
-    except exceptions as e:
-        print(e)
-        func()
 
 _load_position = load_from_fen(START_FEN)
 
@@ -38,10 +29,15 @@ class GameHandler():
 
     def handle_events(self, event):
         self.check_quit_event(event)
-        self.check_mouse_click_event(event)
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            self.check_mouse_click_event(event)
+        elif event.type == pygame.KEYDOWN:
+            self.check_arrow_event(event)
+        else:
+            pass
 
     def check_quit_event(self, event):
-        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and pygame.K_ESCAPE):
+        if event.type == pygame.QUIT:
             pygame.quit()
 
     def check_mouse_click_event(self, event):
@@ -69,6 +65,14 @@ class GameHandler():
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
             if square := self.hitSquare(event.pos):
                 square.isAttacked = not square.isAttacked
+
+    def check_arrow_event(self, event):
+        if event.key == pygame.K_LEFT:
+            self.move_handler.undo()
+        elif event.key == pygame.K_RIGHT:
+            self.move_handler.redo()
+        else:
+            pass
 
     def reset_clicks(self):
         self.board.deselect()

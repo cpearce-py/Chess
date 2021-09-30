@@ -30,7 +30,7 @@ class King(AbstractPiece):
             else: #(destFile - currentFile) == -2:
                 rook = logic.build(self.location, -4, 0)
 
-            rook = board.map.get(rook).currentPiece
+            rook = board.map.get(rook).piece
             rook.castle(board)
 
         self.forceMove(square)
@@ -57,7 +57,7 @@ class King(AbstractPiece):
             if square.isOccupied:
                 if pos != 3:
                     break
-                if square.currentPiece.isFirstMove:
+                if square.piece.isFirstMove:
                     moveCandidates.append(logic.build(current, 2, 0))
                     
         for pos in [-1, -2, -3, -4]:
@@ -65,7 +65,7 @@ class King(AbstractPiece):
             if square.isOccupied:
                 if pos != -4:
                     break
-                if square.currentPiece.isFirstMove:
+                if square.piece.isFirstMove:
                     moveCandidates.append(logic.build(current, -2, 0))
 
         return moveCandidates
@@ -86,10 +86,9 @@ class King(AbstractPiece):
                     continue
 
                 nextMove = logic.build(current, i, j)
-                nextSquare = board.map.get(nextMove)
-                if nextSquare:
+                if nextSquare := board.map.get(nextMove):
                     if nextSquare.isOccupied:
-                        if nextSquare.currentPiece.color == self.color:
+                        if nextSquare.piece.color == self.color:
                             continue
                         moveCandidates.append(nextMove)
                     moveCandidates.append(nextMove)
@@ -128,8 +127,8 @@ class King(AbstractPiece):
 
                     for square in attackers:
                         if m.get(square).isOccupied:
-                            if m.get(square).currentPiece.color != self.color:
-                                attacker = m.get(square).currentPiece
+                            if m.get(square).piece.color != self.color:
+                                attacker = m.get(square).piece
                                 if move in attacker.getAttackMoves(board):
                                     rejected = True
 

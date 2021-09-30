@@ -57,11 +57,11 @@ class Square(pygame.sprite.Sprite):
         return self._isOccupied
 
     @property
-    def currentPiece(self):
+    def piece(self):
         return self._piece
 
-    @currentPiece.setter
-    def currentPiece(self, value):
+    @piece.setter
+    def piece(self, value):
         self._piece = value
         self._isOccupied = True
 
@@ -91,7 +91,7 @@ class Square(pygame.sprite.Sprite):
 
     def select(self):
         try:
-            self.currentPiece.selected = True
+            self.piece.selected = True
         except AttributeError:
             pass
         finally:
@@ -99,7 +99,7 @@ class Square(pygame.sprite.Sprite):
 
     def deselect(self):
         try:
-            self.currentPiece.selected = False
+            self.piece.selected = False
         except AttributeError:
             pass
         finally:
