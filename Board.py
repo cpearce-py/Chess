@@ -56,8 +56,8 @@ class Board(pygame.sprite.Group):
 
                 pos.square = square
 
-                if _pieces.get(pos):
-                    piece = _pieces.get(pos)
+                if (piece := _pieces.get(pos)):
+
                     square.currentPiece = piece
                     piece.square = square
 
@@ -81,6 +81,13 @@ class Board(pygame.sprite.Group):
         )
         inners = ', '.join('%s=%r' % t for t in attrs)
         return f'<{self.__class__.__name__} {inners}>'
+
+    def kill_piece(self, piece):
+        # if piece.color == Color.LIGHT:
+        #     self.lightPieces.remove(piece)
+        # else:
+        #     self.darkPieces.remove(piece)
+        piece.kill()
 
     def reset_squares(self):
         for square in self.board_squares:

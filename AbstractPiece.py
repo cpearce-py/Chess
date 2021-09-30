@@ -1,10 +1,12 @@
+from abc import ABC, abstractmethod
+
+import pygame
+from pygame.locals import *
+
 import logic
-from abc import abstractmethod, ABC
 from constants import Color
 from Location import Location
 from Squares import Square
-import pygame
-from pygame.locals import *
 
 
 class AbstractPiece(ABC, pygame.sprite.Sprite):
@@ -17,7 +19,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
 
     def __init__(self, name, pieceColor, image, square=None, *groups):
         super(AbstractPiece, self).__init__()
-        self._name = name
+        self._name = name.lower()
         self._pieceColor = pieceColor
         try:
             self.image = image.convert_alpha()
@@ -93,30 +95,24 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         self.rect.center = square.rect.center
 
     def forceMove(self, square):
+        """
+        This method shouldn't be overwritten! 
+        It deals with cleanup and the basic process of moving a piece to a 
+        square. Any checks should be done prior.
+
+        :param square: Instance of :class:`Square` square to move to.
+        """
+        if (piece := square.currentPiece):
+            piece.alive = False
+            piece.kill()
         self.square.reset()
-        if square.currentPiece:
-            square.currentPiece.alive = False
         square.currentPiece = self
         self.square = square
         self.isFirstMove = False
         self.rect.center = square.rect.center
 
-    def moveToSquare(self, square, moves, board=None):
-        """Move current piece to given square. Deals with cleanup.
-
-        :param square: Instance of :class:`Square` square to move to.
-        :param moves: List of Instances :class:`Location` possible moves a
-            player can choose from.
-        :returns: ValueError if piece cannot move to given square.
-        """
-        if not moves:
-            raise ValueError("No possible moves!")
-        if square.location in moves:
-            if square.currentPiece:
-                square.currentPiece.alive = False
-            self.forceMove(square)
-        else:
-            raise ValueError("Piece cannot move to that square.")
+    def moveToSquare(self, square, board=None):
+        self.forceMove(square)
 
     @abstractmethod
     def getValidMoves(self, board):

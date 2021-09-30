@@ -5,7 +5,7 @@ class Player:
         self.color = color
         self.board = board
         self.pieces = self.board.get_pieces_coloured(self.color)
-        self._king = [x for x in self.pieces if x.name == 'King'][0]
+        self._king = [x for x in self.pieces if x.name == 'king'][0]
 
     @property
     def king(self):

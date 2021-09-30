@@ -20,20 +20,12 @@ class Pawn(AbstractPiece):
         img = IMAGES['bp'] if pieceColor == Color.DARK else IMAGES['wp']
         super().__init__(name, pieceColor, image=img)
 
-    def moveToSquare(self, square, moves, board=None):
-        if not moves:
-            raise ValueError("No possible moves!")
-
-        if square.location in moves:
-
-            # Check for promotion
-            if square.location.rank in [1, 8]:
-                # btn = Button("Queen", 200, 50, 100, 50)
-                self.promote()
-
-            self.forceMove(square)
-        else:
-            raise ValueError("Piece cannont move to that square.")
+    def moveToSquare(self, square, board=None):
+        # Check for promotion
+        if square.location.rank in [1, 8]:
+            # btn = Button("Queen", 200, 50, 100, 50)
+            self.promote()
+        self.forceMove(square)
 
     def promote(self, piece="queen"):
         """

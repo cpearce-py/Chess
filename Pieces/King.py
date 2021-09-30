@@ -15,12 +15,7 @@ class King(AbstractPiece):
         super().__init__(name, pieceColor, image=img)
         self.castling = False
 
-    def moveToSquare(self, square, moves, board=None):
-        if not moves:
-            raise ValueError("No possible moves!")
-
-        if square.location not in moves:
-            raise ValueError("Can't move")
+    def moveToSquare(self, square, board=None):
 
         currentFile = self.square.file.value
         destFile = square.file.value

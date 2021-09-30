@@ -2,6 +2,9 @@ from Location import Location
 from constants import Files, RANKS, Color
 from move import Move
 
+class EndBoardError(Exception):
+    pass
+
 
 def build(current, fileOffset, rankOffset):
     """

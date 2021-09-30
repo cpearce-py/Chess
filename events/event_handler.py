@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+import traceback
 
 import pygame
 from constants import Files, Color
@@ -60,13 +61,15 @@ class GameHandler():
                 fromSq, toSq = self.clicks
                 move = Move(fromSq.location, toSq.location)
                 
-                with ignore(AttributeError, ValueError, func=self.resetActions):
-                    piece = board.get_piece_from_loc(fromSq.location)
+                # with ignore(AttributeError, ValueError, func=self.resetActions):
+                if (piece := board.get_piece_from_loc(fromSq.location)):
                     if piece.color != self.turn:
                         self.resetActions()
                         return
-                    possibleMoves = piece.getValidMoves(self.board)
-                    piece.moveToSquare(toSq, possibleMoves, self.board)
+                    if toSq.location not in piece.getValidMoves(self.board):
+                        self.resetActions()
+                        return
+                    piece.moveToSquare(toSq, self.board)
                     self.turn = Color.DARK if self.turn == Color.LIGHT else Color.LIGHT
 
                     self.endTurn(self.turn)
@@ -83,7 +86,7 @@ class GameHandler():
         self.curr_player = self.players.get(turn)
         self.move_handler.turn = turn
         self.move_handler.generate_moves()
-        self.move_handler.highlight_attacked(turn=True)
+        self.move_handler.highlight_attacked()
 
     def resetActions(self):
         self.board.deselect()
