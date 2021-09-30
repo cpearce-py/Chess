@@ -4,9 +4,7 @@ import pygame
 from pygame.locals import *
 
 import logic
-from constants import Color
-from Location import Location
-from Squares import Square
+
 
 
 class AbstractPiece(ABC, pygame.sprite.Sprite):
@@ -112,6 +110,9 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         self.rect.center = square.rect.center
 
     def moveToSquare(self, square, board=None):
+        """
+        Method is aimed at being overwritten when certain requirements
+        are needed. Ie. pawn promotion. """
         self.forceMove(square)
 
     @abstractmethod

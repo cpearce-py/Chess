@@ -1,11 +1,10 @@
 from contextlib import contextmanager
-import traceback
 
 import pygame
-from constants import Files, Color
+from constants import Color
 
 from player import Player
-from fen import PositionInfo, load_from_fen, START_FEN, FEN1
+from fen import PositionInfo, load_from_fen, START_FEN
 from move import MoveHandler, Move
 
 @contextmanager
@@ -24,12 +23,18 @@ class GameHandler():
         self.clicks =  []
         self.board = board
         self.board.init(load_position)
-        self.turn = Color.LIGHT if load_position.whiteToMove else Color.DARK
-        self.players = {Color.LIGHT: Player(Color.LIGHT, self.board),
-                        Color.DARK: Player(Color.DARK, self.board)}
+
+        whiteToMove = load_position.whiteToMove
+
+        self.turn = Color.LIGHT if whiteToMove else Color.DARK
+
+        self.players = {Color.LIGHT: Player(Color.LIGHT, board),
+                        Color.DARK: Player(Color.DARK, board)}
         self.curr_player = self.players.get(self.turn)
-        self.move_handler = MoveHandler(board, load_position)
+
+        self.move_handler = MoveHandler(board, whiteToMove=whiteToMove)
         self.move_handler.generate_moves()
+        self.move_handler.highlight_attacked()
 
     def handle_events(self, event):
         self.check_quit_event(event)
@@ -40,16 +45,11 @@ class GameHandler():
             pygame.quit()
 
     def check_mouse_click_event(self, event):
-        board = self.board
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             square = self.hitSquare(event.pos)
 
-            if not square:
-                self.resetActions()
-                return
-
-            if square.isSelected:
-                self.resetActions()
+            if not square or square.isSelected:
+                self.reset_clicks()
                 return
 
             if len(self.clicks) == 0:
@@ -59,35 +59,22 @@ class GameHandler():
 
             if len(self.clicks) == 2:
                 fromSq, toSq = self.clicks
-                move = Move(fromSq.location, toSq.location)
-                
-                # with ignore(AttributeError, ValueError, func=self.resetActions):
-                if (piece := board.get_piece_from_loc(fromSq.location)):
-                    if piece.color != self.turn:
-                        self.resetActions()
-                        return
-                    if toSq.location not in piece.getValidMoves(self.board):
-                        self.resetActions()
-                        return
-                    piece.moveToSquare(toSq, self.board)
-                    self.turn = Color.DARK if self.turn == Color.LIGHT else Color.LIGHT
+                if not fromSq.isOccupied:
+                    self.reset_clicks()
+                    return
+                move = Move(fromSq, toSq)
+                self.move_handler.try_move(move)
+                self.clicks = []
 
-                    self.endTurn(self.turn)
-                    self.resetActions()
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
+            if square := self.hitSquare(event.pos):
+                square.isAttacked = not square.isAttacked
+
+    def reset_clicks(self):
+        self.board.deselect()
+        self.clicks = []
 
     def hitSquare(self, pos):
         for square in self.board:
             if square.rect.collidepoint(pos):
                 return square
-
-    def endTurn(self, turn):
-        self.board.deselect()
-        self.clicks = []
-        self.curr_player = self.players.get(turn)
-        self.move_handler.turn = turn
-        self.move_handler.generate_moves()
-        self.move_handler.highlight_attacked()
-
-    def resetActions(self):
-        self.board.deselect()
-        self.clicks = []
