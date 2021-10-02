@@ -1,19 +1,47 @@
 import types
 from dataclasses import dataclass, field
 
+import pygame
+
 from constants import Color
 from Squares import Square
 from AbstractPiece import AbstractPiece
 
+"""
+A move encompasses a state change in a game of Chess. Therefore we can simply
+store each move and if we want to undo; restore the board to the previous state 
+(Move). Ie. the piece from Move.fromSq returns to fromSq etc.
+"""
+
+"""
+Test the following.
+for attribute in piece.attrs:
+    self.__addattr__ = attribute
+
+then we return all attributes as a dict. and pass that to the relevant objects.
+Ie. pieces! 
+"""
 @dataclass
 class Move:
 
     fromSq: Square
     toSq: Square
-    capture: bool = field(init=False)
+    capture: bool = None
+    piece_moved: AbstractPiece = None
+    piece_captured: AbstractPiece = None
+    captured_groups: pygame.sprite.Group  = None
+    turn: bool = field(init=False)
+    piece_moved_first_move: bool = field(init=False)
 
     def __post_init__(self):
-        self.capture = self.toSq.isOccupied
+        self.piece_moved =  self.fromSq.piece
+        self.piece_moved_first_move = self.piece_moved.isFirstMove
+        self.turn = self.piece_moved.color
+        self.capture = True if self.toSq.piece else False
+        if captured_piece := self.toSq.piece:
+            self.capture = True
+            self.piece_captured = captured_piece
+            self.captured_groups = captured_piece.groups()
 
     def __hash__(self):
         return hash((self.fromSq, self.toSq, self.capture) )
@@ -25,7 +53,10 @@ class Move:
     def __repr__(self):
         attrs = (
             ('from', self.fromSq.location), 
-            ('to', self.toSq.location)
+            ('to', self.toSq.location),
+            ('capture', self.capture),
+            ('piece', self.piece_moved),
+            ('captured', self.piece_captured)
         )
         inners = ', '.join('%s=%r' % t for t in attrs)
         return f'<{self.__class__.__name__} {inners}>'
@@ -42,10 +73,13 @@ class MoveHandler:
         self.darks_moves = []
         self._undo_stack = []
         self._redo_stack = []
+        
         self._history_position = 0
 
+    def execute():
+        pass
+    
     def try_move(self, move):
-
         fromSq, toSq = move.squares
         turn = self.turn
         board = self.board
@@ -65,16 +99,25 @@ class MoveHandler:
             self._history_position -= 1
             move = self._undo_stack.pop()
             self._redo_stack.append(move)
-            print(f"move = {move}")
-            if move.capture:
-                print(f"{move.fromSq.piece} captures {move.toSq.piece}")
+            self.turn = move.turn
+            piece_moved = move.piece_moved
+
+            self.board.set_piece(piece_moved, move.fromSq)
+
+            piece_captured = move.piece_captured
+            self.board.set_piece(piece_captured, move.toSq)
+
+            if piece_captured:
+                piece_captured.alive = True
+                piece_captured.add(move.captured_groups)
+
         else:
             print("Nothing to undo")
 
     def redo(self):
         pass
     
-    def generate_moves(self, piece=None):
+    def generate_moves(self):
         board = self.board
         self.darks_moves = []
         self.lights_moves = []
@@ -116,4 +159,3 @@ class MoveHandler:
 
     def reset(self):
         self.board.deselect()
-

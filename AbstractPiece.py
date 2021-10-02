@@ -33,7 +33,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
 
     def __repr__(self):
         return (f'{self.__class__.__name__}({self._pieceColor},'
-                f' {self._square})')
+                f' {self._square.location})')
 
     @property
     def alive(self):
@@ -89,7 +89,8 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
     @square.setter
     def square(self, square):
         self._square = square
-        square.piece = self
+        if not square.piece == self:
+            square.piece = self
         self.rect.center = square.rect.center
 
     def forceMove(self, square):

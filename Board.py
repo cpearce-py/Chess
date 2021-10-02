@@ -31,11 +31,10 @@ class Board(pygame.sprite.Group):
         super(Board, self).__init__(self)
         self._lightPieces = pygame.sprite.Group()
         self._darkPieces = pygame.sprite.Group()
-        self.tempPieces = pygame.sprite.Group()
+        self.static_pieces = pygame.sprite.Group()
         self.board_squares = pygame.sprite.Group()
         self.selectedPiece = pygame.sprite.GroupSingle()
         self.takenPieces = pygame.sprite.Group()
-        self.state = GameState.GAME
         self._map = {}
 
     def init(self, load_position: PositionInfo=start_position):
@@ -61,7 +60,7 @@ class Board(pygame.sprite.Group):
                     square.piece = piece
                     piece.square = square
 
-                    self.tempPieces.add(piece)
+                    self.static_pieces.add(piece)
 
                     if piece.color == Color.DARK:
                         self._darkPieces.add(piece)
@@ -83,10 +82,6 @@ class Board(pygame.sprite.Group):
         return f'<{self.__class__.__name__} {inners}>'
 
     def kill_piece(self, piece):
-        # if piece.color == Color.LIGHT:
-        #     self.lightPieces.remove(piece)
-        # else:
-        #     self.darkPieces.remove(piece)
         piece.kill()
 
     def reset_squares(self):
@@ -96,10 +91,8 @@ class Board(pygame.sprite.Group):
     def get_pieces_coloured(self, color):
         if color == Color.LIGHT:
             return self.lightPieces
-        elif color == Color.DARK:
-            return self.darkPieces
         else:
-            raise ValueError(f"{color} doesn't exist!")
+            return self.darkPieces
 
     def get_piece_from_loc(self, loc):
         return self.map.get(loc).currentPiece
@@ -124,12 +117,12 @@ class Board(pygame.sprite.Group):
         :param surface: Type `pygame.Surface` surface to draw to
         """
         self.board_squares.draw(surface)
-        self.tempPieces.draw(surface)
+        self.static_pieces.draw(surface)
         self.selectedPiece.draw(surface)
 
     def update(self):
-        self.tempPieces.update(self.selectedPiece, self.tempPieces)
-        self.selectedPiece.update(self.selectedPiece, self.tempPieces)
+        self.static_pieces.update(self.selectedPiece, self.static_pieces)
+        self.selectedPiece.update(self.selectedPiece, self.static_pieces)
         self.board_squares.update()
 
     def rank(self, row):
@@ -162,6 +155,19 @@ class Board(pygame.sprite.Group):
         for sqr in self.sprites():
             sqr.deselect()
 
+    def set_piece(self, piece, square):
+        square = self._map.get(square.location)
+        square.piece = piece
+        if piece and not piece.groups():
+            self.add_piece(piece)
+
+    
+    def add_piece(self, piece):
+        if piece.color == Color.DARK:
+            self.darkPieces.add(piece)
+        else:
+            self.lightPieces.add(piece)
+     
     def load_from_fen(self, fen):
         pieces = {}
         pieceTypeFromSymbol = {
@@ -191,3 +197,4 @@ class Board(pygame.sprite.Group):
                     file += 1
 
         return pieces
+
