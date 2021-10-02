@@ -1,6 +1,9 @@
 from collections import namedtuple
 from dataclasses import dataclass, field
 
+import pygame
+from AbstractPiece import AbstractPiece
+from Squares import Square
 
 @dataclass
 class Move:
@@ -57,4 +60,4 @@ class MoveHandler:
         self._history_position += 1
         self._commands[
             self._history[self._history_position][1]
-        ].undo(self._history[self._history_position][2]
+        ].undo(self._history[self._history_position][2])
