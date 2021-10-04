@@ -1,6 +1,8 @@
 import logic
 from AbstractPiece import AbstractPiece
 from constants import IMAGES, Color
+from move import Flag
+
 
 def _check_square(sqr):
     if sqr.isOccupied:
@@ -14,6 +16,7 @@ class King(AbstractPiece):
         img = IMAGES['bK'] if pieceColor == Color.DARK else IMAGES['wK']
         super().__init__(name, pieceColor, image=img)
         self.castling = False
+        self.castle_rook = None
 
     def moveToSquare(self, square, board=None):
 
@@ -32,6 +35,7 @@ class King(AbstractPiece):
 
             rook = board.map.get(rook).piece
             rook.castle(board)
+            self.castle_rook = rook
 
         self.forceMove(square)
 

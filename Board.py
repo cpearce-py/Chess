@@ -158,7 +158,7 @@ class Board(pygame.sprite.Group):
     def set_piece(self, piece, square):
         square = self._map.get(square.location)
         square.piece = piece
-        if piece and not piece.groups():
+        if piece:
             self.add_piece(piece)
 
     
@@ -167,6 +167,7 @@ class Board(pygame.sprite.Group):
             self.darkPieces.add(piece)
         else:
             self.lightPieces.add(piece)
+        self.static_pieces.add(piece)
      
     def load_from_fen(self, fen):
         pieces = {}

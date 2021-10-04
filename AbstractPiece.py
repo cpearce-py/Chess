@@ -93,6 +93,12 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
             square.piece = self
         self.rect.center = square.rect.center
 
+    def set_attrs_from_dict(self, **attrs):
+        for key, value in attrs.items():
+            if key == "_Sprite__g":
+                pass
+            setattr(self, key, value)
+
     def forceMove(self, square):
         """
         This method shouldn't be overwritten! 

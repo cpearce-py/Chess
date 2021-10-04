@@ -45,6 +45,9 @@ class Move:
         inners = ', '.join('%s=%r' % t for t in attrs)
         return f'<{self.__class__.__name__} {inners}>'
 
+def CastleMove(Move):
+    pass
+
 
 class MoveHandler:
 

@@ -1,5 +1,6 @@
 import types
 from dataclasses import dataclass, field
+from enum import Enum
 
 import pygame
 
@@ -11,9 +12,7 @@ from AbstractPiece import AbstractPiece
 A move encompasses a state change in a game of Chess. Therefore we can simply
 store each move and if we want to undo; restore the board to the previous state 
 (Move). Ie. the piece from Move.fromSq returns to fromSq etc.
-"""
 
-"""
 Test the following.
 for attribute in piece.attrs:
     self.__addattr__ = attribute
@@ -21,6 +20,24 @@ for attribute in piece.attrs:
 then we return all attributes as a dict. and pass that to the relevant objects.
 Ie. pieces! 
 """
+
+class Flag(Enum):
+
+    Move = 0
+    ENPASSANT = 1
+    CASTLE = 2
+    PROMOTE = 3
+
+def clean(attrs):
+    try:
+        attrs['_selected'] = False
+        attrs['_alive'] = True
+    except (TypeError) as e:
+        print(f"_clean_attrs can't unpack {attrs}")   
+        return attrs
+    
+    return attrs
+
 @dataclass
 class Move:
 
@@ -30,19 +47,19 @@ class Move:
     piece_moved: AbstractPiece = None
     piece_captured: AbstractPiece = None
     captured_groups: pygame.sprite.Group  = None
-    turn: bool = field(init=False)
-    piece_moved_first_move: bool = field(init=False)
+    piece_attrs: dict =  field(init=False)
+    captured_piece_attrs: dict = field(init=False)
+    flag: Enum = Flag.Move
 
     def __post_init__(self):
         self.piece_moved =  self.fromSq.piece
-        self.piece_moved_first_move = self.piece_moved.isFirstMove
+        self.piece_attrs = clean(self.fromSq.piece.__dict__.copy())
         self.turn = self.piece_moved.color
-        self.capture = True if self.toSq.piece else False
         if captured_piece := self.toSq.piece:
             self.capture = True
             self.piece_captured = captured_piece
-            self.captured_groups = captured_piece.groups()
-
+            self.captured_piece_attrs = clean(captured_piece.__dict__.copy())
+ 
     def __hash__(self):
         return hash((self.fromSq, self.toSq, self.capture) )
 
@@ -79,7 +96,7 @@ class MoveHandler:
     def execute():
         pass
     
-    def try_move(self, move):
+    def try_move(self, move: Move):
         fromSq, toSq = move.squares
         turn = self.turn
         board = self.board
@@ -95,27 +112,23 @@ class MoveHandler:
             self._history_position += 1
 
     def undo(self):
-        if self._history_position > 0:
-            self._history_position -= 1
-            move = self._undo_stack.pop()
-            self._redo_stack.append(move)
-            self.turn = move.turn
-            piece_moved = move.piece_moved
-
-            self.board.set_piece(piece_moved, move.fromSq)
-
-            piece_captured = move.piece_captured
-            self.board.set_piece(piece_captured, move.toSq)
-
-            if piece_captured:
-                piece_captured.alive = True
-                piece_captured.add(move.captured_groups)
-
-        else:
+        if self._history_position <= 0:
             print("Nothing to undo")
+            return
+        self._history_position -= 1
+        move = self._undo_stack.pop()
+        self._redo_stack.append(move)
 
-    def redo(self):
-        pass
+        self.turn = move.turn
+        piece_moved = move.piece_moved
+        piece_moved.set_attrs_from_dict(**move.piece_attrs)
+
+        piece_captured = move.piece_captured
+        if piece_captured:
+            piece_captured.set_attrs_from_dict(**move.captured_piece_attrs)
+
+        self.board.set_piece(piece_moved, move.fromSq)
+        self.board.set_piece(piece_captured, move.toSq)
     
     def generate_moves(self):
         board = self.board
