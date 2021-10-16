@@ -1,7 +1,7 @@
 import pygame
 
-from constants import HEIGHT, WIDTH, Color
-from scenes.scenes import Menu
+from constants import HEIGHT, WIDTH, FPS
+from scenes.scenes import Menu, GameScene
 
 
 def play_game(starting_scene, WIDTH=512, HEIGHT=512, fps=60):
@@ -36,4 +36,4 @@ def play_game(starting_scene, WIDTH=512, HEIGHT=512, fps=60):
         clock.tick(fps)
 
 if __name__ == '__main__':
-    game = play_game(Menu)
+    game = play_game(GameScene, WIDTH, HEIGHT, FPS)

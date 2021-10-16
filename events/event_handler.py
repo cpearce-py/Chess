@@ -1,5 +1,3 @@
-from contextlib import contextmanager
-
 import pygame
 from constants import Color
 
@@ -26,7 +24,6 @@ class GameHandler():
 
         self.move_handler = MoveHandler(board, whiteToMove=whiteToMove)
         self.move_handler.generate_moves()
-        self.move_handler.highlight_attacked()
 
     def handle_events(self, event):
         self.check_quit_event(event)

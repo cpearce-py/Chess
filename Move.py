@@ -21,6 +21,12 @@ then we return all attributes as a dict. and pass that to the relevant objects.
 Ie. pieces! 
 """
 
+__all__ = (
+    "Move",
+    "MoveHandler",
+    "Flag"
+)
+
 class Flag(Enum):
 
     Move = 0
@@ -83,8 +89,8 @@ class MoveHandler:
     def __init__(self, board, whiteToMove=True):
         self.board = board
         self.turn = Color.LIGHT if whiteToMove else Color.DARK
-        self.lKing = [x for x in self.board.lightPieces if x.name == "king"][0]
-        self.DKing = [x for x in self.board.darkPieces if x.name == "king"][0]
+        self.lKing = [x for x in self.board.light_pieces if x.name == "king"][0]
+        self.DKing = [x for x in self.board.dark_pieces if x.name == "king"][0]
         self._pin_moves = []
         self.lights_moves = []
         self.darks_moves = []
@@ -129,13 +135,13 @@ class MoveHandler:
 
         self.board.set_piece(piece_moved, move.fromSq)
         self.board.set_piece(piece_captured, move.toSq)
-    
+
     def generate_moves(self):
         board = self.board
         self.darks_moves = []
         self.lights_moves = []
 
-        for piece in self.board.darkPieces:
+        for piece in self.board.dark_pieces:
             piece_moves = piece.getAttackMoves(board)
             if isinstance(piece_moves, types.GeneratorType):
                 for move in piece_moves:
@@ -143,7 +149,7 @@ class MoveHandler:
             else:
                 self.darks_moves.extend(piece.getAttackMoves(board))
 
-        for piece in self.board.lightPieces:
+        for piece in self.board.light_pieces:
             piece_moves = piece.getAttackMoves(board)
             if isinstance(piece_moves, types.GeneratorType):
                 for move in piece_moves:
@@ -168,7 +174,7 @@ class MoveHandler:
     def endTurn(self):
         self.board.deselect()
         self.generate_moves()
-        self.highlight_attacked()
+        # self.highlight_attacked()
 
     def reset(self):
         self.board.deselect()

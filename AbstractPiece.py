@@ -28,8 +28,11 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         self._square = None
         self._isFirstMove = True
         self._selected = False
-        self._layer = 1
+        self._layer = 0
         self._alive = True
+
+        if groups:
+            self.add(groups, layer=self._layer)
 
     def __repr__(self):
         return (f'{self.__class__.__name__}({self._pieceColor},'
@@ -65,6 +68,12 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
 
     @selected.setter
     def selected(self, value):
+        if not isinstance(value, bool):
+            raise ValueError(f"{self} selected attribute must be of type Bool")
+        layer_group = [group for group in self.groups()
+                        if isinstance(group, pygame.sprite.LayeredUpdates)][0]
+        layer = 1 if value else 0
+        layer_group.change_layer(self, layer)
         self._selected = value
 
     @property
@@ -214,18 +223,8 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
                 except:
                     continue
 
-    def update(self, selectedGroup, tempPieces):
-
-        if self._selected:
-            if selectedGroup not in self.groups():
-                self.add(selectedGroup)
-                self.remove(tempPieces)
-            self.rect.center = pygame.mouse.get_pos()
-        elif tempPieces not in self.groups():
-            self.add(tempPieces)
-            self.rect.center = self.square.rect.center
-        else:
-            self.rect.center = self.square.rect.center
+    def update(self):
+        self.rect.center = pygame.mouse.get_pos() if self._selected else self.square.rect.center
         self.updateAlive()
 
     def draw(self, surface):

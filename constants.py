@@ -1,22 +1,22 @@
 from enum import Enum
 import pygame
 
+__all__ = (
+    "WIDTH",
+    "HEIGHT",
+    "DIMENSIONS",
+    "SQ_SIZE",
+    "RANKS",
+    "FILES",
+    "Color",
+    "IMAGES"
+)
+
 WIDTH = HEIGHT = 512
+FPS = 60
 DIMENSIONS = 8
 SQ_SIZE = HEIGHT // DIMENSIONS
 RANKS = [8, 7, 6, 5, 4, 3, 2, 1]
-
-class Piece(Enum):
-    King = 1
-    Pawn = 2
-    Knight = 3
-    Bishop = 4
-    Rook = 5
-    Queen = 6
-
-    White = 8
-    Black = 16
-
 
 class Files(Enum):
     A = 1

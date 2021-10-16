@@ -1,10 +1,9 @@
 from Location import Location
 from constants import Files, RANKS, Color
-from move import Move
 
-class EndBoardError(Exception):
-    pass
-
+__all__ = (
+    'build'
+)
 
 def build(current, fileOffset, rankOffset):
     """

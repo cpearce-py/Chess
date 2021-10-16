@@ -15,9 +15,13 @@ BLACK = (0,0,0)
 
 
 class Scene(ABC):
+    """
+    Abstract Scene class to be inhereted by sub-scene classes.
+    """
 
     def __init__(self):
         self.next = self
+        self.objects = pygame.sprite.Group()
 
     @abstractmethod
     def process_input(self, events, pressed_keys):
@@ -60,7 +64,7 @@ class Menu(Scene):
             action=SettingScene
             )
 
-        self.objects = pygame.sprite.Group(_play_btn, _setting_btn)
+        self.objects.add(_play_btn, _setting_btn)
 
     def process_input(self, event):
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
@@ -89,7 +93,7 @@ class SettingScene(Scene):
             action=Menu
         )
     
-        self.objects = pygame.sprite.Group(_return_btn)
+        self.objects.add(_return_btn)
 
     def process_input(self, event):
 

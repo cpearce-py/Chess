@@ -1,8 +1,6 @@
 import pygame
 import pygame.freetype
 from pygame.sprite import Sprite
-from pygame.rect import Rect
-from pygame.sprite import RenderUpdates
 
 BLUE = (106, 159, 181)
 WHITE = (255,255, 255)
@@ -47,69 +45,6 @@ class Button(Sprite):
 
     def update(self, mouse_pos):
         self.mouse_over = self.rect.collidepoint(mouse_pos)
-        
+
     def draw(self, surface):
         surface.blit(self.image, self.rect)
-
-def title_screen(screen):
-    start_btn = Button(
-        center_position=(400, 400),
-        font_size=30,
-        bg_rgb=BLUE,
-        text_rgb=WHITE,
-        text="Start",
-        action=GameState.NEWGAME
-    )
-
-    quit_btn = Button(
-        center_position=(140, 570),
-        font_size=20,
-        bg_rgb=BLUE,
-        text_rgb=WHITE,
-        text="Return To Main Menu",
-        action=GameState.QUIT
-    )
-
-    buttons = RenderUpdates(start_btn, quit_btn)
-
-    return game_loop(screen, buttons)
-
-def game_loop(screen, buttons):
-    while True:
-        mouse_up = False
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                mouse_up = True
-        screen.fill(BLUE)
-
-        for button in buttons:
-            ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
-            if ui_action is not None:
-                return ui_action
-        buttons.draw(screen)
-        pygame.display.flip()
-
-
-def main():
-    pygame.init()
-
-    screen = pygame.display.set_mode((800, 600))
-    game_state = GameState.TITLE
-
-    while True:
-        if game_state == GameState.TITLE:
-            game_state = title_screen(screen)
-
-        if game_state == GameState.NEWGAME:
-            game_state = title_screen(screen)
-
-        if game_state == GameState.QUIT:
-            print('quitting')
-            pygame.quit()
-            return
-
-if __name__ == "__main__":
-    from gamestates import GameState
-    main()

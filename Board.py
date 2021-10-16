@@ -29,18 +29,22 @@ class Board(pygame.sprite.Group):
 
     def __init__(self):
         super(Board, self).__init__(self)
-        self._lightPieces = pygame.sprite.Group()
-        self._darkPieces = pygame.sprite.Group()
-        self.static_pieces = pygame.sprite.Group()
+
+        self._render_pieces = pygame.sprite.LayeredUpdates()
+        self._light_pieces = pygame.sprite.Group()
+        self._dark_pieces = pygame.sprite.Group()
         self.board_squares = pygame.sprite.Group()
-        self.selectedPiece = pygame.sprite.GroupSingle()
-        self.takenPieces = pygame.sprite.Group()
         self._map = {}
+        self.all_pieces = {Color.DARK: self._dark_pieces, 
+                        Color.LIGHT: self._light_pieces
+                        }
+
 
     def init(self, load_position: PositionInfo=start_position):
+        self.whiteToMove = load_position.whiteToMove
 
         _pieces = load_position.squares
-        _map = {}
+        map = {}
 
         for x, file in enumerate(Files):
             colour = Color.DARK if x % 2 == 0 else Color.LIGHT
@@ -60,39 +64,53 @@ class Board(pygame.sprite.Group):
                     square.piece = piece
                     piece.square = square
 
-                    self.static_pieces.add(piece)
+                    self._render_pieces.add(piece, layer=piece.layer)
 
                     if piece.color == Color.DARK:
-                        self._darkPieces.add(piece)
+                        self._dark_pieces.add(piece)
                     else:
-                        self._lightPieces.add(piece)
+                        self._light_pieces.add(piece)
 
                 self.add(square)
-                _map[pos] = square
+                map[pos] = square
                 colour = Color.LIGHT if colour == Color.DARK else Color.DARK
 
-        self._map = _map
+        self._map = map
+        return self
 
     def __repr__(self):
         attrs = (
-            ('Light Pieces', len(self.lightPieces)),
-            ('Dark Pieces', len(self.darkPieces))
+            ('Light Pieces', len(self.light_pieces)),
+            ('Dark Pieces', len(self.dark_pieces))
         )
         inners = ', '.join('%s=%r' % t for t in attrs)
         return f'<{self.__class__.__name__} {inners}>'
 
+    def _get_piece(self, name, color):
+        pieces = self.all_pieces.get(color)
+        return list(filter(lambda x: x.name == name, pieces))
+
+    def king(self, color):
+        return self._get_piece("king", color)[0]
+    
+    def queen(self, color):
+        return self._get_piece("queen", color)
+
+    def bishops(self, color):
+        return self._get_piece("bishop", color)
+
+    def rooks(self, color):
+        return self._get_piece("rook", color)
+
+    def pieces(self, color):
+        return self.all_pieces.get(color)
+        
     def kill_piece(self, piece):
         piece.kill()
 
     def reset_squares(self):
         for square in self.board_squares:
             square.isAttacked = False
-
-    def get_pieces_coloured(self, color):
-        if color == Color.LIGHT:
-            return self.lightPieces
-        else:
-            return self.darkPieces
 
     def get_piece_from_loc(self, loc):
         return self.map.get(loc).currentPiece
@@ -117,12 +135,10 @@ class Board(pygame.sprite.Group):
         :param surface: Type `pygame.Surface` surface to draw to
         """
         self.board_squares.draw(surface)
-        self.static_pieces.draw(surface)
-        self.selectedPiece.draw(surface)
+        self._render_pieces.draw(surface)
 
     def update(self):
-        self.static_pieces.update(self.selectedPiece, self.static_pieces)
-        self.selectedPiece.update(self.selectedPiece, self.static_pieces)
+        self._render_pieces.update()
         self.board_squares.update()
 
     def rank(self, row):
@@ -144,12 +160,12 @@ class Board(pygame.sprite.Group):
         return self._BOARD
 
     @property
-    def lightPieces(self):
-        return self._lightPieces
+    def light_pieces(self):
+        return self._light_pieces
 
     @property
-    def darkPieces(self):
-        return self._darkPieces
+    def dark_pieces(self):
+        return self._dark_pieces
 
     def deselect(self):
         for sqr in self.sprites():
@@ -164,10 +180,10 @@ class Board(pygame.sprite.Group):
     
     def add_piece(self, piece):
         if piece.color == Color.DARK:
-            self.darkPieces.add(piece)
+            self.dark_pieces.add(piece)
         else:
-            self.lightPieces.add(piece)
-        self.static_pieces.add(piece)
+            self.light_pieces.add(piece)
+        self._render_pieces.add(piece, layer=0)
      
     def load_from_fen(self, fen):
         pieces = {}
