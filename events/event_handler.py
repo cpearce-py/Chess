@@ -1,5 +1,6 @@
 import pygame
 from constants import Color
+import move_generator
 
 from player import Player
 from fen import PositionInfo, load_from_fen, START_FEN
@@ -24,6 +25,7 @@ class GameHandler():
 
         self.move_handler = MoveHandler(board, whiteToMove=whiteToMove)
         self.move_handler.generate_moves()
+        self.move_generator = move_generator.MoveGenerator(board)
 
     def handle_events(self, event):
         self.check_quit_event(event)
@@ -57,8 +59,10 @@ class GameHandler():
                     self.reset_clicks()
                     return
                 move = Move(fromSq, toSq)
-                self.move_handler.try_move(move)
-                self.clicks = []
+                if self.move_handler.try_move(move):
+                    self.end_turn()
+                else:
+                    self.reset_clicks()
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
             if square := self.hitSquare(event.pos):
@@ -71,6 +75,11 @@ class GameHandler():
             self.move_handler.redo()
         else:
             pass
+
+    def end_turn(self):
+        self.board.end_turn()
+        self.clicks = []
+        self.move_generator.generate_moves()
 
     def reset_clicks(self):
         self.board.deselect()

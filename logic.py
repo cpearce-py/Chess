@@ -1,5 +1,5 @@
 from Location import Location
-from constants import Files, RANKS, Color
+from constants import Files
 
 __all__ = (
     'build'

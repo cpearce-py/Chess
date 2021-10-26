@@ -96,13 +96,14 @@ class MoveHandler:
         self.darks_moves = []
         self._undo_stack = []
         self._redo_stack = []
-        
+
         self._history_position = 0
 
-    def execute():
-        pass
-    
     def try_move(self, move: Move):
+        """
+        Attempts to make a move. Returns True if move was successful, otherwise
+        returns False.
+        """
         fromSq, toSq = move.squares
         turn = self.turn
         board = self.board
@@ -110,12 +111,14 @@ class MoveHandler:
         if piece := fromSq.piece:
             if piece.color != turn or toSq.location not in piece.getValidMoves(board):
                 self.reset()
-                return 
+                return False
             piece.moveToSquare(toSq, board)
             self.turn = Color.DARK if self.turn == Color.LIGHT else Color.LIGHT
             self.endTurn()
             self._undo_stack.append(move)
             self._history_position += 1
+            return True
+        return False
 
     def undo(self):
         if self._history_position <= 0:

@@ -1,6 +1,5 @@
 import pygame
 
-import logic
 from constants import RANKS, Color, Files, WIDTH, HEIGHT, DIMENSIONS, SQ_SIZE
 from Location import Location
 from Pieces import *
@@ -42,8 +41,9 @@ class Board(pygame.sprite.Group):
 
     def init(self, load_position: PositionInfo=start_position):
         self.whiteToMove = load_position.whiteToMove
+        self.color_to_move = Color.LIGHT if self.whiteToMove else Color.DARK
 
-        _pieces = load_position.squares
+        pieces = load_position.squares
         map = {}
 
         for x, file in enumerate(Files):
@@ -59,7 +59,7 @@ class Board(pygame.sprite.Group):
 
                 pos.square = square
 
-                if (piece := _pieces.get(pos)):
+                if (piece := pieces.get(pos)):
 
                     square.piece = piece
                     piece.square = square
@@ -101,6 +101,12 @@ class Board(pygame.sprite.Group):
 
     def rooks(self, color):
         return self._get_piece("rook", color)
+
+    def knights(self, color):
+        return self._get_piece("knight", color)
+
+    def pawns(self, color):
+        return self._get_piece("pawn", color)
 
     def pieces(self, color):
         return self.all_pieces.get(color)
@@ -184,7 +190,12 @@ class Board(pygame.sprite.Group):
         else:
             self.light_pieces.add(piece)
         self._render_pieces.add(piece, layer=0)
-     
+
+    def end_turn(self):
+        self.deselect()
+        self.reset_squares()
+        self.color_to_move = Color.DARK if self.color_to_move == Color.LIGHT else Color.LIGHT
+
     def load_from_fen(self, fen):
         pieces = {}
         pieceTypeFromSymbol = {

@@ -8,8 +8,9 @@ class Square(pygame.sprite.Sprite):
 
     def __init__(self, SquareColor, pos, rect):
         pygame.sprite.Sprite.__init__(self)
-        if not isinstance(pos, Location):
-            raise ValueError("please pass pos, as class Location")
+
+        assert isinstance(pos, Location)
+
         self._SquareColor = SquareColor
         self._Location = pos
         self._isOccupied = False
@@ -36,13 +37,11 @@ class Square(pygame.sprite.Sprite):
     def reset(self):
         self._piece = None
         self._isOccupied = False
+        self.isAttacked = False
+        self._selected = False
 
     def update(self):
         self.updateColor()
-        self.updatePiece()
-
-    def updatePiece(self):
-        pass
 
     def updateColor(self):
         if self._selected:
