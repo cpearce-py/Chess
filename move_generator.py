@@ -1,8 +1,7 @@
-from typing import List, Set
+from typing import Set
 
 import logic
 from move import Move
-from constants import Color
 
 
 class MoveGenerator:
@@ -10,50 +9,53 @@ class MoveGenerator:
     def __init__(self, board):
         self.board = board
         self.moves: Set[Move] = set()
+        self.can_queenside_castle = False
+        self.can_kingside_castle = False
 
         self.generate_moves()
 
-    def generate_moves(self) -> List[Move]:
+    @property
+    def castle_rights(self):
+        return (self.can_kingside_castle, self.can_queenside_castle)
 
-        # Re-initalise to a clean state
+    @castle_rights.setter
+    def castle_rights(self, rights):
+        self.can_kingside_castle = rights[0]
+        self.can_queenside_castle = rights[1]
+    
+    def generate_moves(self) -> Set[Move]:
+        """
+        Function to generate all the possible moves for the current board 
+        position. 
+
+        Logic is:
+            - re-initalise instance to clear state 
+            - calculate all attacks on friendly king, including pins 
+            - calculate all possible king moves. 
+            - if in double check we just return King moves, as they're the only legal moves
+            - if not, generate all other moves. 
+
+        Function returns a set() of moves. This set can also be accessed from 
+        the instances moves attribute, but this will only be correct if 
+        generate_moves() is run by the instance, in the boards current position. 
+        """
+
         self.init()
-
-        # Calculate all attacks mode on the king, including pins
         self.calculate_attacks()
-
-        # Generate possible king moves.
         self.generate_king_moves()
-
-
-        # If King in Double Check, only King moves are valid so we can 
-        # return out. (But we need to get the king moves first)
         if self.inDoubleCheck:
             return self.moves
-
-        # Now we can calculate all other possible moves. 
-        # self.generate_sliding_moves()
-        # self.generate_knight_moves()
-        # self.generate_pawn_moves()
-
-
-        # Method to highlight squares, for visual testing.
-        self.highlight()
+        self.highlight(self.pinRays)
 
         return self.moves
 
     def generate_king_moves(self):
         king = self.board.king(self.friendly_colour)
-        current = king.location
-        choices = [1, 0, -1]
+        board = self.board
+        self.generate_opponent_attacks()
+        moves = king.getValidMoves(board)
+        self.castle_rights = king.castle_rights
 
-        for i in choices:
-            for j in choices:
-                if (i == j == 0):
-                    continue
-
-                move = logic.build(current, i, j)
-                if nextSquare := self.board.map.get(move):
-                    pass
 
     def calculate_attacks(self):
         """
@@ -149,22 +151,43 @@ class MoveGenerator:
                 directions.extend([(1,1), (-1,1), (1,-1), (-1,-1)])
         return directions
 
+    def generate_opponent_attacks(self):
+        opponent_col = self.opponent_colour
+        board = self.board
+
+        for piece in self.board.pieces(opponent_col):
+            for loc in piece.getAttackMoves(board):
+                if loc is None:
+                    continue
+                square = board.map.get(loc)
+                self.opponent_attacks.add(square)
+        
     def init(self):
         self.moves = set()
+        self.opponent_attacks = set()
+        self.opponent_sliding_attacks = set()
+        self.opponent_pawn_attacks = set()
+
         self.inCheck = False
         self.inDoubleCheck = False
         self.pinsExistInPosition = False
 
         self.isWhiteMove = self.board.whiteToMove
         self.friendly_colour = self.board.color_to_move
-        self.opponent_colour = Color.DARK if self.friendly_colour == Color.LIGHT else Color.LIGHT
-
+        self.opponent_colour = logic.switch_turn(self.friendly_colour)
         self.pinRays = []
 
-    def highlight(self):
-        for ray in self.pinRays:
-            for square in ray:
-                square.isAttacked = True
+    def highlight(self, set_of_moves=None):
+        if set_of_moves is None:
+            return
+            
+        try:
+            for square in set_of_moves:
+                square.isAttacked = True 
+        except AttributeError: # if pinRays is passed, we need to go 2 levels deep.
+            for ray in set_of_moves:
+                for square in ray:
+                    square.isAttacked = True
 
 if __name__ == '__main__':
     import Board

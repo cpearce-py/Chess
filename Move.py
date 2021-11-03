@@ -4,6 +4,7 @@ from enum import Enum
 
 import pygame
 
+import logic
 from constants import Color
 from Squares import Square
 from AbstractPiece import AbstractPiece
@@ -113,7 +114,7 @@ class MoveHandler:
                 self.reset()
                 return False
             piece.moveToSquare(toSq, board)
-            self.turn = Color.DARK if self.turn == Color.LIGHT else Color.LIGHT
+            self.turn = logic.switch_turn(self.turn)
             self.endTurn()
             self._undo_stack.append(move)
             self._history_position += 1

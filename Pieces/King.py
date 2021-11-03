@@ -17,7 +17,13 @@ class King(AbstractPiece):
         super().__init__(name, pieceColor, image=img)
         self.castling = False
         self.castle_rook = None
+        self.can_kingside_castle = False
+        self.can_queenside_castle = False
 
+    @property
+    def castle_rights(self):
+        return (self.can_kingside_castle, self.can_queenside_castle)
+        
     def moveToSquare(self, square, board=None):
 
         currentFile = self.square.file.value
@@ -62,6 +68,7 @@ class King(AbstractPiece):
                 if pos != 3:
                     break
                 if square.piece.isFirstMove:
+                    self.can_kingside_castle = True
                     moveCandidates.append(logic.build(current, 2, 0))
                     
         for pos in [-1, -2, -3, -4]:
@@ -70,6 +77,7 @@ class King(AbstractPiece):
                 if pos != -4:
                     break
                 if square.piece.isFirstMove:
+                    self.can_queenside_castle = True
                     moveCandidates.append(logic.build(current, -2, 0))
 
         return moveCandidates

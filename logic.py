@@ -1,8 +1,9 @@
 from Location import Location
-from constants import Files
+from constants import Files, Color
 
 __all__ = (
-    'build'
+    'build',
+    'switch_turn'
 )
 
 def build(current, fileOffset, rankOffset):
@@ -26,3 +27,9 @@ def build(current, fileOffset, rankOffset):
                         current.rank + rankOffset)
     except ValueError:
         return None
+
+def switch_turn(turn):
+    return{
+        Color.LIGHT: Color.DARK,
+        Color.DARK: Color.LIGHT
+    }.get(turn)
