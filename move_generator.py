@@ -56,7 +56,6 @@ class MoveGenerator:
         moves = king.getValidMoves(board)
         self.castle_rights = king.castle_rights
 
-
     def calculate_attacks(self):
         """
         Calculate all attacks aimed at the King. 
@@ -188,8 +187,3 @@ class MoveGenerator:
             for ray in set_of_moves:
                 for square in ray:
                     square.isAttacked = True
-
-if __name__ == '__main__':
-    import Board
-    b = Board.Board().init()
-    m = MoveGenerator(b)

@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 import pygame
 
 from ui import Button
-from ui.gamestates import GameState
 from Board import Board
 from events.event_handler import GameHandler
 

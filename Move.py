@@ -9,19 +9,6 @@ from constants import Color
 from Squares import Square
 from AbstractPiece import AbstractPiece
 
-"""
-A move encompasses a state change in a game of Chess. Therefore we can simply
-store each move and if we want to undo; restore the board to the previous state 
-(Move). Ie. the piece from Move.fromSq returns to fromSq etc.
-
-Test the following.
-for attribute in piece.attrs:
-    self.__addattr__ = attribute
-
-then we return all attributes as a dict. and pass that to the relevant objects.
-Ie. pieces! 
-"""
-
 __all__ = (
     "Move",
     "MoveHandler",
@@ -40,7 +27,7 @@ def clean(attrs):
         attrs['_selected'] = False
         attrs['_alive'] = True
     except (TypeError) as e:
-        print(f"_clean_attrs can't unpack {attrs}")   
+        print(f"Can't unpack {attrs}")   
         return attrs
     
     return attrs
@@ -106,20 +93,21 @@ class MoveHandler:
         returns False.
         """
         fromSq, toSq = move.squares
+        if not fromSq.piece:
+            return False
+
         turn = self.turn
         board = self.board
-
-        if piece := fromSq.piece:
-            if piece.color != turn or toSq.location not in piece.getValidMoves(board):
-                self.reset()
-                return False
-            piece.moveToSquare(toSq, board)
-            self.turn = logic.switch_turn(self.turn)
-            self.endTurn()
-            self._undo_stack.append(move)
-            self._history_position += 1
-            return True
-        return False
+        piece = fromSq.piece
+        if piece.color != turn or toSq.location not in piece.getValidMoves(board):
+            self.reset()
+            return False
+        piece.moveToSquare(toSq, board)
+        self.turn = logic.switch_turn(self.turn)
+        self.endTurn()
+        self._undo_stack.append(move)
+        self._history_position += 1
+        return True
 
     def undo(self):
         if self._history_position <= 0:
