@@ -1,7 +1,6 @@
 import logic
 from AbstractPiece import AbstractPiece
-from constants import Color, Files, IMAGES
-from Location import Location
+from constants import Color, IMAGES
 
 
 class Rook(AbstractPiece):

@@ -1,8 +1,5 @@
-import logic
-from constants import Color, Files, IMAGES
+from constants import Color, IMAGES
 from AbstractPiece import AbstractPiece
-from Location import Location
-
 
 class Bishop(AbstractPiece):
 

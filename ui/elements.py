@@ -2,11 +2,15 @@ import pygame
 import pygame.freetype
 from pygame.sprite import Sprite
 
+__all__ = (
+    "Button",
+    "create_surface_with_text",
+)
+
 BLUE = (106, 159, 181)
 WHITE = (255,255, 255)
 
-def create_surface_with_text(text, font_size, text_rgb, bg_rgb,
-                             bold=True):
+def create_surface_with_text(text, font_size, text_rgb, bg_rgb, bold=True):
     """Returns surface with text written on"""
     font = pygame.freetype.SysFont("Courier", font_size, bold=bold)
     surface, _ = font.render(text=text, fgcolor=text_rgb, bgcolor=bg_rgb)
@@ -24,7 +28,7 @@ class Button(Sprite):
             text=text, font_size=font_size*1.2, text_rgb=text_rgb, bg_rgb=bg_rgb
         )
 
-        self.images = [_default_image, _hightlighted_image]
+        self.images = (_default_image, _hightlighted_image)
         self.rects = [
             _default_image.get_rect(center=center_position),
             _hightlighted_image.get_rect(center=center_position)

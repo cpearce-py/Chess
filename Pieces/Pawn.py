@@ -1,18 +1,9 @@
 import logic
 from AbstractPiece import AbstractPiece
-from constants import Color, Files, IMAGES, RANKS
-from Location import Location
-from Pieces.Bishop import Bishop
-from Pieces.Queen import Queen
-from Pieces.Knight import Knight
-from Pieces.Rook import Rook
-import pygame
+from constants import IMAGES, Color
 
-CLASSES = {"queen": Queen,
-            "rook": Rook,
-            "knight": Knight,
-            "bishop": Bishop
-            }
+from Pieces.Queen import Queen
+
 
 class Pawn(AbstractPiece):
 
@@ -27,26 +18,22 @@ class Pawn(AbstractPiece):
             self.promote()
         self.forceMove(square)
 
-    def promote(self, piece="queen"):
+    def promote(self, piece=Queen):
         """
         Method to promote current instance of `Pawn` to given piece
 
-        :param piece: type `str` name of piece to promote too.
-        default = queen.
+        :param piece: Callable class of piece to promoote too. 
+        default = Queen.
         """
-        if not isinstance(piece, str):
-            raise ValueError("Pass piece as string.")
-        piece = CLASSES.get(piece.lower())
         # Clean up required for sprite.GroupSingle
         # Store groups Pawn was in, and then kill itself.
         groups = self.groups()
         self.kill()
-
         square = self.square
         # Changing our class and initalising...
         self.__class__ = piece
         self.__init__(self.color)
-        # Add new Piece to the previous pawns groups!
+        # Add new Piece to the previous pieces groups!
         self.add(groups)
 
         square.reset()

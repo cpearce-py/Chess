@@ -33,13 +33,16 @@ class Color(Enum):
     LIGHT = 1
     DARK = 2
 
-def _setupImages(path):
+def _setupImages(path, pieces=None):
     """
     Local method to load all our pieces images.
     """
     _IMAGES = {}
-    pieces = ['wp', 'wR', 'wN', 'wB', 'wK', 'wQ',
-              'bp', 'bR', 'bN', 'bB', 'bK', 'bQ']
+
+    if not pieces:
+        pieces = ['wp', 'wR', 'wN', 'wB', 'wK', 'wQ',
+                'bp', 'bR', 'bN', 'bB', 'bK', 'bQ',] 
+
     for piece in pieces:
         _IMAGES[piece] = pygame.transform.scale(
             pygame.image.load(f'{path}/{piece}.png'), (SQ_SIZE, SQ_SIZE))

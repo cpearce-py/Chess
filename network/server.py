@@ -1,5 +1,7 @@
 import socket
 import threading
+import _thread
+import sys
 
 HEADER = 64
 PORT = 5050

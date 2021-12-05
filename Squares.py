@@ -1,6 +1,6 @@
 import pygame
 
-from constants import DIMENSIONS, HEIGHT, RANKS, SQ_SIZE, WIDTH, Color, Files
+from constants import HEIGHT, WIDTH, Color
 from Location import Location
 
 
@@ -96,16 +96,14 @@ class Square(pygame.sprite.Sprite):
             self.piece.selected = True
         except AttributeError:
             pass
-        finally:
-            self._selected = True
+        self._selected = True
 
     def deselect(self):
         try:
             self.piece.selected = False
         except AttributeError:
             pass
-        finally:
-            self._selected = False
+        self._selected = False
 
     def __repr__(self):
         return (f'{self.__class__.__name__}(COLOR={self._SquareColor.name},'

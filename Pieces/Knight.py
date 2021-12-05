@@ -1,7 +1,5 @@
-import logic
 from AbstractPiece import AbstractPiece
 from constants import Color, IMAGES
-from Location import Location
 
 
 class Knight(AbstractPiece):

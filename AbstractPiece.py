@@ -25,7 +25,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
             self.image = image
 
         self.rect = self.image.get_rect(center=[100, 100])
-        self._square = None
+        self._square = square
         self._isFirstMove = True
         self._selected = False
         self._layer = 0
@@ -69,7 +69,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
     @selected.setter
     def selected(self, value):
         if not isinstance(value, bool):
-            raise ValueError(f"{self} selected attribute must be of type Bool")
+            raise ValueError(f"{self.__class__.__name__}.selected attribute must be of type Bool")
         layer_group = [group for group in self.groups()
                         if isinstance(group, pygame.sprite.LayeredUpdates)][0]
         layer = 1 if value else 0
@@ -108,7 +108,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
                 pass
             setattr(self, key, value)
 
-    def forceMove(self, square):
+    def forceMove(self, target_square):
         """
         This method shouldn't be overwritten! 
         It deals with cleanup and the basic process of moving a piece to a 
@@ -116,19 +116,20 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
 
         :param square: Instance of :class:`Square` square to move to.
         """
-        if (piece := square.piece):
+        if (piece := target_square.piece):
             piece.alive = False
             piece.kill()
         self.square.reset()
-        square.piece = self
-        self.square = square
+        target_square.piece = self
+        self.square = target_square
         self.isFirstMove = False
-        self.rect.center = square.rect.center
+        self.rect.center = target_square.rect.center
 
     def moveToSquare(self, square, board=None):
         """
         Method is aimed at being overwritten when certain requirements
-        are needed. Ie. pawn promotion. """
+        are needed. Ie. pawn promotion.
+        """
         self.forceMove(square)
 
     @abstractmethod

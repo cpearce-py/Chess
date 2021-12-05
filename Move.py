@@ -1,6 +1,6 @@
 import types
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import Enum, auto
 
 import pygame
 
@@ -15,22 +15,25 @@ __all__ = (
     "Flag"
 )
 
+
 class Flag(Enum):
 
-    Move = 0
-    ENPASSANT = 1
-    CASTLE = 2
-    PROMOTE = 3
+    MOVE = auto()
+    CAPTURE = auto()
+    ENPASSANT = auto()
+    CASTLE = auto()
+    PROMOTE = auto()
+    CHECKMATE = auto()
 
-def clean(attrs):
+
+def clean(**attrs):
     try:
         attrs['_selected'] = False
         attrs['_alive'] = True
-    except (TypeError) as e:
-        print(f"Can't unpack {attrs}")   
-        return attrs
-    
+    except TypeError as e:
+        print(f"Can't unpack due to: {e}")       
     return attrs
+
 
 @dataclass
 class Move:
@@ -43,16 +46,16 @@ class Move:
     captured_groups: pygame.sprite.Group  = None
     piece_attrs: dict =  field(init=False)
     captured_piece_attrs: dict = field(init=False)
-    flag: Enum = Flag.Move
+    flag: Enum = Flag.MOVE
 
     def __post_init__(self):
         self.piece_moved =  self.fromSq.piece
-        self.piece_attrs = clean(self.fromSq.piece.__dict__.copy())
+        self.piece_attrs = clean(**self.fromSq.piece.__dict__.copy())
         self.turn = self.piece_moved.color
         if captured_piece := self.toSq.piece:
             self.capture = True
             self.piece_captured = captured_piece
-            self.captured_piece_attrs = clean(captured_piece.__dict__.copy())
+            self.captured_piece_attrs = clean(**captured_piece.__dict__.copy())
  
     def __hash__(self):
         return hash((self.fromSq, self.toSq, self.capture) )
@@ -66,8 +69,7 @@ class Move:
             ('from', self.fromSq.location), 
             ('to', self.toSq.location),
             ('capture', self.capture),
-            ('piece', self.piece_moved),
-            ('captured', self.piece_captured)
+            ('flag', self.flag),
         )
         inners = ', '.join('%s=%r' % t for t in attrs)
         return f'<{self.__class__.__name__} {inners}>'
@@ -82,15 +84,15 @@ class MoveHandler:
         self._pin_moves = []
         self.lights_moves = []
         self.darks_moves = []
+        
         self._undo_stack = []
         self._redo_stack = []
-
         self._history_position = 0
 
-    def try_move(self, move: Move):
+    def try_move(self, move: Move, _redo_move=False):
         """
-        Attempts to make a move. Returns True if move was successful, otherwise
-        returns False.
+        Attempts to make a move. Returns True if move was successful, and False 
+        if not.
         """
         fromSq, toSq = move.squares
         if not fromSq.piece:
@@ -103,13 +105,14 @@ class MoveHandler:
             self.reset()
             return False
         piece.moveToSquare(toSq, board)
-        self.turn = logic.switch_turn(self.turn)
+        self.turn = logic.switch_turn(turn)
         self.endTurn()
         self._undo_stack.append(move)
         self._history_position += 1
         return True
 
     def undo(self):
+        """Undoes a move"""
         if self._history_position <= 0:
             print("Nothing to undo")
             return
@@ -128,6 +131,14 @@ class MoveHandler:
         self.board.set_piece(piece_moved, move.fromSq)
         self.board.set_piece(piece_captured, move.toSq)
 
+    def redo(self):
+        """Replays move if one is available."""
+        try:
+            move = self._redo_stack.pop()
+            self.try_move(move)
+        except IndexError:
+            print('Nothing to redo')
+
     def generate_moves(self):
         board = self.board
         self.darks_moves = []
@@ -136,8 +147,9 @@ class MoveHandler:
         for piece in self.board.dark_pieces:
             piece_moves = piece.getAttackMoves(board)
             if isinstance(piece_moves, types.GeneratorType):
-                for move in piece_moves:
-                    self.darks_moves.append(move)
+                self.darks_moves.extend(list(piece_moves))
+                # for move in piece_moves:
+                #     self.darks_moves.append(move)
             else:
                 self.darks_moves.extend(piece.getAttackMoves(board))
 

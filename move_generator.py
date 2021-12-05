@@ -45,7 +45,7 @@ class MoveGenerator:
         self.generate_king_moves()
         if self.inDoubleCheck:
             return self.moves
-        self.highlight(self.pinRays)
+        # self.highlight(self.pinRays)
 
         return self.moves
 
@@ -57,9 +57,6 @@ class MoveGenerator:
         self.castle_rights = king.castle_rights
 
     def calculate_attacks(self):
-        """
-        Calculate all attacks aimed at the King. 
-        """
         board = self.board
 
         

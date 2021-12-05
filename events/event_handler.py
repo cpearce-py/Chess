@@ -1,31 +1,25 @@
-import pygame
-from constants import Color
-import move_generator
+import sys
 
+import pygame
+
+import move_generator as mg
+from constants import Color
+from fen import START_FEN, PositionInfo, load_from_fen
+from move import Flag, Move, MoveHandler
 from player import Player
-from fen import PositionInfo, load_from_fen, START_FEN
-from move import MoveHandler, Move
 
 _load_position = load_from_fen(START_FEN)
 
-class GameHandler():
+class GameHandler:
 
     def __init__(self, board, load_position: PositionInfo=_load_position):
         self.clicks =  []
         self.board = board
         self.board.init(load_position)
-
         whiteToMove = load_position.whiteToMove
-
-        self.turn = Color.LIGHT if whiteToMove else Color.DARK
-
-        self.players = {Color.LIGHT: Player(Color.LIGHT, board),
-                        Color.DARK: Player(Color.DARK, board)}
-        self.curr_player = self.players.get(self.turn)
-
         self.move_handler = MoveHandler(board, whiteToMove=whiteToMove)
         self.move_handler.generate_moves()
-        self.move_generator = move_generator.MoveGenerator(board)
+        self.move_generator = mg.MoveGenerator(board)
 
     def handle_events(self, event):
         self.check_quit_event(event)
@@ -39,6 +33,7 @@ class GameHandler():
     def check_quit_event(self, event):
         if event.type == pygame.QUIT:
             pygame.quit()
+            sys.exit()
 
     def check_mouse_click_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:

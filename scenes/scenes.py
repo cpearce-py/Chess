@@ -1,4 +1,3 @@
-# Scene's available
 from abc import ABC, abstractmethod
 
 import pygame
@@ -6,7 +5,6 @@ import pygame
 from ui import Button
 from Board import Board
 from events.event_handler import GameHandler
-
 
 BLUE = (106, 159, 181)
 WHITE = (255,255, 255)
@@ -16,6 +14,10 @@ BLACK = (0,0,0)
 class Scene(ABC):
     """
     Abstract Scene class to be inhereted by sub-scene classes.
+    Scene's hold all visible objects and tie together the GUI and logic.
+    All sub-classed Scenes inherit the .objects attribute, which is a pygame
+    `Group` class. This is setup to hold each scene's objects and allows the easy
+    convience of draw() and update() that a `pygame.sprite.Group` class offers.
     """
 
     def __init__(self):
@@ -42,7 +44,7 @@ class Scene(ABC):
 
 
 class Menu(Scene):
-
+    """ Simple main menu scene. """
     def __init__(self):
         super().__init__()
         _play_btn = Button(
@@ -80,7 +82,8 @@ class Menu(Scene):
 
 
 class SettingScene(Scene):
-
+    """Simple settings scene. As of yet, it is just to demonstrate the scene 
+    switching."""
     def __init__(self):
         super().__init__()
         _return_btn = Button(
@@ -111,14 +114,14 @@ class SettingScene(Scene):
 
 
 class GameScene(Scene):
-
+    """Main chess game scene."""
     def __init__(self):
         super().__init__()
         self.board = Board()
-        self.event_handler = GameHandler(self.board)
+        self.game_handler = GameHandler(self.board)
 
     def process_input(self, event):
-        self.event_handler.handle_events(event)
+        self.game_handler.handle_events(event)
 
     def update(self):
         self.board.update()
@@ -126,3 +129,4 @@ class GameScene(Scene):
     def render(self, screen):
         screen.fill(BLACK)
         self.board.draw(screen)
+        self.objects.draw(screen)

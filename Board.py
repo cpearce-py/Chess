@@ -1,11 +1,10 @@
 import pygame
 
-from constants import RANKS, Color, Files, WIDTH, HEIGHT, DIMENSIONS, SQ_SIZE
+from constants import RANKS, Color, Files, SQ_SIZE
 from Location import Location
 from Pieces import *
 from Squares import Square
 
-from ui.gamestates import GameState
 from fen import PositionInfo, START_FEN, load_from_fen
 
 start_position = load_from_fen(START_FEN)
