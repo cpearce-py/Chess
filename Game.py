@@ -27,7 +27,7 @@ def play_game(starting_scene, WIDTH=512, HEIGHT=512, fps=60):
 
         # Render states to screen
         active_scene.render(screen)
-    
+
         # Move onto next scene, when ready.
         active_scene = active_scene.next
 
@@ -36,4 +36,4 @@ def play_game(starting_scene, WIDTH=512, HEIGHT=512, fps=60):
         clock.tick(fps)
 
 if __name__ == '__main__':
-    game = play_game(Menu, WIDTH, HEIGHT, FPS)
+    game = play_game(GameScene, WIDTH, HEIGHT, FPS)

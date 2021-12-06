@@ -55,7 +55,7 @@ class Menu(Scene):
             text="Play Game",
             action=GameScene
         )
-        
+
         _setting_btn = Button(
             center_position=(200, 100),
             font_size=20,
@@ -82,7 +82,7 @@ class Menu(Scene):
 
 
 class SettingScene(Scene):
-    """Simple settings scene. As of yet, it is just to demonstrate the scene 
+    """Simple settings scene. As of yet, it is just to demonstrate the scene
     switching."""
     def __init__(self):
         super().__init__()
@@ -94,7 +94,7 @@ class SettingScene(Scene):
             text="Return To Menu",
             action=Menu
         )
-    
+
         self.objects.add(_return_btn)
 
     def process_input(self, event):
@@ -118,7 +118,7 @@ class GameScene(Scene):
     def __init__(self):
         super().__init__()
         self.board = Board()
-        self.game_handler = GameHandler(self.board)
+        self.game_handler = GameHandler(self.board, scene=self)
 
     def process_input(self, event):
         self.game_handler.handle_events(event)

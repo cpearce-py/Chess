@@ -9,12 +9,12 @@ _BLACK = (0,0,0)
 
 
 def _setup_images(path, pieces=None):
-    
+
     IMAGES = {}
 
     if not pieces:
         pieces = ['wp', 'wR', 'wN', 'wB', 'wK', 'wQ',
-                'bp', 'bR', 'bN', 'bB', 'bK', 'bQ',] 
+                'bp', 'bR', 'bN', 'bB', 'bK', 'bQ',]
 
     for piece in pieces:
         IMAGES[piece] = pygame.transform.scale(
@@ -52,16 +52,17 @@ class Layout:
                     for tile in self._tiles:
                         tile.handle_event(event)
                         self._displayed = False
-                        
+
     @property
     def rect(self):
         if not self._tiles.sprites():
-            return pygame.Rect()
-        
+            # return pygame.Rect()
+            pass
+
         length = len(self._tiles.sprites())
         width = c.SQ_SIZE*length
         height = c.SQ_SIZE
-        self._rect 
+        self._rect
         return
 
     def update(self, *args):
@@ -95,11 +96,11 @@ def _dummy_action():
 
 class Tile(pygame.sprite.Sprite):
     """
-    Subclass of pygame.sprite.Sprite, designed to be a GUI utility where you can 
-    place an image onto a BG colour tile. 
-    Example is used in Pawn promotion to show which piece you can promote too. 
+    Subclass of pygame.sprite.Sprite, designed to be a GUI utility where you can
+    place an image onto a BG colour tile.
+    Example is used in Pawn promotion to show which piece you can promote too.
 
-    :param image: pygame.Surface with image. 
+    :param image: pygame.Surface with image.
     :param bg_color: List or Tuple with RGB colour values.
     """
     def __init__(self, image, bg_color, highlighted=None, action=_dummy_action):
@@ -138,12 +139,12 @@ class Tile(pygame.sprite.Sprite):
 
 
 def main():
-    IMG_FOLDER = os.path.join(os.path.dirname(__file__), 'IMG') 
+    IMG_FOLDER = os.path.join(os.path.dirname(__file__), 'IMG')
 
     WHITE_PIECES = _setup_images(IMG_FOLDER, pieces=['wR', 'wN', 'wB', 'wQ',])
     BLACK_PIECES = _setup_images(IMG_FOLDER, pieces=['bR', 'bN', 'bB', 'bQ',])
 
-    HEIGHT = int(len(WHITE_PIECES)*c.SQ_SIZE) 
+    HEIGHT = int(len(WHITE_PIECES)*c.SQ_SIZE)
 
     layout = Layout()
 

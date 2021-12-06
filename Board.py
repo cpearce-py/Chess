@@ -33,7 +33,7 @@ class Board(pygame.sprite.Group):
         self._dark_pieces = pygame.sprite.Group()
         self.board_squares = pygame.sprite.Group()
         self._map = {}
-        self.all_pieces = {Color.DARK: self._dark_pieces, 
+        self.all_pieces = {Color.DARK: self._dark_pieces,
                         Color.LIGHT: self._light_pieces
                         }
 
@@ -91,7 +91,7 @@ class Board(pygame.sprite.Group):
 
     def king(self, color):
         return self._get_piece("king", color)[0]
-    
+
     def queen(self, color):
         return self._get_piece("queen", color)
 
@@ -109,7 +109,7 @@ class Board(pygame.sprite.Group):
 
     def pieces(self, color):
         return self.all_pieces.get(color)
-        
+
     def kill_piece(self, piece):
         piece.kill()
 
@@ -182,7 +182,7 @@ class Board(pygame.sprite.Group):
         if piece:
             self.add_piece(piece)
 
-    
+
     def add_piece(self, piece):
         if piece.color == Color.DARK:
             self.dark_pieces.add(piece)

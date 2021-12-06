@@ -23,7 +23,7 @@ class King(AbstractPiece):
     @property
     def castle_rights(self):
         return (self.can_kingside_castle, self.can_queenside_castle)
-        
+
     def moveToSquare(self, square, board=None):
 
         currentFile = self.square.file.value
@@ -59,7 +59,7 @@ class King(AbstractPiece):
 
         if not self.isFirstMove:
             return moveCandidates
-        
+
         current = self.location
 
         for pos in [1,2,3]:
@@ -70,7 +70,7 @@ class King(AbstractPiece):
                 if square.piece.isFirstMove:
                     self.can_kingside_castle = True
                     moveCandidates.append(logic.build(current, 2, 0))
-                    
+
         for pos in [-1, -2, -3, -4]:
             square = map.get(logic.build(current, pos, 0))
             if square.isOccupied:

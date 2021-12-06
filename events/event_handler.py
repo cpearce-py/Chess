@@ -3,16 +3,14 @@ import sys
 import pygame
 
 import move_generator as mg
-from constants import Color
 from fen import START_FEN, PositionInfo, load_from_fen
 from move import Flag, Move, MoveHandler
-from player import Player
 
 _load_position = load_from_fen(START_FEN)
 
 class GameHandler:
 
-    def __init__(self, board, load_position: PositionInfo=_load_position):
+    def __init__(self, board, scene, load_position: PositionInfo=_load_position):
         self.clicks =  []
         self.board = board
         self.board.init(load_position)
@@ -20,6 +18,7 @@ class GameHandler:
         self.move_handler = MoveHandler(board, whiteToMove=whiteToMove)
         self.move_handler.generate_moves()
         self.move_generator = mg.MoveGenerator(board)
+        self._scene = scene
 
     def handle_events(self, event):
         self.check_quit_event(event)
@@ -53,8 +52,17 @@ class GameHandler:
                 if not fromSq.isOccupied:
                     self.reset_clicks()
                     return
-                move = Move(fromSq, toSq)
-                if self.move_handler.try_move(move):
+                user_move = Move(fromSq, toSq)
+                # move = self.move_generator.get_move(user_move)
+                # if move:
+                #     self.move_handler.make_move(move)
+                #     if move.flag == Flag.PROMOTE:
+                #         colour_to_promote = user_move.fromSq.piece.color
+                #         self._scene.promote(colour_to_promote)
+                #     self.end_turn()
+                # else:
+                #     self.reset_clicks()
+                if self.move_handler.try_move(user_move):
                     self.end_turn()
                 else:
                     self.reset_clicks()

@@ -20,24 +20,29 @@ class MoveGenerator:
 
     @castle_rights.setter
     def castle_rights(self, rights):
+        """Set castle rights for the current state of the generator.
+        param rights: `tuple` or `list`
+        param rights: `tuple` or `list`
+        """
         self.can_kingside_castle = rights[0]
         self.can_queenside_castle = rights[1]
-    
+
     def generate_moves(self) -> Set[Move]:
         """
-        Function to generate all the possible moves for the current board 
-        position. 
+        Function to generate all the possible moves for the current board
+        position. This must be called after each move of a board when in playing
+        state.
 
         Logic is:
-            - re-initalise instance to clear state 
-            - calculate all attacks on friendly king, including pins 
-            - calculate all possible king moves. 
+            - re-initalise instance to clear state
+            - calculate all attacks on friendly king, including pins
+            - calculate all possible king moves.
             - if in double check we just return King moves, as they're the only legal moves
-            - if not, generate all other moves. 
+            - if not, generate all other moves.
 
-        Function returns a set() of moves. This set can also be accessed from 
-        the instances moves attribute, but this will only be correct if 
-        generate_moves() is run by the instance, in the boards current position. 
+        Function returns a set() of moves. This set can also be accessed from
+        the instances moves attribute, but this will only be correct if
+        generate_moves() is run, in the boards current position.
         """
 
         self.init()
@@ -58,14 +63,11 @@ class MoveGenerator:
 
     def calculate_attacks(self):
         board = self.board
-
-        
         opponent_col = self.opponent_colour
         friendly_col = self.friendly_colour
 
         king = board.king(friendly_col)
         king_square = king.square
-
 
         self.pinsExistInPosition = False
 
@@ -74,7 +76,7 @@ class MoveGenerator:
 
         directions = self._get_sliding_directions(board, opponent_col)
         for direction in directions:
-            # Check sliding attacks 
+            # Check sliding attacks
             ray = []
             x, y = direction
             possible_pin = False
@@ -92,10 +94,11 @@ class MoveGenerator:
 
                     else: # Is enemy piece
                         if (
-                            abs(direction[0]) == abs(direction[1]) and 
-                            piece.name in ['queen', 'bishop']) or (
-                            abs(direction[0]) != abs(direction[1]) and 
-                            piece.name in ['queen', 'rook']
+                                abs(direction[0]) == abs(direction[1]) and
+                                piece.name in ['queen', 'bishop']
+                            ) or (
+                                abs(direction[0]) != abs(direction[1]) and
+                                piece.name in ['queen', 'rook']
                             ):
                             possible_pin = True
                             if friendly_on_ray:
@@ -104,13 +107,13 @@ class MoveGenerator:
                                 break
                             else:
                                 # if already in check, then this is double check.
-                                self.inDoubleCheck = self.inCheck 
+                                self.inDoubleCheck = self.inCheck
                                 self.inCheck = True
                                 break
                 nextMove = logic.build(nextMove.location, x, y)
 
             if possible_pin:
-                self.pinRays.append(ray)   
+                self.pinRays.append(ray)
             if self.inDoubleCheck:
                 break
 
@@ -134,7 +137,7 @@ class MoveGenerator:
 
     def _get_sliding_directions(self, board, opponent_col):
         """ Setting up directions to check for pins. If there's a queen, we check
-        for both diagonal and rook based pins. Otherwise, check for 
+        for both diagonal and rook based pins. Otherwise, check for
         bishops or rooks  on the board and their relative directions. """
         directions = []
         if board.queen(opponent_col):
@@ -157,7 +160,7 @@ class MoveGenerator:
                     continue
                 square = board.map.get(loc)
                 self.opponent_attacks.add(square)
-        
+
     def init(self):
         self.moves = set()
         self.opponent_attacks = set()
@@ -176,10 +179,10 @@ class MoveGenerator:
     def highlight(self, set_of_moves=None):
         if set_of_moves is None:
             return
-            
+
         try:
             for square in set_of_moves:
-                square.isAttacked = True 
+                square.isAttacked = True
         except AttributeError: # if pinRays is passed, we need to go 2 levels deep.
             for ray in set_of_moves:
                 for square in ray:

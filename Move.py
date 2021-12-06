@@ -31,7 +31,7 @@ def clean(**attrs):
         attrs['_selected'] = False
         attrs['_alive'] = True
     except TypeError as e:
-        print(f"Can't unpack due to: {e}")       
+        print(f"Can't unpack due to: {e}")
     return attrs
 
 
@@ -56,7 +56,7 @@ class Move:
             self.capture = True
             self.piece_captured = captured_piece
             self.captured_piece_attrs = clean(**captured_piece.__dict__.copy())
- 
+
     def __hash__(self):
         return hash((self.fromSq, self.toSq, self.capture) )
 
@@ -66,7 +66,7 @@ class Move:
 
     def __repr__(self):
         attrs = (
-            ('from', self.fromSq.location), 
+            ('from', self.fromSq.location),
             ('to', self.toSq.location),
             ('capture', self.capture),
             ('flag', self.flag),
@@ -84,14 +84,14 @@ class MoveHandler:
         self._pin_moves = []
         self.lights_moves = []
         self.darks_moves = []
-        
+
         self._undo_stack = []
         self._redo_stack = []
         self._history_position = 0
 
     def try_move(self, move: Move, _redo_move=False):
         """
-        Attempts to make a move. Returns True if move was successful, and False 
+        Attempts to make a move. Returns True if move was successful, and False
         if not.
         """
         fromSq, toSq = move.squares
