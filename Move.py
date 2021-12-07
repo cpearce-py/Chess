@@ -148,8 +148,6 @@ class MoveHandler:
             piece_moves = piece.getAttackMoves(board)
             if isinstance(piece_moves, types.GeneratorType):
                 self.darks_moves.extend(list(piece_moves))
-                # for move in piece_moves:
-                #     self.darks_moves.append(move)
             else:
                 self.darks_moves.extend(piece.getAttackMoves(board))
 

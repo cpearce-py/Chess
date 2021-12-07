@@ -1,5 +1,6 @@
 import os
 from collections import deque
+from typing import Tuple
 
 import pygame
 
@@ -24,71 +25,102 @@ def _setup_images(path, pieces=None):
 
 
 class Layout:
+    """
+    Base class, aimed at acting like a widget. Holds Tile objects and will
+    automatically align them horizontally, draw them to the a surface and deal
+    with triggering their action once clicked.
 
+    Usage:
+        l = Layout()
+
+        for tile in tiles:
+            l.add_tile(tile)
+
+        for event in pygame.event.get():
+            l.handle_event(event)
+
+        l.update()
+        l.draw(surface)
+
+    Layout class cannot control it's visibilty so up to user to create and destroy
+    within game loop.
+
+    Can pass certain keyword arguments to affect the style of the layout,
+    however it's safer to use the pre-defined subclassed layouts.
+    ie. HLayout, VLayout.
+    """
     _MAX_SPACES = 4
 
-    def __init__(self, max_objects=None, *objects ):
+    def __init__(self, max_objects: int=None, **kwargs):
+
         if not max_objects:
             max_objects = Layout._MAX_SPACES
-        self._objects = deque(objects, maxlen=max_objects)
-        self._tiles = pygame.sprite.Group(*objects)
-        self._rect = None
-        self._displayed = False
+
+        self._tiles = pygame.sprite.Group()
+
+        width = kwargs.pop('width', c.SQ_SIZE * max_objects)
+        height = kwargs.pop('height', c.SQ_SIZE)
+        self.position = kwargs.pop('position', (0,0))
+
+        popup_rect = pygame.Rect((0,0), (width, height))
+        popup_rect.move_ip(self.position)
+
+        self.popup_rect = popup_rect
 
     def __len__(self):
         return len(self._tiles.sprites())
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} {repr(self._objects)}>"
-
-    def show(self):
-        """Display the layout"""
-        self._displayed = True
-        while self._displayed:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                    for tile in self._tiles:
-                        tile.handle_event(event)
-                        self._displayed = False
+        return f"<{self.__class__.__name__} {len(self)}>"
 
     @property
     def rect(self):
-        if not self._tiles.sprites():
-            # return pygame.Rect()
-            pass
+        return self.popup_rect
 
-        length = len(self._tiles.sprites())
-        width = c.SQ_SIZE*length
-        height = c.SQ_SIZE
-        self._rect
-        return
+    def move(self, amount):
+        if not isinstance(amount, tuple):
+            amount = (amount, amount)
 
-    def update(self, *args):
-        for object in self._objects:
-            object.update(*args)
+        self.popup_rect.move_ip(amount)
+        for obj in self._tiles.sprites():
+            obj.rect.move_ip(amount)
+
+    def update(self):
+        self._tiles.update()
 
     def handle_event(self, event):
-        if event == pygame.event.MOUSEBUTTONUP and event.key == 1:
-            for obj in self._objects:
-                if obj.check_clicked(event.pos):
-                    return obj.action
+        for obj in self._tiles.sprites():
+            if obj.check_click(event.pos):
+                obj.action()
 
     def add_tile(self, tile):
         self._tiles.add(tile)
-
-
-    def _add_internal(self, *objects):
-        self._objects.extend(objects)
+        rect = self.popup_rect.move(self.position)
+        number_of_tiles = len(self._tiles.sprites())
+        top = rect.top
+        left = rect.left + (c.SQ_SIZE * (number_of_tiles-1))
+        tile.rect.top = top
+        tile.rect.left = left
 
     def draw(self, surface):
-        return
+        for obj in self._tiles.sprites():
+            obj.draw(surface)
 
 class VLayout(Layout):
-    def __init__(self, width=c.SQ_SIZE, height=None, maxlen=4):
-        self.width = width
-        self.height = c.SQ_SIZE * maxlen if not height else height
+
+    def __init__(self, **kwargs):
+        height = c.SQ_SIZE * Layout._MAX_SPACES
+        width = c.SQ_SIZE
+        super().__init__(height=height, width=width, **kwargs)
+
+    def add_tile(self, tile):
+        self._tiles.add(tile)
+        rect = self.popup_rect.move(self.position)
+        number_of_tiles = len(self._tiles.sprites())
+        left = rect.left
+        top = rect.top + (c.SQ_SIZE * (number_of_tiles - 1))
+        tile.rect.top = top
+        tile.rect.left = left
 
 def _dummy_action():
     print("No action assigned")
@@ -144,16 +176,12 @@ def main():
     WHITE_PIECES = _setup_images(IMG_FOLDER, pieces=['wR', 'wN', 'wB', 'wQ',])
     BLACK_PIECES = _setup_images(IMG_FOLDER, pieces=['bR', 'bN', 'bB', 'bQ',])
 
-    HEIGHT = int(len(WHITE_PIECES)*c.SQ_SIZE)
-
-    layout = Layout()
+    layout = VLayout(position=(50,100))
 
     for piece in BLACK_PIECES.values():
         tile = Tile(piece, (125,50,50), highlighted=(111,80,125))
         layout.add_tile(tile)
 
-    # piece = WHITE_PIECES['wN']
-    # t1 = Tile(piece, (125,50,50), highlighted=(111,80,125))
 
 
     pygame.init()
@@ -166,14 +194,12 @@ def main():
                 pygame.quit()
                 return
             if event.type == pygame.MOUSEBUTTONUP:
+                print('sending to layout')
                 layout.handle_event(event)
 
         layout.update()
-        # layout.update(pygame.mouse.get_pos())
         screen.fill(_BLACK)
-        # layout.draw(screen)
         layout.draw(screen)
-
 
         pygame.display.flip()
         clock.tick(c.FPS)
