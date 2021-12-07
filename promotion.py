@@ -83,6 +83,17 @@ class Layout:
     def rect(self):
         return self.popup_rect
 
+    def reverse(self, value=True):
+        """Quick method to inplace reverse the sprites in the layout"""
+        if not value:
+            return
+        print("reversing")
+        tiles = self._tiles.sprites()
+        tiles.reverse()
+        self._tiles.empty()
+        for tile in tiles:
+            self.add_tile(tile)
+
     def move(self, amount):
         """
         Move layout widget, and all it's containing tiles, by some coordinate.
@@ -158,7 +169,7 @@ class Tile(pygame.sprite.Sprite):
 
     kwargs:
         :param name: Optional name for the tile. Aimed at debugging.
-
+        :name type: `Str`
     """
     def __init__(self, image, bg_color, highlighted=None,
                  action=_dummy_action, **kwargs):
@@ -206,11 +217,9 @@ def main():
 
     layout = Layout(position=(50,100))
 
-    for name, piece in BLACK_PIECES.items():
+    for name, piece in WHITE_PIECES.items():
         tile = Tile(piece, (125,50,50), highlighted=(111,80,125), name=name)
         layout.add_tile(tile)
-
-
 
     pygame.init()
     screen = pygame.display.set_mode((c.WIDTH, c.HEIGHT))
