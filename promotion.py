@@ -27,11 +27,20 @@ def _setup_images(path, pieces=None):
 class Layout:
     """
     Base class, aimed at acting like a widget. Holds Tile objects and will
-    automatically align them horizontally, draw them to the a surface and deal
-    with triggering their action once clicked.
+    automatically align them horizontally, draw them to a surface and deal
+    with triggering their action if clicked.
+
+    Not the max_objects keyword argument is used to pre-setup the width/height
+    of the layout. By default this is 4. You cannot add more tiles than the
+    max_objects is set too. No error is thrown class will just ignore additional
+    attempts to add more.
+
+    By default, the widget is created at position (0,0) of the screen.
+    Pass keyword arugment `position` to change this behaviour, or use move() method
+    passing a tuple (x, y).
 
     Usage:
-        l = Layout()
+        l = Layout(max_objects=5)
 
         for tile in tiles:
             l.add_tile(tile)
@@ -45,16 +54,13 @@ class Layout:
     Layout class cannot control it's visibilty so up to user to create and destroy
     within game loop.
 
-    Can pass certain keyword arguments to affect the style of the layout,
-    however it's safer to use the pre-defined subclassed layouts.
-    ie. HLayout, VLayout.
+    This class creates a horizontally layouted widget, use subclass `VLayout`
+    to create a vertical layout that works in the same way.
     """
-    _MAX_SPACES = 4
 
-    def __init__(self, max_objects: int=None, **kwargs):
+    def __init__(self, max_objects: int = 4, **kwargs):
 
-        if not max_objects:
-            max_objects = Layout._MAX_SPACES
+        self.max_objects = max_objects
 
         self._tiles = pygame.sprite.Group()
 
@@ -78,7 +84,14 @@ class Layout:
         return self.popup_rect
 
     def move(self, amount):
-        if not isinstance(amount, tuple):
+        """
+        Move layout widget, and all it's containing tiles, by some coordinate.
+
+        :param amount: (x, y) move to apply to layout.
+        :amount type: `tuple`, `list`, or `int`. If Int, will apply the same value
+                      to both X and Y.
+        """
+        if not isinstance(amount, (tuple, list)):
             amount = (amount, amount)
 
         self.popup_rect.move_ip(amount)
@@ -91,9 +104,11 @@ class Layout:
     def handle_event(self, event):
         for obj in self._tiles.sprites():
             if obj.check_click(event.pos):
-                obj.action()
+                obj.action(piece=obj.name)
 
     def add_tile(self, tile):
+        if len(self._tiles.sprites()) >= 4:
+            return
         self._tiles.add(tile)
         rect = self.popup_rect.move(self.position)
         number_of_tiles = len(self._tiles.sprites())
@@ -106,12 +121,13 @@ class Layout:
         for obj in self._tiles.sprites():
             obj.draw(surface)
 
+
 class VLayout(Layout):
 
-    def __init__(self, **kwargs):
-        height = c.SQ_SIZE * Layout._MAX_SPACES
+    def __init__(self, max_objects: int=4, **kwargs):
+        height = c.SQ_SIZE * max_objects
         width = c.SQ_SIZE
-        super().__init__(height=height, width=width, **kwargs)
+        super().__init__(max_objects=max_objects, height=height, width=width, **kwargs)
 
     def add_tile(self, tile):
         self._tiles.add(tile)
@@ -122,7 +138,10 @@ class VLayout(Layout):
         tile.rect.top = top
         tile.rect.left = left
 
-def _dummy_action():
+def _dummy_action(piece=None):
+    if piece:
+        print(f'Clicked: {piece}')
+        return
     print("No action assigned")
 
 
@@ -134,8 +153,17 @@ class Tile(pygame.sprite.Sprite):
 
     :param image: pygame.Surface with image.
     :param bg_color: List or Tuple with RGB colour values.
+    :param highlighted: `List` or `tuple` with RGB colour values.
+    :param action: callable action that will be triggered when tile is clicked.
+
+    kwargs:
+        :param name: Optional name for the tile. Aimed at debugging.
+
     """
-    def __init__(self, image, bg_color, highlighted=None, action=_dummy_action):
+    def __init__(self, image, bg_color, highlighted=None,
+                 action=_dummy_action, **kwargs):
+
+        self.name = kwargs.pop('name', "Piece")
         self._mouse_over = False
         self.action = action
 
@@ -176,10 +204,10 @@ def main():
     WHITE_PIECES = _setup_images(IMG_FOLDER, pieces=['wR', 'wN', 'wB', 'wQ',])
     BLACK_PIECES = _setup_images(IMG_FOLDER, pieces=['bR', 'bN', 'bB', 'bQ',])
 
-    layout = VLayout(position=(50,100))
+    layout = Layout(position=(50,100))
 
-    for piece in BLACK_PIECES.values():
-        tile = Tile(piece, (125,50,50), highlighted=(111,80,125))
+    for name, piece in BLACK_PIECES.items():
+        tile = Tile(piece, (125,50,50), highlighted=(111,80,125), name=name)
         layout.add_tile(tile)
 
 
@@ -194,7 +222,6 @@ def main():
                 pygame.quit()
                 return
             if event.type == pygame.MOUSEBUTTONUP:
-                print('sending to layout')
                 layout.handle_event(event)
 
         layout.update()
