@@ -89,7 +89,7 @@ class MoveHandler:
         self._redo_stack = []
         self._history_position = 0
 
-    def try_move(self, move: Move, _redo_move=False):
+    def try_move(self, move: Move):
         """
         Attempts to make a move. Returns True if move was successful, and False
         if not.

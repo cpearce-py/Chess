@@ -41,7 +41,7 @@ def _setupImages(path, pieces=None):
 
     if not pieces:
         pieces = ['wp', 'wR', 'wN', 'wB', 'wK', 'wQ',
-                'bp', 'bR', 'bN', 'bB', 'bK', 'bQ',] 
+                'bp', 'bR', 'bN', 'bB', 'bK', 'bQ',]
 
     for piece in pieces:
         _IMAGES[piece] = pygame.transform.scale(

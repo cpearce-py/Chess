@@ -1,6 +1,4 @@
 import os
-from collections import deque
-from typing import Tuple
 
 import pygame
 
@@ -45,6 +43,8 @@ class Layout:
         for tile in tiles:
             l.add_tile(tile)
 
+        layout.move((10,20))
+
         for event in pygame.event.get():
             l.handle_event(event)
 
@@ -61,23 +61,21 @@ class Layout:
     def __init__(self, max_objects: int = 4, **kwargs):
 
         self.max_objects = max_objects
-
         self._tiles = pygame.sprite.Group()
-
         width = kwargs.pop('width', c.SQ_SIZE * max_objects)
         height = kwargs.pop('height', c.SQ_SIZE)
         self.position = kwargs.pop('position', (0,0))
 
         popup_rect = pygame.Rect((0,0), (width, height))
         popup_rect.move_ip(self.position)
-
         self.popup_rect = popup_rect
+        self.on_exit = kwargs.pop('on_exit', _dummy_action)
 
     def __len__(self):
         return len(self._tiles.sprites())
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} {len(self)}>"
+        return f"<{self.__class__.__name__}, max_objects={self.max_objects}>"
 
     @property
     def rect(self):
@@ -87,14 +85,14 @@ class Layout:
         """Quick method to inplace reverse the sprites in the layout"""
         if not value:
             return
-        print("reversing")
+        print("Reversing")
         tiles = self._tiles.sprites()
         tiles.reverse()
         self._tiles.empty()
         for tile in tiles:
             self.add_tile(tile)
 
-    def move(self, amount):
+    def move(self, amount, anchor="topleft"):
         """
         Move layout widget, and all it's containing tiles, by some coordinate.
 
@@ -106,35 +104,38 @@ class Layout:
             amount = (amount, amount)
 
         self.popup_rect.move_ip(amount)
-        for obj in self._tiles.sprites():
+        for obj in self._tiles:
             obj.rect.move_ip(amount)
 
     def update(self):
         self._tiles.update()
 
     def handle_event(self, event):
-        for obj in self._tiles.sprites():
-            if obj.check_click(event.pos):
-                obj.action(piece=obj.name)
+        if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            for obj in self._tiles:
+                if obj.check_click(event.pos):
+                    obj.action(piece=obj.name)
 
     def add_tile(self, tile):
-        if len(self._tiles.sprites()) >= 4:
+        if len(self._tiles) >= 4:
             return
         self._tiles.add(tile)
         rect = self.popup_rect.move(self.position)
-        number_of_tiles = len(self._tiles.sprites())
+        number_of_tiles = len(self._tiles)
         top = rect.top
         left = rect.left + (c.SQ_SIZE * (number_of_tiles-1))
         tile.rect.top = top
         tile.rect.left = left
 
     def draw(self, surface):
-        for obj in self._tiles.sprites():
+        for obj in self._tiles:
             obj.draw(surface)
 
 
 class VLayout(Layout):
-
+    """
+    Subclass of `Layout` presetup for a vertical layout.
+    """
     def __init__(self, max_objects: int=4, **kwargs):
         height = c.SQ_SIZE * max_objects
         width = c.SQ_SIZE
@@ -143,7 +144,7 @@ class VLayout(Layout):
     def add_tile(self, tile):
         self._tiles.add(tile)
         rect = self.popup_rect.move(self.position)
-        number_of_tiles = len(self._tiles.sprites())
+        number_of_tiles = len(self._tiles)
         left = rect.left
         top = rect.top + (c.SQ_SIZE * (number_of_tiles - 1))
         tile.rect.top = top
@@ -215,11 +216,12 @@ def main():
     WHITE_PIECES = _setup_images(IMG_FOLDER, pieces=['wR', 'wN', 'wB', 'wQ',])
     BLACK_PIECES = _setup_images(IMG_FOLDER, pieces=['bR', 'bN', 'bB', 'bQ',])
 
-    layout = Layout(position=(50,100))
-
-    for name, piece in WHITE_PIECES.items():
+    layout = VLayout(position=(50,100))
+    for name, piece in BLACK_PIECES.items():
         tile = Tile(piece, (125,50,50), highlighted=(111,80,125), name=name)
         layout.add_tile(tile)
+
+    layout.reverse()
 
     pygame.init()
     screen = pygame.display.set_mode((c.WIDTH, c.HEIGHT))

@@ -52,20 +52,20 @@ class GameHandler:
                 if not fromSq.isOccupied:
                     self.reset_clicks()
                     return
-                user_move = Move(fromSq, toSq)
+                user_move = Move(fromSq, toSq, flag=Flag.PROMOTE)
                 # move = self.move_generator.get_move(user_move)
-                # if move:
-                #     self.move_handler.make_move(move)
-                #     if move.flag == Flag.PROMOTE:
-                #         colour_to_promote = user_move.fromSq.piece.color
-                #         self._scene.promote(colour_to_promote)
-                #     self.end_turn()
-                # else:
-                #     self.reset_clicks()
-                if self.move_handler.try_move(user_move):
+                if user_move:
+                    self.move_handler.try_move(user_move)
+                    if user_move.flag == Flag.PROMOTE:
+                        colour_to_promote = user_move.toSq.piece.color
+                        self._scene.promote(colour_to_promote)
                     self.end_turn()
                 else:
                     self.reset_clicks()
+                # if self.move_handler.try_move(user_move):
+                #     self.end_turn()
+                # else:
+                #     self.reset_clicks()
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
             if square := self.hitSquare(event.pos):

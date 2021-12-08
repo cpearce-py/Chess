@@ -1,14 +1,41 @@
 from abc import ABC, abstractmethod
+from enum import Enum, auto
 
 import pygame
 
 from ui import Button
 from Board import Board
 from events.event_handler import GameHandler
+from promotion import Layout, Tile
+import constants as c
 
 BLUE = (106, 159, 181)
 WHITE = (255,255, 255)
 BLACK = (0,0,0)
+LIGHT_SQ = (232, 235, 239)
+DARK_SQ = (125, 135, 150)
+LIGHT_HIGHLIGHT = (252, 115, 120)
+DARK_HIGHLIGHT = (145, 62, 75)
+
+
+def _setup_promotion_images():
+    """
+    Filter out 4 pieces we want to display in promotion menu and order by
+    most valuable.
+    """
+    imgs = c.IMAGES
+
+    piece_order = ['Q', 'R', 'B', 'N']
+
+    dark_dict = { 'b'+key: imgs['b'+key] for key in piece_order }
+    light_dict = { 'w'+key: imgs['w'+key] for key in piece_order}
+
+    return {
+        c.Color.LIGHT: list(light_dict.values()),
+        c.Color.DARK: list(dark_dict.values())
+    }
+
+_PIECES = _setup_promotion_images()
 
 
 class Scene(ABC):
@@ -112,6 +139,10 @@ class SettingScene(Scene):
         screen.fill(BLACK)
         self.objects.draw(screen)
 
+class State(Enum):
+
+    PLAYING = auto()
+    PROMOTING = auto()
 
 class GameScene(Scene):
     """Main chess game scene."""
@@ -119,14 +150,40 @@ class GameScene(Scene):
         super().__init__()
         self.board = Board()
         self.game_handler = GameHandler(self.board, scene=self)
+        self.promotion_menu = None
+        self.state = State.PLAYING
+
+    def promote(self, colour):
+        images = _PIECES.get(colour)
+        layout = Layout()
+        for index, image in enumerate(images):
+            bg_color = DARK_SQ if index % 2 == 0 else LIGHT_SQ
+            highlight_color = DARK_HIGHLIGHT if index % 2 == 0 else LIGHT_HIGHLIGHT
+            tile = Tile(image, bg_color, highlight_color)
+            layout.add_tile(tile)
+        layout.move(pygame.mouse.get_pos())
+        self.promotion_menu = layout
+        self.state = State.PROMOTING
 
     def process_input(self, event):
-        self.game_handler.handle_events(event)
+        if self.state == State.PROMOTING:
+            self.promotion_menu.handle_event(event)
+        else:
+            self.game_handler.handle_events(event)
 
     def update(self):
+        try:
+            self.promotion_menu.update()
+        except AttributeError:
+            pass
+        self.objects.update()
         self.board.update()
 
     def render(self, screen):
         screen.fill(BLACK)
         self.board.draw(screen)
         self.objects.draw(screen)
+        try:
+            self.promotion_menu.draw(screen)
+        except AttributeError:
+            pass
