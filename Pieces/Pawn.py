@@ -3,6 +3,7 @@ from AbstractPiece import AbstractPiece
 from constants import IMAGES, Color
 
 from Pieces.Queen import Queen
+from move import Move, Flag
 
 
 class Pawn(AbstractPiece):
@@ -12,7 +13,20 @@ class Pawn(AbstractPiece):
         super().__init__(name, pieceColor, image=img)
         self.enpassant_able = False
 
+    # def __repr__(self):
+    #     return super().__repr__().join(f' enpassant_able={self.enpassant_able}')
+
     def moveToSquare(self, square, board=None):
+        if self.isFirstMove:
+            sqr_rank = square.location.rank
+            piece_rank = self.location.rank
+            rank_diff = max(sqr_rank, piece_rank) - min(sqr_rank, piece_rank)
+            print(f'Square rank: {sqr_rank} and piece rank {piece_rank}. Diff: {rank_diff}')
+            if rank_diff > 1:
+                self.enpassant_able = True
+        else:
+            self.enpassant_able = False
+
         # Check for promotion
         if square.location.rank in [1, 8]:
             # btn = Button("Queen", 200, 50, 100, 50)
@@ -48,6 +62,7 @@ class Pawn(AbstractPiece):
         for move in self._getAllValidMoves(board):
             if not board.map.get(move): # Loc not on board ie. at edge.
                 continue
+            # check enpassant
             if (move.file != self.square.file and not
                     board.map.get(move).isOccupied): # Diagonal move but no capture
                 continue
@@ -60,6 +75,21 @@ class Pawn(AbstractPiece):
                     continue
 
             moveCandidates.append(move)
+
+        for pos in [-1, 1]:
+            enpassant_left = logic.build(self.location, pos, 0)
+            square = board.map.get(enpassant_left):
+            if not square:
+                continue
+            piece = square.piece
+            if not piece:
+                continue
+            if piece.name == "pawn" and piece.color != self.color:
+                if piece.enpassant_able:
+                    enpassant_attack = logic.build(self.location, pos, 1)
+                    moveCandidates.append(enpassant_attack)
+                    move = Move(self.square, enpassant_attack, flag=Flag.ENPASSANT)
+                    moveCandidates.append(move)
 
         return moveCandidates
 

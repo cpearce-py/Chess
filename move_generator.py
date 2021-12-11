@@ -82,7 +82,6 @@ class MoveGenerator:
             self.moves.add(move)
         # self.moves.add(moves)
         self.castle_rights = king.castle_rights
-        print(f'mg set: {self.moves}')
 
     def calculate_attacks(self):
         board = self.board
@@ -219,4 +218,4 @@ class MoveGenerator:
 
 
     def pawn_moves(self):
-
+        pass
