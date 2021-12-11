@@ -1,0 +1,15 @@
+Logic:
+    mg creates map of all possible moves a colour can make. ie. all light moves.
+    user clicks two squares.
+    build `Move` from user clicks
+    check if user move in mg moves.
+    replace user move with corrected flag move.
+    end turn, repeat.
+
+    when mg builds we loop through all pieces and build their moves. So I think
+    it's easier to have pieces return `Move` instances and then just build
+    attacking maps from their toSq locations.
+
+Refactors:
+    have all pieces return `Move` instances not Locations.
+    or have mg

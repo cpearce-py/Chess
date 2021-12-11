@@ -109,7 +109,7 @@ class King(AbstractPiece):
 
     def getValidMoves(self, board):
         """
-        Method to return all possible moves instance of a king can make.
+        Method to return all possible moves king can make.
 
         :param board: current board state
         :type board: class `Board`
@@ -154,3 +154,8 @@ class King(AbstractPiece):
                     possibleMoves.append(move)
 
         return possibleMoves
+
+    def converted_moves(self, board):
+        moves = self.getValidMoves(board)
+        return logic.convert(moves, self, board)
+

@@ -18,6 +18,7 @@ Current methodology is this:
     - If that move is in our set of possible moves, we allow the move to occur.
 """
 
+
 class MoveGenerator:
 
     def __init__(self, board):
@@ -74,15 +75,14 @@ class MoveGenerator:
 
     def generate_king_moves(self):
         board = self.board
-        print(self.friendly_colour)
         king = board.king(self.friendly_colour)
         self.generate_opponent_attacks()
-        moves = king.getValidMoves(board)
+        moves = king.converted_moves(board)
         for move in moves:
-            square = board.map.get(move)
-            self.moves.add(square)
+            self.moves.add(move)
         # self.moves.add(moves)
         self.castle_rights = king.castle_rights
+        print(f'mg set: {self.moves}')
 
     def calculate_attacks(self):
         board = self.board
@@ -203,6 +203,10 @@ class MoveGenerator:
     def highlight(self, set_of_moves=None):
         if set_of_moves is None:
             return
+        if isinstance(set_of_moves, Set):
+            for move in set_of_moves:
+                move.toSq.isAttacked = True
+            return
 
         try:
             for square in set_of_moves:
@@ -212,4 +216,7 @@ class MoveGenerator:
                 for square in ray:
                     square.isAttacked = True
 
+
+
+    def pawn_moves(self):
 

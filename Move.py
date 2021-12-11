@@ -54,6 +54,7 @@ class Move:
         self.turn = self.piece_moved.color
         if captured_piece := self.toSq.piece:
             self.capture = True
+            self.flag = Flag.CAPTURE
             self.piece_captured = captured_piece
             self.captured_piece_attrs = clean(**captured_piece.__dict__.copy())
 

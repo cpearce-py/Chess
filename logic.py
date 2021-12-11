@@ -1,5 +1,7 @@
+from typing import List
 from Location import Location
 from constants import Files, Color
+from move import Move
 
 __all__ = (
     'build',
@@ -33,3 +35,11 @@ def switch_turn(turn):
         Color.LIGHT: Color.DARK,
         Color.DARK: Color.LIGHT
     }.get(turn)
+
+def convert(moves: List, piece, board):
+    piece_square  = piece.square
+    for move in moves:
+        toSq = board.map.get(move)
+        yield Move(piece_square, toSq)
+
+

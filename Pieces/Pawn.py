@@ -10,6 +10,7 @@ class Pawn(AbstractPiece):
     def __init__(self, pieceColor, name="Pawn"):
         img = IMAGES['bp'] if pieceColor == Color.DARK else IMAGES['wp']
         super().__init__(name, pieceColor, image=img)
+        self.enpassant_able = False
 
     def moveToSquare(self, square, board=None):
         # Check for promotion
@@ -22,7 +23,8 @@ class Pawn(AbstractPiece):
         """
         Method to promote current instance of `Pawn` to given piece
 
-        :param piece: Callable class of piece to promoote too.
+        :param piece: Callable class of piece to promote too.
+        :type piece: Subclass of `AbstractPiece`
         default = Queen.
         """
         # Clean up required for sprite.GroupSingle
@@ -44,10 +46,10 @@ class Pawn(AbstractPiece):
         moveCandidates = []
 
         for move in self._getAllValidMoves(board):
-            if not board.map.get(move):
+            if not board.map.get(move): # Loc not on board ie. at edge.
                 continue
             if (move.file != self.square.file and not
-                    board.map.get(move).isOccupied):
+                    board.map.get(move).isOccupied): # Diagonal move but no capture
                 continue
             if (move.file == self.square.file and
                     board.map.get(move).isOccupied):
@@ -80,6 +82,9 @@ class Pawn(AbstractPiece):
             yield logic.build(self.location, fileOffset=-1, rankOffset=-1)
 
     def getAttackMoves(self, board):
+        """
+        Get all attack moves for a pawn. Check for possible enpassant moves also.
+        """
 
         if self._pieceColor == Color.LIGHT:
             move1 = logic.build(self.location, fileOffset=1, rankOffset=1)
