@@ -108,14 +108,20 @@ class King(AbstractPiece):
         return moveCandidates
 
     def getValidMoves(self, board):
+        """
+        Method to return all possible moves instance of a king can make.
+
+        :param board: current board state
+        :type board: class `Board`
+        :return: all possible moves the king can make in current position.
+        :rtype: `list` of `Location`
+        """
         allMoves = self.getAttackMoves(board)
         possibleMoves = []
         m = board.map
-
         for move in allMoves:
-            if board.map.get(move):
+            if square := board.map.get(move):
                 rejected = False
-                square = board.map.get(move)
                 if not square.isOccupied:
 
                     # If free square, we'll check for attackers

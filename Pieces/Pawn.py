@@ -22,7 +22,7 @@ class Pawn(AbstractPiece):
         """
         Method to promote current instance of `Pawn` to given piece
 
-        :param piece: Callable class of piece to promoote too. 
+        :param piece: Callable class of piece to promoote too.
         default = Queen.
         """
         # Clean up required for sprite.GroupSingle
@@ -82,9 +82,11 @@ class Pawn(AbstractPiece):
     def getAttackMoves(self, board):
 
         if self._pieceColor == Color.LIGHT:
-            yield logic.build(self.location, fileOffset=1, rankOffset=1)
-            yield logic.build(self.location, fileOffset=-1, rankOffset=1)
+            move1 = logic.build(self.location, fileOffset=1, rankOffset=1)
+            move2 = logic.build(self.location, fileOffset=-1, rankOffset=1)
+            return [move1, move2]
 
         else:
-            yield logic.build(self.location, fileOffset=1, rankOffset=-1)
-            yield logic.build(self.location, fileOffset=-1, rankOffset=-1)
+            move1 = logic.build(self.location, fileOffset=1, rankOffset=-1)
+            move2 = logic.build(self.location, fileOffset=-1, rankOffset=-1)
+            return [move1, move2]

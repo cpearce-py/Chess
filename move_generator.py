@@ -3,6 +3,20 @@ from typing import Set
 import logic
 from move import Move
 
+"""
+Current methodology is this:
+    - re-initalise instance to clear state (no moves calculated) [x]
+    - calculate all attacks on friendly king, including pins. We can store these
+    as simple location classes (don't need to generate moves etc.) [x]
+    - calculate all possible king moves. This will need to be done creating
+    `Move` instances, which we can add to our moves attribute.
+    - if in double check we just return King moves, as they're the only legal moves
+    - if not, generate all other moves. Again, as instances of `Move`. We need
+    to also calculate the Flag type for each move. This will be used later to
+    trigger certain events in the game loop ie. End Screen for Checkmate, Promotions etc.
+    - We'll then create a simple `Move` instance for the User's attempted move.
+    - If that move is in our set of possible moves, we allow the move to occur.
+"""
 
 class MoveGenerator:
 
@@ -11,6 +25,10 @@ class MoveGenerator:
         self.moves: Set[Move] = set()
         self.can_queenside_castle = False
         self.can_kingside_castle = False
+
+        self.isWhiteMove = board.whiteToMove
+        self.friendly_colour = board.color_to_move
+        self.opponent_colour = logic.switch_turn(self.friendly_colour)
 
         self.generate_moves()
 
@@ -50,15 +68,20 @@ class MoveGenerator:
         self.generate_king_moves()
         if self.inDoubleCheck:
             return self.moves
-        # self.highlight(self.pinRays)
+        self.highlight(self.moves)
 
         return self.moves
 
     def generate_king_moves(self):
-        king = self.board.king(self.friendly_colour)
         board = self.board
+        print(self.friendly_colour)
+        king = board.king(self.friendly_colour)
         self.generate_opponent_attacks()
         moves = king.getValidMoves(board)
+        for move in moves:
+            square = board.map.get(move)
+            self.moves.add(square)
+        # self.moves.add(moves)
         self.castle_rights = king.castle_rights
 
     def calculate_attacks(self):
@@ -130,7 +153,8 @@ class MoveGenerator:
         pawns = board.pawns(opponent_col)
         self.isPawnCheck = False
         for pawn in pawns:
-            if king_square.location in pawn.getAttackMoves(board):
+            attacks = pawn.getAttackMoves(board)
+            if king_square.location in attacks:
                 self.isPawnCheck = True
                 self.inDoubleCheck = self.inCheck
                 self.inCheck = True
@@ -154,7 +178,7 @@ class MoveGenerator:
         opponent_col = self.opponent_colour
         board = self.board
 
-        for piece in self.board.pieces(opponent_col):
+        for piece in board.pieces(opponent_col):
             for loc in piece.getAttackMoves(board):
                 if loc is None:
                     continue
@@ -187,3 +211,5 @@ class MoveGenerator:
             for ray in set_of_moves:
                 for square in ray:
                     square.isAttacked = True
+
+

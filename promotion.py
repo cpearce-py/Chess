@@ -85,7 +85,7 @@ class Layout:
         """Quick method to inplace reverse the sprites in the layout"""
         if not value:
             return
-        print("Reversing")
+        print(f"Reversing {self.__class__.__name__}'s {len(self)} sprites")
         tiles = self._tiles.sprites()
         tiles.reverse()
         self._tiles.empty()
@@ -96,9 +96,9 @@ class Layout:
         """
         Move layout widget, and all it's containing tiles, by some coordinate.
 
-        :param amount: (x, y) move to apply to layout.
-        :amount type: `tuple`, `list`, or `int`. If Int, will apply the same value
-                      to both X and Y.
+        :param amount: (x, y) or `int` move to apply to layout. If Int, will
+                        apply the same value to both X and Y.
+        :type amount: `tuple`, `list`, or `int`.
         """
         if not isinstance(amount, (tuple, list)):
             amount = (amount, amount)

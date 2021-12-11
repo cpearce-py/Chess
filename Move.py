@@ -145,19 +145,10 @@ class MoveHandler:
         self.lights_moves = []
 
         for piece in self.board.dark_pieces:
-            piece_moves = piece.getAttackMoves(board)
-            if isinstance(piece_moves, types.GeneratorType):
-                self.darks_moves.extend(list(piece_moves))
-            else:
-                self.darks_moves.extend(piece.getAttackMoves(board))
+            self.darks_moves.extend(piece.getAttackMoves(board))
 
         for piece in self.board.light_pieces:
-            piece_moves = piece.getAttackMoves(board)
-            if isinstance(piece_moves, types.GeneratorType):
-                for move in piece_moves:
-                    self.lights_moves.append(move)
-            else:
-                self.lights_moves.extend(piece.getAttackMoves(board))
+            self.lights_moves.extend(piece.getAttackMoves(board))
 
     def highlight_attacked(self, turn=True):
 

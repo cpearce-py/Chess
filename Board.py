@@ -1,10 +1,10 @@
 import pygame
 
+import logic
 from constants import RANKS, Color, Files, SQ_SIZE
 from Location import Location
 from Pieces import *
 from Squares import Square
-
 from fen import PositionInfo, START_FEN, load_from_fen
 
 start_position = load_from_fen(START_FEN)
@@ -23,6 +23,10 @@ class Board(pygame.sprite.Group):
 
     Returns:
         Rook(Color=LIGHT, Location(A,1))
+
+    Board currently tracks which colors turn it is. Not sure I'm fully commited
+    to this setup but it's easier to manage as the board is shared between nearly
+    all other components. ie. move_gen, move_handler, scene etc.
     """
 
     def __init__(self):
@@ -43,7 +47,7 @@ class Board(pygame.sprite.Group):
         self.color_to_move = Color.LIGHT if self.whiteToMove else Color.DARK
 
         pieces = load_position.squares
-        map = {}
+        _map = {}
 
         for x, file in enumerate(Files):
             colour = Color.DARK if x % 2 == 0 else Color.LIGHT
@@ -71,10 +75,10 @@ class Board(pygame.sprite.Group):
                         self._light_pieces.add(piece)
 
                 self.add(square)
-                map[pos] = square
+                _map[pos] = square
                 colour = Color.LIGHT if colour == Color.DARK else Color.DARK
 
-        self._map = map
+        self._map = _map
         return self
 
     def __repr__(self):
@@ -193,7 +197,7 @@ class Board(pygame.sprite.Group):
     def end_turn(self):
         self.deselect()
         self.reset_squares()
-        self.color_to_move = Color.DARK if self.color_to_move == Color.LIGHT else Color.LIGHT
+        self.color_to_move = logic.switch_turn(self.color_to_move)
 
     def load_from_fen(self, fen):
         pieces = {}
