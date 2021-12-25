@@ -89,6 +89,9 @@ class Board(pygame.sprite.Group):
         inners = ', '.join('%s=%r' % t for t in attrs)
         return f'<{self.__class__.__name__} {inners}>'
 
+    def get(self, location):
+        return self.map.get(location, None)
+
     def _get_piece(self, name, color):
         pieces = self.all_pieces.get(color)
         return list(filter(lambda x: x.name == name, pieces))
