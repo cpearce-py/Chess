@@ -59,8 +59,8 @@ class MovePieceHolder:
 class Move:
     """Base move class"""
 
-    fromSq: Square
-    toSq: Square
+    from_sq: Square
+    to_sq: Square
     pieces: MovePieceHolder = None
     piece_moved: AbstractPiece = None
     piece_captured: AbstractPiece = None
@@ -69,26 +69,26 @@ class Move:
     flag: Enum = Flag.MOVE
 
     def __post_init__(self):
-        moved_piece = self.fromSq.piece
+        moved_piece = self.from_sq.piece
         self.pieces = MovePieceHolder(moved_piece)
-        self.piece_attrs = _clean(**self.fromSq.piece.__dict__.copy())
+        self.piece_attrs = _clean(**self.from_sq.piece.__dict__.copy())
         self.turn = moved_piece.color
-        if captured_piece := self.toSq.piece:
+        if captured_piece := self.to_sq.piece:
             self.flag = Flag.CAPTURE
             self.pieces.captured_piece = captured_piece
 
     def __hash__(self):
-        return hash((self.fromSq, self.toSq, self.flag.name))
+        return hash((self.from_sq, self.to_sq, self.flag.name))
 
     @property
     def squares(self):
         """Return squares involved in move"""
-        return (self.fromSq, self.toSq)
+        return (self.from_sq, self.to_sq)
 
     def __repr__(self):
         attrs = (
-            ("from", self.fromSq.location),
-            ("to", self.toSq.location),
+            ("from", self.from_sq.location),
+            ("to", self.to_sq.location),
             ("flag", self.flag.name),
         )
         inners = ", ".join("%s=%r" % t for t in attrs)
