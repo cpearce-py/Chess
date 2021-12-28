@@ -1,5 +1,5 @@
 from typing import List
-from Location import Location
+from location import Location
 from constants import Files, Color
 from move import Move
 

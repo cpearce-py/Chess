@@ -27,7 +27,7 @@ class MoveGenerator:
         self.can_queenside_castle = False
         self.can_kingside_castle = False
 
-        self.is_white_move = board.whiteToMove
+        self.is_white_move = board.white_to_move
         self.friendly_colour = board.color_to_move
         self.opponent_colour = logic.switch_turn(self.friendly_colour)
 
@@ -193,7 +193,7 @@ class MoveGenerator:
         self.inDoubleCheck = False
         self.pinsExistInPosition = False
 
-        self.is_white_move = self.board.whiteToMove
+        self.is_white_move = self.board.white_to_move
         self.friendly_colour = self.board.color_to_move
         self.opponent_colour = logic.switch_turn(self.friendly_colour)
         self.pinRays = []

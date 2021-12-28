@@ -1,7 +1,7 @@
 import pygame
 
 from constants import HEIGHT, WIDTH, Color
-from Location import Location
+from location import Location
 
 
 class Square(pygame.sprite.Sprite):

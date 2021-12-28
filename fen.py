@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 
 from Pieces import *
 from constants import Color, Files
-from Location import Location
+from location import Location
 
 START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 FEN1 = "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2 "

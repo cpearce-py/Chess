@@ -2,7 +2,7 @@ import pygame
 
 import logic
 from constants import RANKS, Color, Files, SQ_SIZE
-from Location import Location
+from location import Location
 from Pieces import *
 from squares import Square
 from fen import PositionInfo, START_FEN, load_from_fen
