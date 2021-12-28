@@ -20,9 +20,6 @@ class Pawn(AbstractPiece):
             sqr_rank = square.location.rank
             piece_rank = self.location.rank
             rank_diff = max(sqr_rank, piece_rank) - min(sqr_rank, piece_rank)
-            print(
-                f"Square rank: {sqr_rank} and piece rank {piece_rank}. Diff: {rank_diff}"
-            )
             if rank_diff > 1:
                 self.enpassant_able = True
         else:
