@@ -1,3 +1,7 @@
+"""
+    Promotion.py
+    Dealing with window creation and promotion
+"""
 import os
 
 import pygame

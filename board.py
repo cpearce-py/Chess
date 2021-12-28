@@ -31,7 +31,7 @@ class Board(pygame.sprite.Group):
     """
 
     def __init__(self):
-        super(Board, self).__init__(self)
+        super().__init__(self)
 
         self._render_pieces = pygame.sprite.LayeredUpdates()
         self._light_pieces = pygame.sprite.Group()
@@ -42,10 +42,13 @@ class Board(pygame.sprite.Group):
             Color.DARK: self._dark_pieces,
             Color.LIGHT: self._light_pieces,
         }
+        self.white_to_move = None
+        self.color_to_move = None
 
     def init(self, load_position: PositionInfo = start_position):
-        self.whiteToMove = load_position.whiteToMove
-        self.color_to_move = Color.LIGHT if self.whiteToMove else Color.DARK
+        """Initalises board inline."""
+        self.white_to_move = load_position.whiteToMove
+        self.color_to_move = Color.LIGHT if self.white_to_move else Color.DARK
 
         pieces = load_position.squares
         _map = {}
@@ -91,6 +94,7 @@ class Board(pygame.sprite.Group):
         return f"<{self.__class__.__name__} {inners}>"
 
     def get(self, location):
+        """Return square from board at given location"""
         return self.map.get(location, None)
 
     def _get_piece(self, name, color):
@@ -98,21 +102,28 @@ class Board(pygame.sprite.Group):
         return list(filter(lambda x: x.name == name, pieces))
 
     def king(self, color):
+        """Return King piece of given color"""
         return self._get_piece("king", color)[0]
 
     def queen(self, color):
+        """Return List[Queen] piece of given color"""
         return self._get_piece("queen", color)
 
     def bishops(self, color):
+        """Return List[Bishop] pieces of given color"""
         return self._get_piece("bishop", color)
 
     def rooks(self, color):
+        """Return List[Rooks] pieces of given color"""
         return self._get_piece("rook", color)
 
     def knights(self, color):
+        """Return List[Knight] pieces of given color"""
         return self._get_piece("knight", color)
 
     def pawns(self, color):
+        """Return List[Pawn] pieces of given color"""
+        return self._get_piece("knight", color)
         return self._get_piece("pawn", color)
 
     def pieces(self, color):
@@ -151,6 +162,10 @@ class Board(pygame.sprite.Group):
         self._render_pieces.draw(surface)
 
     def update(self):
+        """
+        Update method inherited from pygame.sprite.Group.
+        Updates each sprite object on board. ie. Squares, pieces etc.
+        """
         self._render_pieces.update()
         self.board_squares.update()
 
@@ -224,10 +239,10 @@ class Board(pygame.sprite.Group):
                 if symbol.isnumeric():
                     file += int(symbol)
                 else:
-                    pieceColour = Color.LIGHT if symbol.isupper() else Color.DARK
-                    pieceType = pieceTypeFromSymbol.get(symbol.lower())
+                    piece_color = Color.LIGHT if symbol.isupper() else Color.DARK
+                    piece_type = pieceTypeFromSymbol.get(symbol.lower())
                     loc = Location(Files(file + 1), rank + 1)
-                    pieces[loc] = pieceType(pieceColour)
+                    pieces[loc] = piece_type(piece_color)
                     file += 1
 
         return pieces
