@@ -20,7 +20,6 @@ Current methodology is this:
 
 
 class MoveGenerator:
-
     def __init__(self, board):
         self.board = board
         self.moves: Set[Move] = set()
@@ -111,17 +110,17 @@ class MoveGenerator:
                         # Check for pin
                         if not friendly_on_ray:
                             friendly_on_ray = True
-                        else: # 2nd friendly on ray therefore no pin
+                        else:  # 2nd friendly on ray therefore no pin
                             break
 
-                    else: # Is enemy piece
+                    else:  # Is enemy piece
                         if (
-                                abs(direction[0]) == abs(direction[1]) and
-                                piece.name in ['queen', 'bishop']
-                            ) or (
-                                abs(direction[0]) != abs(direction[1]) and
-                                piece.name in ['queen', 'rook']
-                            ):
+                            abs(direction[0]) == abs(direction[1])
+                            and piece.name in ["queen", "bishop"]
+                        ) or (
+                            abs(direction[0]) != abs(direction[1])
+                            and piece.name in ["queen", "rook"]
+                        ):
                             possible_pin = True
                             if friendly_on_ray:
                                 self.pinsExistInPosition = True
@@ -159,18 +158,18 @@ class MoveGenerator:
                 self.inCheck = True
 
     def _get_sliding_directions(self, board, opponent_col):
-        """ Setting up directions to check for pins. If there's a queen, we check
+        """Setting up directions to check for pins. If there's a queen, we check
         for both diagonal and rook based pins. Otherwise, check for
-        bishops or rooks  on the board and their relative directions. """
+        bishops or rooks  on the board and their relative directions."""
         directions = []
         if board.queen(opponent_col):
-            directions.extend([(1,1), (-1,1), (1,-1), (-1,-1)])
-            directions.extend([(1,0), (-1,0), (0,1), (0,-1)])
+            directions.extend([(1, 1), (-1, 1), (1, -1), (-1, -1)])
+            directions.extend([(1, 0), (-1, 0), (0, 1), (0, -1)])
         else:
             if board.rooks(opponent_col):
-                directions.extend([(1,0), (-1,0), (0,1), (0,-1)])
+                directions.extend([(1, 0), (-1, 0), (0, 1), (0, -1)])
             if board.bishops(opponent_col):
-                directions.extend([(1,1), (-1,1), (1,-1), (-1,-1)])
+                directions.extend([(1, 1), (-1, 1), (1, -1), (-1, -1)])
         return directions
 
     def generate_opponent_attacks(self):
@@ -210,12 +209,10 @@ class MoveGenerator:
         try:
             for square in set_of_moves:
                 square.isAttacked = True
-        except AttributeError: # if pinRays is passed, we need to go 2 levels deep.
+        except AttributeError:  # if pinRays is passed, we need to go 2 levels deep.
             for ray in set_of_moves:
                 for square in ray:
                     square.isAttacked = True
-
-
 
     def pawn_moves(self):
         pass

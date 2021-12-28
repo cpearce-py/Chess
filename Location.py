@@ -13,16 +13,20 @@ class Location:
         self._square = None
 
     def __repr__(self):
-        return (f'{self.__class__.__name__}(FILE={self._file.name}, '
-                f'RANK={self._rank})')
+        return (
+            f"{self.__class__.__name__}(FILE={self._file.name}, " f"RANK={self._rank})"
+        )
 
     def __eq__(self, other):
         """
         Compare with Location.
         :param other: Instance of :class:`Location`
         """
-        return (isinstance(other, Location) and
-                other.file == self.file and other.rank == self.rank)
+        return (
+            isinstance(other, Location)
+            and other.file == self.file
+            and other.rank == self.rank
+        )
 
     def __hash__(self):
         """Compute hash for location"""

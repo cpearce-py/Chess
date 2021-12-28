@@ -8,11 +8,7 @@ from constants import Color
 from squares import Square
 from AbstractPiece import AbstractPiece
 
-__all__ = (
-    "Move",
-    "MoveHandler",
-    "Flag"
-)
+__all__ = ("Move", "MoveHandler", "Flag")
 
 
 class Flag(Enum):
@@ -27,8 +23,8 @@ class Flag(Enum):
 
 def clean(**attrs):
     try:
-        attrs['_selected'] = False
-        attrs['_alive'] = True
+        attrs["_selected"] = False
+        attrs["_alive"] = True
     except TypeError as e:
         print(f"Can't unpack due to: {e}")
     return attrs
@@ -42,13 +38,13 @@ class Move:
     capture: bool = None
     piece_moved: AbstractPiece = None
     piece_captured: AbstractPiece = None
-    captured_groups: pygame.sprite.Group  = None
-    piece_attrs: dict =  field(init=False)
+    captured_groups: pygame.sprite.Group = None
+    piece_attrs: dict = field(init=False)
     captured_piece_attrs: dict = field(init=False)
     flag: Enum = Flag.MOVE
 
     def __post_init__(self):
-        self.piece_moved =  self.fromSq.piece
+        self.piece_moved = self.fromSq.piece
         self.piece_attrs = clean(**self.fromSq.piece.__dict__.copy())
         self.turn = self.piece_moved.color
         if captured_piece := self.toSq.piece:
@@ -58,7 +54,7 @@ class Move:
             self.captured_piece_attrs = clean(**captured_piece.__dict__.copy())
 
     def __hash__(self):
-        return hash((self.fromSq, self.toSq, self.capture) )
+        return hash((self.fromSq, self.toSq, self.capture))
 
     @property
     def squares(self):
@@ -66,16 +62,16 @@ class Move:
 
     def __repr__(self):
         attrs = (
-            ('from', self.fromSq.location),
-            ('to', self.toSq.location),
-            ('capture', self.capture),
-            ('flag', self.flag),
+            ("from", self.fromSq.location),
+            ("to", self.toSq.location),
+            ("capture", self.capture),
+            ("flag", self.flag),
         )
-        inners = ', '.join('%s=%r' % t for t in attrs)
-        return f'<{self.__class__.__name__} {inners}>'
+        inners = ", ".join("%s=%r" % t for t in attrs)
+        return f"<{self.__class__.__name__} {inners}>"
+
 
 class MoveHandler:
-
     def __init__(self, board, whiteToMove=True):
         self.board = board
         self.turn = Color.LIGHT if whiteToMove else Color.DARK
@@ -137,7 +133,7 @@ class MoveHandler:
             move = self._redo_stack.pop()
             self.try_move(move)
         except IndexError:
-            print('Nothing to redo')
+            print("Nothing to redo")
 
     def generate_moves(self):
         board = self.board
@@ -161,7 +157,7 @@ class MoveHandler:
             side = self.lights_moves if self.turn == Color.LIGHT else self.darks_moves
 
         for loc in side:
-            if (square := board.map.get(loc)):
+            if square := board.map.get(loc):
                 square.isAttacked = True
 
     def endTurn(self):

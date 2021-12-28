@@ -8,10 +8,10 @@ from move import Flag, Move, MoveHandler
 
 _load_position = load_from_fen(START_FEN)
 
-class GameHandler:
 
-    def __init__(self, board, scene, load_position: PositionInfo=_load_position):
-        self.clicks =  []
+class GameHandler:
+    def __init__(self, board, scene, load_position: PositionInfo = _load_position):
+        self.clicks = []
         self.board = board
         self.board.init(load_position)
         whiteToMove = load_position.whiteToMove
@@ -61,19 +61,18 @@ class GameHandler:
                 # This chunk of code is for testing promotion.
 
                 # move = self.move_generator.get_move(user_move)
-                #if user_move:
+                # if user_move:
                 #    self.move_handler.try_move(user_move)
                 #    if user_move.flag == Flag.PROMOTE:
                 #        colour_to_promote = user_move.toSq.piece.color
                 #        self._scene.promote(colour_to_promote)
                 #    self.end_turn()
-                #else:
+                # else:
                 #    self.reset_clicks()
                 # if self.move_handler.try_move(user_move):
                 #     self.end_turn()
                 # else:
                 #     self.reset_clicks()
-
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
             if square := self.hitSquare(event.pos):

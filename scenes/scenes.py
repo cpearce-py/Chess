@@ -10,8 +10,8 @@ from promotion import Layout, Tile
 import constants as c
 
 BLUE = (106, 159, 181)
-WHITE = (255,255, 255)
-BLACK = (0,0,0)
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 LIGHT_SQ = (232, 235, 239)
 DARK_SQ = (125, 135, 150)
 LIGHT_HIGHLIGHT = (252, 115, 120)
@@ -25,15 +25,16 @@ def _setup_promotion_images():
     """
     imgs = c.IMAGES
 
-    piece_order = ['Q', 'R', 'B', 'N']
+    piece_order = ["Q", "R", "B", "N"]
 
-    dark_dict = { 'b'+key: imgs['b'+key] for key in piece_order }
-    light_dict = { 'w'+key: imgs['w'+key] for key in piece_order}
+    dark_dict = {"b" + key: imgs["b" + key] for key in piece_order}
+    light_dict = {"w" + key: imgs["w" + key] for key in piece_order}
 
     return {
         c.Color.LIGHT: list(light_dict.values()),
-        c.Color.DARK: list(dark_dict.values())
+        c.Color.DARK: list(dark_dict.values()),
     }
+
 
 _PIECES = _setup_promotion_images()
 
@@ -71,7 +72,8 @@ class Scene(ABC):
 
 
 class Menu(Scene):
-    """ Simple main menu scene. """
+    """Simple main menu scene."""
+
     def __init__(self):
         super().__init__()
         _play_btn = Button(
@@ -80,7 +82,7 @@ class Menu(Scene):
             bg_rgb=BLUE,
             text_rgb=WHITE,
             text="Play Game",
-            action=GameScene
+            action=GameScene,
         )
 
         _setting_btn = Button(
@@ -89,8 +91,8 @@ class Menu(Scene):
             bg_rgb=BLUE,
             text_rgb=WHITE,
             text="Setting",
-            action=SettingScene
-            )
+            action=SettingScene,
+        )
 
         self.objects.add(_play_btn, _setting_btn)
 
@@ -111,6 +113,7 @@ class Menu(Scene):
 class SettingScene(Scene):
     """Simple settings scene. As of yet, it is just to demonstrate the scene
     switching."""
+
     def __init__(self):
         super().__init__()
         _return_btn = Button(
@@ -119,7 +122,7 @@ class SettingScene(Scene):
             bg_rgb=BLUE,
             text_rgb=WHITE,
             text="Return To Menu",
-            action=Menu
+            action=Menu,
         )
 
         self.objects.add(_return_btn)
@@ -139,13 +142,16 @@ class SettingScene(Scene):
         screen.fill(BLACK)
         self.objects.draw(screen)
 
+
 class State(Enum):
 
     PLAYING = auto()
     PROMOTING = auto()
 
+
 class GameScene(Scene):
     """Main chess game scene."""
+
     def __init__(self):
         super().__init__()
         self.board = Board()

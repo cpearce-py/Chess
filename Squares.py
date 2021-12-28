@@ -5,7 +5,6 @@ from Location import Location
 
 
 class Square(pygame.sprite.Sprite):
-
     def __init__(self, SquareColor, pos, rect):
         pygame.sprite.Sprite.__init__(self)
 
@@ -17,19 +16,23 @@ class Square(pygame.sprite.Sprite):
         self._piece = None
         self.isAttacked = False
         self.image = pygame.Surface([WIDTH, HEIGHT])
-        self._attacked_color = (252, 115, 120) if SquareColor == Color.LIGHT else (145, 62, 75)
-        self._orig_color = (232, 235, 239) if SquareColor == Color.LIGHT else (
-            125, 135, 150)
+        self._attacked_color = (
+            (252, 115, 120) if SquareColor == Color.LIGHT else (145, 62, 75)
+        )
+        self._orig_color = (
+            (232, 235, 239) if SquareColor == Color.LIGHT else (125, 135, 150)
+        )
         self.image.fill(self._orig_color)
         self.rect = rect
 
         self._selected = False
 
     def __eq__(self, other):
-        return (isinstance(other, Square) and
-                other._SquareColor == self._SquareColor and
-                other._Location == self._Location
-                )
+        return (
+            isinstance(other, Square)
+            and other._SquareColor == self._SquareColor
+            and other._Location == self._Location
+        )
 
     def __hash__(self):
         return hash((self._SquareColor, self._Location))
@@ -65,7 +68,6 @@ class Square(pygame.sprite.Sprite):
         self._isOccupied = True if piece else False
         if piece and piece.square != self:
             piece.square = self
-
 
     @property
     def location(self):
@@ -106,5 +108,7 @@ class Square(pygame.sprite.Sprite):
         self._selected = False
 
     def __repr__(self):
-        return (f'{self.__class__.__name__}(COLOR={self._SquareColor.name},'
-                f'{self._Location}), {self._isOccupied})')
+        return (
+            f"{self.__class__.__name__}(COLOR={self._SquareColor.name},"
+            f"{self._Location}), {self._isOccupied})"
+        )

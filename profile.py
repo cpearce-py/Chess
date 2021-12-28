@@ -9,8 +9,9 @@ def profile(func):
         pr.disable()
         s = io.StringIO()
         sortby = "cumulative"
-        ps =  pstats.Stats(pr, stream=s).sort_stats(sortby)
+        ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
         ps.print_stats()
         print(s.getvalue())
         return retval
+
     return inner

@@ -11,9 +11,8 @@ def _check_square(sqr):
 
 
 class King(AbstractPiece):
-
     def __init__(self, pieceColor, name="King"):
-        img = IMAGES['bK'] if pieceColor == Color.DARK else IMAGES['wK']
+        img = IMAGES["bK"] if pieceColor == Color.DARK else IMAGES["wK"]
         super().__init__(name, pieceColor, image=img)
         self.castling = False
         self.castle_rook = None
@@ -30,13 +29,13 @@ class King(AbstractPiece):
         destFile = square.file.value
 
         # Check if castling
-        if self.isFirstMove and abs(destFile - currentFile ) not in [1, 0]:
+        if self.isFirstMove and abs(destFile - currentFile) not in [1, 0]:
             currentFile = self.square.file.value
             destFile = square.file.value
 
-            if (destFile - currentFile ) == 2:
+            if (destFile - currentFile) == 2:
                 rook = logic.build(self.location, 3, 0)
-            else: #(destFile - currentFile) == -2:
+            else:  # (destFile - currentFile) == -2:
                 rook = logic.build(self.location, -4, 0)
 
             rook = board.map.get(rook).piece
@@ -62,7 +61,7 @@ class King(AbstractPiece):
 
         current = self.location
 
-        for pos in [1,2,3]:
+        for pos in [1, 2, 3]:
             square = map.get(logic.build(current, pos, 0))
             if square.isOccupied:
                 if pos != 3:
@@ -94,7 +93,7 @@ class King(AbstractPiece):
         for i in choices:
             for j in choices:
 
-                if (i == j == 0):
+                if i == j == 0:
                     continue
 
                 nextMove = logic.build(current, i, j)
@@ -139,7 +138,6 @@ class King(AbstractPiece):
                     self._getDiagonalCandidates(attackers, m, move, -1, 1)
                     self._getKnightsMove(attackers, m, move)
 
-
                     # For each square possible of attacking, we check for
                     # Enemy piece, if so, we can't move there.
 
@@ -158,4 +156,3 @@ class King(AbstractPiece):
     def converted_moves(self, board):
         moves = self.getValidMoves(board)
         return logic.convert(moves, self, board)
-

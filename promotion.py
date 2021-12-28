@@ -4,7 +4,7 @@ import pygame
 
 import constants as c
 
-_BLACK = (0,0,0)
+_BLACK = (0, 0, 0)
 
 
 def _setup_images(path, pieces=None):
@@ -12,12 +12,25 @@ def _setup_images(path, pieces=None):
     IMAGES = {}
 
     if not pieces:
-        pieces = ['wp', 'wR', 'wN', 'wB', 'wK', 'wQ',
-                'bp', 'bR', 'bN', 'bB', 'bK', 'bQ',]
+        pieces = [
+            "wp",
+            "wR",
+            "wN",
+            "wB",
+            "wK",
+            "wQ",
+            "bp",
+            "bR",
+            "bN",
+            "bB",
+            "bK",
+            "bQ",
+        ]
 
     for piece in pieces:
         IMAGES[piece] = pygame.transform.scale(
-            pygame.image.load(f'{path}/{piece}.png'), (c.SQ_SIZE, c.SQ_SIZE))
+            pygame.image.load(f"{path}/{piece}.png"), (c.SQ_SIZE, c.SQ_SIZE)
+        )
 
     return IMAGES
 
@@ -62,14 +75,14 @@ class Layout:
 
         self.max_objects = max_objects
         self._tiles = pygame.sprite.Group()
-        width = kwargs.pop('width', c.SQ_SIZE * max_objects)
-        height = kwargs.pop('height', c.SQ_SIZE)
-        self.position = kwargs.pop('position', (0,0))
+        width = kwargs.pop("width", c.SQ_SIZE * max_objects)
+        height = kwargs.pop("height", c.SQ_SIZE)
+        self.position = kwargs.pop("position", (0, 0))
 
-        popup_rect = pygame.Rect((0,0), (width, height))
+        popup_rect = pygame.Rect((0, 0), (width, height))
         popup_rect.move_ip(self.position)
         self.popup_rect = popup_rect
-        self.on_exit = kwargs.pop('on_exit', _dummy_action)
+        self.on_exit = kwargs.pop("on_exit", _dummy_action)
 
     def __len__(self):
         return len(self._tiles.sprites())
@@ -123,7 +136,7 @@ class Layout:
         rect = self.popup_rect.move(self.position)
         number_of_tiles = len(self._tiles)
         top = rect.top
-        left = rect.left + (c.SQ_SIZE * (number_of_tiles-1))
+        left = rect.left + (c.SQ_SIZE * (number_of_tiles - 1))
         tile.rect.top = top
         tile.rect.left = left
 
@@ -136,7 +149,8 @@ class VLayout(Layout):
     """
     Subclass of `Layout` presetup for a vertical layout.
     """
-    def __init__(self, max_objects: int=4, **kwargs):
+
+    def __init__(self, max_objects: int = 4, **kwargs):
         height = c.SQ_SIZE * max_objects
         width = c.SQ_SIZE
         super().__init__(max_objects=max_objects, height=height, width=width, **kwargs)
@@ -150,9 +164,10 @@ class VLayout(Layout):
         tile.rect.top = top
         tile.rect.left = left
 
+
 def _dummy_action(piece=None):
     if piece:
-        print(f'Clicked: {piece}')
+        print(f"Clicked: {piece}")
         return
     print("No action assigned")
 
@@ -172,10 +187,12 @@ class Tile(pygame.sprite.Sprite):
         :param name: Optional name for the tile. Aimed at debugging.
         :name type: `Str`
     """
-    def __init__(self, image, bg_color, highlighted=None,
-                 action=_dummy_action, **kwargs):
 
-        self.name = kwargs.pop('name', "Piece")
+    def __init__(
+        self, image, bg_color, highlighted=None, action=_dummy_action, **kwargs
+    ):
+
+        self.name = kwargs.pop("name", "Piece")
         self._mouse_over = False
         self.action = action
 
@@ -211,14 +228,30 @@ class Tile(pygame.sprite.Sprite):
 
 
 def main():
-    IMG_FOLDER = os.path.join(os.path.dirname(__file__), 'IMG')
+    IMG_FOLDER = os.path.join(os.path.dirname(__file__), "IMG")
 
-    WHITE_PIECES = _setup_images(IMG_FOLDER, pieces=['wR', 'wN', 'wB', 'wQ',])
-    BLACK_PIECES = _setup_images(IMG_FOLDER, pieces=['bR', 'bN', 'bB', 'bQ',])
+    WHITE_PIECES = _setup_images(
+        IMG_FOLDER,
+        pieces=[
+            "wR",
+            "wN",
+            "wB",
+            "wQ",
+        ],
+    )
+    BLACK_PIECES = _setup_images(
+        IMG_FOLDER,
+        pieces=[
+            "bR",
+            "bN",
+            "bB",
+            "bQ",
+        ],
+    )
 
-    layout = VLayout(position=(50,100))
+    layout = VLayout(position=(50, 100))
     for name, piece in BLACK_PIECES.items():
-        tile = Tile(piece, (125,50,50), highlighted=(111,80,125), name=name)
+        tile = Tile(piece, (125, 50, 50), highlighted=(111, 80, 125), name=name)
         layout.add_tile(tile)
 
     layout.reverse()
@@ -243,5 +276,5 @@ def main():
         clock.tick(c.FPS)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -35,5 +35,6 @@ def play_game(starting_scene, WIDTH=512, HEIGHT=512, fps=60):
         pygame.display.flip()
         clock.tick(fps)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     game = play_game(GameScene, WIDTH, HEIGHT, FPS)

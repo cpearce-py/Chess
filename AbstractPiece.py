@@ -6,7 +6,6 @@ from pygame.locals import *
 import logic
 
 
-
 class AbstractPiece(ABC, pygame.sprite.Sprite):
     """
     Base Piece class.
@@ -35,8 +34,10 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
             self.add(groups, layer=self._layer)
 
     def __repr__(self):
-        return (f'{self.__class__.__name__}({self._pieceColor},'
-                f' {self._square.location})')
+        return (
+            f"{self.__class__.__name__}({self._pieceColor},"
+            f" {self._square.location})"
+        )
 
     @property
     def alive(self):
@@ -69,9 +70,14 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
     @selected.setter
     def selected(self, value):
         if not isinstance(value, bool):
-            raise ValueError(f"{self.__class__.__name__}.selected attribute must be of type Bool")
-        layer_group = [group for group in self.groups()
-                        if isinstance(group, pygame.sprite.LayeredUpdates)][0]
+            raise ValueError(
+                f"{self.__class__.__name__}.selected attribute must be of type Bool"
+            )
+        layer_group = [
+            group
+            for group in self.groups()
+            if isinstance(group, pygame.sprite.LayeredUpdates)
+        ][0]
         layer = 1 if value else 0
         layer_group.change_layer(self, layer)
         self._selected = value
@@ -91,7 +97,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
 
     @property
     def square(self):
-        """ Property for what Square the piece is on.
+        """Property for what Square the piece is on.
         Returns: :class:`Square`."""
         return self._square
 
@@ -110,13 +116,13 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
 
     def forceMove(self, target_square):
         """
-        This method shouldn't be overwritten! 
-        It deals with cleanup and the basic process of moving a piece to a 
+        This method shouldn't be overwritten!
+        It deals with cleanup and the basic process of moving a piece to a
         square. Any checks should be done prior.
 
         :param square: Instance of :class:`Square` square to move to.
         """
-        if (piece := target_square.piece):
+        if piece := target_square.piece:
             piece.alive = False
             piece.kill()
         self.square.reset()
@@ -134,11 +140,12 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
 
     @abstractmethod
     def getValidMoves(self, board):
-        """ Method to get available moves. MUST be used in each subclass."""
+        """Method to get available moves. MUST be used in each subclass."""
         raise NotImplementedError
 
-    def _getDiagonalCandidates(self, moves, boardMap,
-                               current, rankOffset=0, fileOffset=0):
+    def _getDiagonalCandidates(
+        self, moves, boardMap, current, rankOffset=0, fileOffset=0
+    ):
         """
         Method to append possible diagonal moves.
         Offset determines forward or backwards direction (1 or -1)
@@ -225,7 +232,9 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
                     continue
 
     def update(self):
-        self.rect.center = pygame.mouse.get_pos() if self._selected else self.square.rect.center
+        self.rect.center = (
+            pygame.mouse.get_pos() if self._selected else self.square.rect.center
+        )
         self.updateAlive()
 
     def draw(self, surface):
@@ -233,5 +242,5 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
 
     def updateAlive(self):
         if self.alive == False:
-            print(f'{self.name} is dead')
+            print(f"{self.name} is dead")
             self.kill()

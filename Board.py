@@ -9,6 +9,7 @@ from fen import PositionInfo, START_FEN, load_from_fen
 
 start_position = load_from_fen(START_FEN)
 
+
 class Board(pygame.sprite.Group):
     """
     Representation of Chess Board. Manage piece movement and board display.
@@ -37,12 +38,12 @@ class Board(pygame.sprite.Group):
         self._dark_pieces = pygame.sprite.Group()
         self.board_squares = pygame.sprite.Group()
         self._map = {}
-        self.all_pieces = {Color.DARK: self._dark_pieces,
-                        Color.LIGHT: self._light_pieces
-                        }
+        self.all_pieces = {
+            Color.DARK: self._dark_pieces,
+            Color.LIGHT: self._light_pieces,
+        }
 
-
-    def init(self, load_position: PositionInfo=start_position):
+    def init(self, load_position: PositionInfo = start_position):
         self.whiteToMove = load_position.whiteToMove
         self.color_to_move = Color.LIGHT if self.whiteToMove else Color.DARK
 
@@ -52,7 +53,7 @@ class Board(pygame.sprite.Group):
         for x, file in enumerate(Files):
             colour = Color.DARK if x % 2 == 0 else Color.LIGHT
             for y, rank in enumerate(RANKS):
-                rect = pygame.Rect(x*SQ_SIZE, y*SQ_SIZE, SQ_SIZE, SQ_SIZE)
+                rect = pygame.Rect(x * SQ_SIZE, y * SQ_SIZE, SQ_SIZE, SQ_SIZE)
 
                 pos = Location(file, rank)
                 square = Square(colour, pos, rect)
@@ -62,7 +63,7 @@ class Board(pygame.sprite.Group):
 
                 pos.square = square
 
-                if (piece := pieces.get(pos)):
+                if piece := pieces.get(pos):
 
                     square.piece = piece
                     piece.square = square
@@ -83,11 +84,11 @@ class Board(pygame.sprite.Group):
 
     def __repr__(self):
         attrs = (
-            ('Light Pieces', len(self.light_pieces)),
-            ('Dark Pieces', len(self.dark_pieces))
+            ("Light Pieces", len(self.light_pieces)),
+            ("Dark Pieces", len(self.dark_pieces)),
         )
-        inners = ', '.join('%s=%r' % t for t in attrs)
-        return f'<{self.__class__.__name__} {inners}>'
+        inners = ", ".join("%s=%r" % t for t in attrs)
+        return f"<{self.__class__.__name__} {inners}>"
 
     def get(self, location):
         return self.map.get(location, None)
@@ -189,7 +190,6 @@ class Board(pygame.sprite.Group):
         if piece:
             self.add_piece(piece)
 
-
     def add_piece(self, piece):
         if piece.color == Color.DARK:
             self.dark_pieces.add(piece)
@@ -205,19 +205,19 @@ class Board(pygame.sprite.Group):
     def load_from_fen(self, fen):
         pieces = {}
         pieceTypeFromSymbol = {
-            'k': King,
-            'p': Pawn,
-            'n':  Knight,
-            'b': Bishop,
-            'r': Rook,
-            'q': Queen
+            "k": King,
+            "p": Pawn,
+            "n": Knight,
+            "b": Bishop,
+            "r": Rook,
+            "q": Queen,
         }
-        fenBoard = fen.split(' ')[0]
+        fenBoard = fen.split(" ")[0]
         file = 0
         rank = 7
 
         for symbol in fenBoard:
-            if symbol == '/':
+            if symbol == "/":
                 file = 0
                 rank -= 1
             else:
@@ -226,9 +226,8 @@ class Board(pygame.sprite.Group):
                 else:
                     pieceColour = Color.LIGHT if symbol.isupper() else Color.DARK
                     pieceType = pieceTypeFromSymbol.get(symbol.lower())
-                    loc = Location(Files(file+1), rank+1)
+                    loc = Location(Files(file + 1), rank + 1)
                     pieces[loc] = pieceType(pieceColour)
                     file += 1
 
         return pieces
-

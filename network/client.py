@@ -2,7 +2,7 @@ import socket
 
 HEADER = 64
 PORT = 5050
-FORMAT = 'utf-8'
+FORMAT = "utf-8"
 DISCONNECT_MSG = "!DISCONNECT"
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
