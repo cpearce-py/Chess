@@ -21,6 +21,7 @@ Current methodology is this:
 
 class MoveGenerator:
     """Class for generating available moves"""
+
     def __init__(self, board):
         self.board = board
         self.moves: Set[Move] = set()

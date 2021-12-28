@@ -1,7 +1,9 @@
+"""
+Base move module
+"""
+
 from dataclasses import dataclass, field
 from enum import Enum, auto
-
-import pygame
 
 import logic
 from constants import Color
@@ -12,6 +14,7 @@ __all__ = ("Move", "MoveHandler", "Flag")
 
 
 class Flag(Enum):
+    """Different move types"""
 
     MOVE = auto()
     CAPTURE = auto()
@@ -21,51 +24,72 @@ class Flag(Enum):
     CHECKMATE = auto()
 
 
-def clean(**attrs):
+def _clean(**attrs):
+    """private method to reset certain attributes of a piece. Used for Un/Re do."""
     try:
         attrs["_selected"] = False
         attrs["_alive"] = True
-    except TypeError as e:
-        print(f"Can't unpack due to: {e}")
+    except TypeError as error:
+        print(f"Can't unpack due to: {error}")
     return attrs
 
 
 @dataclass
+class MovePieceHolder:
+    """
+    Storage class for containing what pieces were involved in a move
+    Internal to just this module.
+    """
+
+    moved_piece: AbstractPiece
+    _captured_piece: AbstractPiece = None
+
+    @property
+    def captured_piece(self) -> AbstractPiece:
+        """Captured piece"""
+        return self._captured_piece
+
+    @captured_piece.setter
+    def captured_piece(self, piece) -> None:
+        self._captured_piece = piece
+        self._captured_piece_attrs = _clean(**piece.__dict__.copy())
+
+
+@dataclass
 class Move:
+    """Base move class"""
 
     fromSq: Square
     toSq: Square
-    capture: bool = None
+    pieces: MovePieceHolder = None
     piece_moved: AbstractPiece = None
     piece_captured: AbstractPiece = None
-    captured_groups: pygame.sprite.Group = None
     piece_attrs: dict = field(init=False)
     captured_piece_attrs: dict = field(init=False)
     flag: Enum = Flag.MOVE
 
     def __post_init__(self):
-        self.piece_moved = self.fromSq.piece
-        self.piece_attrs = clean(**self.fromSq.piece.__dict__.copy())
-        self.turn = self.piece_moved.color
+        moved_piece = self.fromSq.piece
+        self.pieces = MovePieceHolder(moved_piece)
+        self.piece_attrs = _clean(**self.fromSq.piece.__dict__.copy())
+        self.turn = moved_piece.color
         if captured_piece := self.toSq.piece:
-            self.capture = True
             self.flag = Flag.CAPTURE
-            self.piece_captured = captured_piece
-            self.captured_piece_attrs = clean(**captured_piece.__dict__.copy())
+            self.pieces.captured_piece = captured_piece
 
     def __hash__(self):
-        return hash((self.fromSq, self.toSq, self.capture))
+        return hash((self.fromSq, self.toSq, self.flag.name))
 
     @property
     def squares(self):
+        """Return squares involved in move"""
         return (self.fromSq, self.toSq)
 
     def __repr__(self):
         attrs = (
             ("from", self.fromSq.location),
             ("to", self.toSq.location),
-            ("capture", self.capture),
-            ("flag", self.flag),
+            ("flag", self.flag.name),
         )
         inners = ", ".join("%s=%r" % t for t in attrs)
         return f"<{self.__class__.__name__} {inners}>"
@@ -90,17 +114,17 @@ class MoveHandler:
         Attempts to make a move. Returns True if move was successful, and False
         if not.
         """
-        fromSq, toSq = move.squares
-        if not fromSq.piece:
+        from_sq, to_sq = move.squares
+        if not from_sq.piece:
             return False
 
         turn = self.turn
         board = self.board
-        piece = fromSq.piece
-        if piece.color != turn or toSq.location not in piece.getValidMoves(board):
+        piece = from_sq.piece
+        if piece.color != turn or to_sq.location not in piece.getValidMoves(board):
             self.reset()
             return False
-        piece.moveToSquare(toSq, board)
+        piece.moveToSquare(to_sq, board)
         self.turn = logic.switch_turn(turn)
         self.endTurn()
         self._undo_stack.append(move)
@@ -117,7 +141,7 @@ class MoveHandler:
         self._redo_stack.append(move)
 
         self.turn = move.turn
-        piece_moved = move.piece_moved
+        piece_moved = move.pieces.moved_piece
         piece_moved.set_attrs_from_dict(**move.piece_attrs)
 
         piece_captured = move.piece_captured
@@ -136,6 +160,7 @@ class MoveHandler:
             print("Nothing to redo")
 
     def generate_moves(self):
+        """Generated possible moves at a given instance - will be removed"""
         board = self.board
         self.darks_moves = []
         self.lights_moves = []
