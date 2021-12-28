@@ -13,8 +13,8 @@ class Pawn(AbstractPiece):
         super().__init__(name, pieceColor, image=img)
         self.enpassant_able = False
 
-    # def __repr__(self):
-    #     return super().__repr__().join(f' enpassant_able={self.enpassant_able}')
+    def __repr__(self):  
+        return AbstractPiece().__repr__().join(f' enpassant_able={self.enpassant_able}')
 
     def moveToSquare(self, square, board=None):
         if self.isFirstMove:
@@ -78,7 +78,7 @@ class Pawn(AbstractPiece):
 
         for pos in [-1, 1]:
             enpassant_left = logic.build(self.location, pos, 0)
-            square = board.map.get(enpassant_left):
+            square = board.map.get(enpassant_left)
             if not square:
                 continue
             piece = square.piece
@@ -87,8 +87,9 @@ class Pawn(AbstractPiece):
             if piece.name == "pawn" and piece.color != self.color:
                 if piece.enpassant_able:
                     enpassant_attack = logic.build(self.location, pos, 1)
+                    enpassant_sqr = board.get(enpassant_attack)
                     moveCandidates.append(enpassant_attack)
-                    move = Move(self.square, enpassant_attack, flag=Flag.ENPASSANT)
+                    move = Move(self.square, enpassant_sqr, flag=Flag.ENPASSANT)
                     moveCandidates.append(move)
 
         return moveCandidates

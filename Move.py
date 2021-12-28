@@ -6,7 +6,7 @@ import pygame
 
 import logic
 from constants import Color
-from Squares import Square
+from squares import Square
 from AbstractPiece import AbstractPiece
 
 __all__ = (

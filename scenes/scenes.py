@@ -4,7 +4,7 @@ from enum import Enum, auto
 import pygame
 
 from ui import Button
-from Board import Board
+from board import Board
 from events.event_handler import GameHandler
 from promotion import Layout, Tile
 import constants as c
