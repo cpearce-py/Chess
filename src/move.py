@@ -8,7 +8,7 @@ from enum import Enum, auto
 import logic
 import constants as c
 from squares import Square
-from AbstractPiece import AbstractPiece
+from abstract_piece import AbstractPiece
 
 __all__ = ("Move", "MoveHandler", "Flag")
 

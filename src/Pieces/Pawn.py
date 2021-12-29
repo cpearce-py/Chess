@@ -1,5 +1,5 @@
 import logic
-from AbstractPiece import AbstractPiece
+from abstract_piece import AbstractPiece
 import constants as c
 
 from Pieces.Queen import Queen

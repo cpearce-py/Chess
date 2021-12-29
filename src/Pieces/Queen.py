@@ -1,4 +1,4 @@
-from AbstractPiece import AbstractPiece
+from abstract_piece import AbstractPiece
 from constants import Color, IMAGES
 
 

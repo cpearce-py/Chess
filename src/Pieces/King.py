@@ -1,5 +1,5 @@
 import logic
-from AbstractPiece import AbstractPiece
+from abstract_piece import AbstractPiece
 from constants import IMAGES, Color
 from move import Flag
 
