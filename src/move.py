@@ -96,11 +96,9 @@ class Move:
 
 
 class MoveHandler:
-    def __init__(self, board, whiteToMove=True):
+    def __init__(self, board, white_to_move=True):
         self.board = board
-        self.turn = c.Color.LIGHT if whiteToMove else c.Color.DARK
-        self.lKing = [x for x in self.board.light_pieces if x.name == "king"][0]
-        self.DKing = [x for x in self.board.dark_pieces if x.name == "king"][0]
+        self.turn = c.Color.LIGHT if white_to_move else c.Color.DARK
         self._pin_moves = []
         self.lights_moves = []
         self.darks_moves = []

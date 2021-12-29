@@ -14,8 +14,8 @@ class GameHandler:
         self.clicks = []
         self.board = board
         self.board.init(load_position)
-        whiteToMove = load_position.whiteToMove
-        self.move_handler = MoveHandler(board, whiteToMove=whiteToMove)
+        white_to_move = load_position.whiteToMove
+        self.move_handler = MoveHandler(board, white_to_move=white_to_move)
         self.move_handler.generate_moves()
         self.move_generator = mg.MoveGenerator(board)
         self._scene = scene

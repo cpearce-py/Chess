@@ -1,6 +1,7 @@
 from abstract_piece import AbstractPiece
 import constants as c
 
+
 class Knight(AbstractPiece):
     def __init__(self, pieceColor, name="knight"):
         img = c.IMAGES["bN"] if pieceColor == c.Color.DARK else c.IMAGES["wN"]

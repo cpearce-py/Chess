@@ -2,6 +2,7 @@ import logic
 from abstract_piece import AbstractPiece
 import constants as c
 
+
 class Rook(AbstractPiece):
     def __init__(self, pieceColor, name="Rook"):
         img = c.IMAGES["bR"] if pieceColor == c.Color.DARK else c.IMAGES["wR"]

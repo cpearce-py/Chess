@@ -214,4 +214,3 @@ class Board(pygame.sprite.Group):
         self.deselect()
         self.reset_squares()
         self.color_to_move = logic.switch_turn(self.color_to_move)
-
