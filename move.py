@@ -148,8 +148,8 @@ class MoveHandler:
         if piece_captured:
             piece_captured.set_attrs_from_dict(**move.captured_piece_attrs)
 
-        self.board.set_piece(piece_moved, move.fromSq)
-        self.board.set_piece(piece_captured, move.toSq)
+        self.board.set_piece(piece_moved, move.from_sq)
+        self.board.set_piece(piece_captured, move.to_sq)
 
     def redo(self):
         """Replays move if one is available."""

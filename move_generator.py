@@ -204,7 +204,7 @@ class MoveGenerator:
             return
         if isinstance(set_of_moves, Set):
             for move in set_of_moves:
-                move.toSq.isAttacked = True
+                move.to_sq.isAttacked = True
             return
 
         try:
