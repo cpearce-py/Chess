@@ -1,9 +1,8 @@
 import pygame
 
 import logic
-from constants import RANKS, Color, Files, SQ_SIZE
+import constants as c
 from location import Location
-from Pieces import *
 from squares import Square
 from fen import PositionInfo, START_FEN, load_from_fen
 
@@ -39,8 +38,8 @@ class Board(pygame.sprite.Group):
         self.board_squares = pygame.sprite.Group()
         self._map = {}
         self.all_pieces = {
-            Color.DARK: self._dark_pieces,
-            Color.LIGHT: self._light_pieces,
+            c.Color.DARK: self._dark_pieces,
+            c.Color.LIGHT: self._light_pieces,
         }
         self.white_to_move = None
         self.color_to_move = None
@@ -48,15 +47,15 @@ class Board(pygame.sprite.Group):
     def init(self, load_position: PositionInfo = start_position):
         """Initalises board inline."""
         self.white_to_move = load_position.whiteToMove
-        self.color_to_move = Color.LIGHT if self.white_to_move else Color.DARK
+        self.color_to_move = c.Color.LIGHT if self.white_to_move else c.Color.DARK
 
         pieces = load_position.squares
         _map = {}
 
-        for x, file in enumerate(Files):
-            colour = Color.DARK if x % 2 == 0 else Color.LIGHT
-            for y, rank in enumerate(RANKS):
-                rect = pygame.Rect(x * SQ_SIZE, y * SQ_SIZE, SQ_SIZE, SQ_SIZE)
+        for x, file in enumerate(c.Files):
+            colour = c.Color.DARK if x % 2 == 0 else c.Color.LIGHT
+            for y, rank in enumerate(c.RANKS):
+                rect = pygame.Rect(x * c.SQ_SIZE, y * c.SQ_SIZE, c.SQ_SIZE, c.SQ_SIZE)
 
                 pos = Location(file, rank)
                 square = Square(colour, pos, rect)
@@ -73,14 +72,14 @@ class Board(pygame.sprite.Group):
 
                     self._render_pieces.add(piece, layer=piece.layer)
 
-                    if piece.color == Color.DARK:
+                    if piece.color == c.Color.DARK:
                         self._dark_pieces.add(piece)
                     else:
                         self._light_pieces.add(piece)
 
                 self.add(square)
                 _map[pos] = square
-                colour = Color.LIGHT if colour == Color.DARK else Color.DARK
+                colour = c.Color.LIGHT if colour == c.Color.DARK else c.Color.DARK
 
         self._map = _map
         return self
@@ -123,7 +122,6 @@ class Board(pygame.sprite.Group):
 
     def pawns(self, color):
         """Return List[Pawn] pieces of given color"""
-        return self._get_piece("knight", color)
         return self._get_piece("pawn", color)
 
     def pieces(self, color):
@@ -140,10 +138,10 @@ class Board(pygame.sprite.Group):
         return self.map.get(loc).currentPiece
 
     def getFile(self, square, direction):
-        curFile = Files(square.location.file.value)
-        newFile = Files(curFile.value + direction)
-        newLocation = Location(newFile, square.location.rank)
-        return self.map.get(newLocation)
+        cur_file = c.Files(square.location.file.value)
+        new_file = c.Files(cur_file.value + direction)
+        new_loc = Location(new_file, square.location.rank)
+        return self.map.get(new_loc)
 
     def getFileUp(self, square):
         return self.getFile(square, 1)
@@ -206,7 +204,7 @@ class Board(pygame.sprite.Group):
             self.add_piece(piece)
 
     def add_piece(self, piece):
-        if piece.color == Color.DARK:
+        if piece.color == c.Color.DARK:
             self.dark_pieces.add(piece)
         else:
             self.light_pieces.add(piece)
@@ -217,32 +215,3 @@ class Board(pygame.sprite.Group):
         self.reset_squares()
         self.color_to_move = logic.switch_turn(self.color_to_move)
 
-    def load_from_fen(self, fen):
-        pieces = {}
-        pieceTypeFromSymbol = {
-            "k": King,
-            "p": Pawn,
-            "n": Knight,
-            "b": Bishop,
-            "r": Rook,
-            "q": Queen,
-        }
-        fenBoard = fen.split(" ")[0]
-        file = 0
-        rank = 7
-
-        for symbol in fenBoard:
-            if symbol == "/":
-                file = 0
-                rank -= 1
-            else:
-                if symbol.isnumeric():
-                    file += int(symbol)
-                else:
-                    piece_color = Color.LIGHT if symbol.isupper() else Color.DARK
-                    piece_type = pieceTypeFromSymbol.get(symbol.lower())
-                    loc = Location(Files(file + 1), rank + 1)
-                    pieces[loc] = piece_type(piece_color)
-                    file += 1
-
-        return pieces

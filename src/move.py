@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 
 import logic
-from constants import Color
+import constants as c
 from squares import Square
 from AbstractPiece import AbstractPiece
 
@@ -98,7 +98,7 @@ class Move:
 class MoveHandler:
     def __init__(self, board, whiteToMove=True):
         self.board = board
-        self.turn = Color.LIGHT if whiteToMove else Color.DARK
+        self.turn = c.Color.LIGHT if whiteToMove else c.Color.DARK
         self.lKing = [x for x in self.board.light_pieces if x.name == "king"][0]
         self.DKing = [x for x in self.board.dark_pieces if x.name == "king"][0]
         self._pin_moves = []
@@ -179,7 +179,7 @@ class MoveHandler:
         if not turn:
             side = self.lights_moves + self.darks_moves
         else:
-            side = self.lights_moves if self.turn == Color.LIGHT else self.darks_moves
+            side = self.lights_moves if self.turn == c.Color.LIGHT else self.darks_moves
 
         for loc in side:
             if square := board.map.get(loc):

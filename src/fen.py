@@ -1,20 +1,20 @@
 # Fen Utilities
 from dataclasses import dataclass, field
 
-from Pieces import *
-from constants import Color, Files
+import Pieces as p
+import constants as c
 from location import Location
 
 START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 FEN1 = "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2 "
 
-pieceTypeFromSymbol = {
-    "k": King,
-    "p": Pawn,
-    "n": Knight,
-    "b": Bishop,
-    "r": Rook,
-    "q": Queen,
+piece_type_from_symb = {
+    "k": p.King,
+    "p": p.Pawn,
+    "n": p.Knight,
+    "b": p.Bishop,
+    "r": p.Rook,
+    "q": p.Queen,
 }
 
 
@@ -44,9 +44,9 @@ def load_from_fen(fen):
             if symbol.isnumeric():
                 file += int(symbol)
             else:
-                pieceColour = Color.LIGHT if symbol.isupper() else Color.DARK
-                pieceType = pieceTypeFromSymbol.get(symbol.lower())
-                loc = Location(Files(file + 1), rank + 1)
+                pieceColour = c.Color.LIGHT if symbol.isupper() else c.Color.DARK
+                pieceType = piece_type_from_symb.get(symbol.lower())
+                loc = Location(c.Files(file + 1), rank + 1)
                 loadedPositionInfo.squares[loc] = pieceType(pieceColour)
                 file += 1
 

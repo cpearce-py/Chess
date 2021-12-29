@@ -1,6 +1,6 @@
 import logic
 from AbstractPiece import AbstractPiece
-from constants import IMAGES, Color
+import constants as c
 
 from Pieces.Queen import Queen
 from move import Move, Flag
@@ -8,7 +8,7 @@ from move import Move, Flag
 
 class Pawn(AbstractPiece):
     def __init__(self, pieceColor, name="Pawn"):
-        img = IMAGES["bp"] if pieceColor == Color.DARK else IMAGES["wp"]
+        img = c.IMAGES["bp"] if pieceColor == c.Color.DARK else c.IMAGES["wp"]
         super().__init__(name, pieceColor, image=img)
         self.enpassant_able = False
 
@@ -93,7 +93,7 @@ class Pawn(AbstractPiece):
 
     def _getAllValidMoves(self, board):
 
-        if self._pieceColor == Color.LIGHT:
+        if self._pieceColor == c.Color.LIGHT:
             if self.isFirstMove:
                 yield logic.build(self.location, fileOffset=0, rankOffset=2)
 
@@ -114,7 +114,7 @@ class Pawn(AbstractPiece):
         Get all attack moves for a pawn. Check for possible enpassant moves also.
         """
 
-        if self._pieceColor == Color.LIGHT:
+        if self._pieceColor == c.Color.LIGHT:
             move1 = logic.build(self.location, fileOffset=1, rankOffset=1)
             move2 = logic.build(self.location, fileOffset=-1, rankOffset=1)
             return [move1, move2]

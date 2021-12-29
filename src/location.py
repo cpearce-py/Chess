@@ -1,4 +1,4 @@
-from constants import Files
+import constants as c
 from enum import Enum
 
 
@@ -49,9 +49,9 @@ class Location:
         return self._rank
 
     def nextRank(self, direction):
-        curRank = Files.RANKS.index(self.rank)
-        newRank = Files.RANKS[curRank + direction]
-        return Location(self.file, newRank)
+        cur_rank = c.RANKS.index(self.rank)
+        new_rank = c.RANKS[cur_rank + direction]
+        return Location(self.file, new_rank)
 
     def nextRankUp(self):
         self.nextRank(1)

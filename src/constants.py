@@ -7,7 +7,7 @@ __all__ = (
     "DIMENSIONS",
     "SQ_SIZE",
     "RANKS",
-    "FILES",
+    "Files",
     "Color",
     "IMAGES",
 )
@@ -35,11 +35,11 @@ class Color(Enum):
     DARK = 2
 
 
-def _setupImages(path, pieces=None):
+def _setup_images(path, pieces=None):
     """
     Local method to load all our pieces images.
     """
-    _IMAGES = {}
+    images = {}
 
     if not pieces:
         pieces = [
@@ -58,11 +58,11 @@ def _setupImages(path, pieces=None):
         ]
 
     for piece in pieces:
-        _IMAGES[piece] = pygame.transform.scale(
+        images[piece] = pygame.transform.scale(
             pygame.image.load(f"{path}/{piece}.png"), (SQ_SIZE, SQ_SIZE)
         )
 
-    return _IMAGES
+    return images
 
 
-IMAGES = _setupImages("IMG")
+IMAGES = _setup_images("IMG")
