@@ -18,7 +18,7 @@ class Location:
             raise ValueError("Please pass file arg as Files. Enum")
         self._file = file
         self._rank = rank
-        self._square: Optional[Square] = None
+        self._square: Optional["Square"] = None
 
     def __repr__(self):
         return (
@@ -41,11 +41,11 @@ class Location:
         return hash((self._file, self._rank))
 
     @property
-    def square(self) -> Optional[Square]:
+    def square(self):
         return self._square
 
     @square.setter
-    def square(self, value: Square):
+    def square(self, value: "Square"):
         self._square = value
 
     @property

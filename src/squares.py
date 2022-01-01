@@ -1,4 +1,5 @@
 import pygame
+from enum import Enum
 from typing import (
     TYPE_CHECKING,
     Optional,
@@ -8,7 +9,6 @@ from location import Location
 
 if TYPE_CHECKING:
     from abstract_piece import AbstractPiece
-    from enum import Enum
 
 class Square(pygame.sprite.Sprite):
     def __init__(self, SquareColor: Color, pos: Location, rect: pygame.Rect):
@@ -65,11 +65,11 @@ class Square(pygame.sprite.Sprite):
         return self._isOccupied
 
     @property
-    def piece(self) -> Optional[AbstractPiece]:
+    def piece(self) -> Optional["AbstractPiece"]:
         return self._piece
 
     @piece.setter
-    def piece(self, piece: AbstractPiece | None) -> None:
+    def piece(self, piece: Optional["AbstractPiece"]) -> None:
         self._piece = piece
         self._isOccupied = True if piece else False
         if piece and piece.square != self:

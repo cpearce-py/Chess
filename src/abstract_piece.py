@@ -98,7 +98,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         return self._square.location
 
     @property
-    def square(self) -> Square:
+    def square(self) -> "Square":
         """Property for what Square the piece is on.
         Returns: :class:`Square`."""
         return self._square
