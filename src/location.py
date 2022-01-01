@@ -1,3 +1,4 @@
+from __future__ import annotations
 from enum import Enum
 from typing import (
     TYPE_CHECKING,
@@ -18,7 +19,7 @@ class Location:
             raise ValueError("Please pass file arg as Files. Enum")
         self._file = file
         self._rank = rank
-        self._square: Optional["Square"] = None
+        self._square: Optional[Square] = None
 
     def __repr__(self):
         return (
@@ -45,7 +46,7 @@ class Location:
         return self._square
 
     @square.setter
-    def square(self, value: "Square"):
+    def square(self, value: Square):
         self._square = value
 
     @property
