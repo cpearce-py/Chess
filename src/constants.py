@@ -1,7 +1,10 @@
+import os
 from enum import Enum
+
 import pygame
 
 __all__ = (
+    "ROOT_DIR",
     "WIDTH",
     "HEIGHT",
     "DIMENSIONS",
@@ -11,7 +14,8 @@ __all__ = (
     "Color",
     "IMAGES",
 )
-
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+print(ROOT_DIR)
 WIDTH = HEIGHT = 512
 FPS = 60
 DIMENSIONS = 8
@@ -65,4 +69,4 @@ def _setup_images(path, pieces=None):
     return images
 
 
-IMAGES = _setup_images("IMG")
+IMAGES = _setup_images(ROOT_DIR + "/IMG")
