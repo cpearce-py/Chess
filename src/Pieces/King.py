@@ -1,13 +1,7 @@
 import logic
 from abstract_piece import AbstractPiece
 from constants import IMAGES, Color
-from move import Flag
-
-
-def _check_square(sqr):
-    if sqr.isOccupied:
-        return False
-    return True
+from squares import Square
 
 
 class King(AbstractPiece):
@@ -23,7 +17,7 @@ class King(AbstractPiece):
     def castle_rights(self):
         return (self.can_kingside_castle, self.can_queenside_castle)
 
-    def moveToSquare(self, square, board=None):
+    def moveToSquare(self, square: Square, board=None):
 
         currentFile = self.square.file.value
         destFile = square.file.value

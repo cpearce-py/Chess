@@ -30,7 +30,7 @@ class Board(pygame.sprite.Group):
     """
 
     def __init__(self):
-        super().__init__(self)
+        super().__init__()
 
         self._render_pieces = pygame.sprite.LayeredUpdates()
         self._light_pieces = pygame.sprite.Group()
@@ -167,23 +167,9 @@ class Board(pygame.sprite.Group):
         self._render_pieces.update()
         self.board_squares.update()
 
-    def rank(self, row):
-        i = len(self._BOARD) - row
-        return self._BOARD[i]
-
-    def file(self, col):
-        file = []
-        for row in self._BOARD:
-            file.append(row[col])
-        return file
-
     @property
     def map(self):
         return self._map
-
-    @property
-    def board(self):
-        return self._BOARD
 
     @property
     def light_pieces(self):
