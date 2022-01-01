@@ -1,11 +1,17 @@
 import pygame
-
+from typing import (
+    TYPE_CHECKING,
+    Optional,
+)
 from constants import HEIGHT, WIDTH, Color
 from location import Location
 
+if TYPE_CHECKING:
+    from abstract_piece import AbstractPiece
+    from enum import Enum
 
 class Square(pygame.sprite.Sprite):
-    def __init__(self, SquareColor, pos, rect):
+    def __init__(self, SquareColor: Color, pos: Location, rect: pygame.Rect):
         pygame.sprite.Sprite.__init__(self)
 
         assert isinstance(pos, Location)
@@ -27,7 +33,7 @@ class Square(pygame.sprite.Sprite):
 
         self._selected = False
 
-    def __eq__(self, other):
+    def __eq__(self, other: object):
         return (
             isinstance(other, Square)
             and other._SquareColor == self._SquareColor
@@ -37,7 +43,7 @@ class Square(pygame.sprite.Sprite):
     def __hash__(self):
         return hash((self._SquareColor, self._Location))
 
-    def reset(self):
+    def reset(self) -> None:
         self._piece = None
         self._isOccupied = False
         self.isAttacked = False
@@ -59,55 +65,55 @@ class Square(pygame.sprite.Sprite):
         return self._isOccupied
 
     @property
-    def piece(self):
+    def piece(self) -> Optional[AbstractPiece]:
         return self._piece
 
     @piece.setter
-    def piece(self, piece):
+    def piece(self, piece: AbstractPiece | None) -> None:
         self._piece = piece
         self._isOccupied = True if piece else False
         if piece and piece.square != self:
             piece.square = self
 
     @property
-    def location(self):
+    def location(self) -> Location:
         return self._Location
 
     @property
-    def file(self):
+    def file(self) -> Enum:
         return self._Location.file
 
     @property
-    def rank(self):
+    def rank(self) -> int:
         return self._Location.rank
 
     @property
-    def color(self):
+    def color(self) -> Color:
         return self._SquareColor
 
     @property
-    def isSelected(self):
+    def isSelected(self) -> bool:
         return self._selected
 
     @isSelected.setter
-    def isSelected(self, value):
+    def isSelected(self, value: bool):
         self._selected = value
 
-    def select(self):
+    def select(self) -> None:
         try:
             self.piece.selected = True
         except AttributeError:
             pass
         self._selected = True
 
-    def deselect(self):
+    def deselect(self) -> None:
         try:
             self.piece.selected = False
         except AttributeError:
             pass
         self._selected = False
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(COLOR={self._SquareColor.name},"
             f"{self._Location}), {self._isOccupied})"

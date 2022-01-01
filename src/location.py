@@ -1,23 +1,31 @@
-import constants as c
 from enum import Enum
+from typing import (
+    TYPE_CHECKING,
+    Optional,
+)
 
+
+import constants as c
+
+if TYPE_CHECKING:
+    from squares import Square
 
 class Location:
     """Base Location class."""
 
-    def __init__(self, file, rank):
+    def __init__(self, file: Enum, rank: int):
         if not isinstance(file, Enum):
             raise ValueError("Please pass file arg as Files. Enum")
         self._file = file
         self._rank = rank
-        self._square = None
+        self._square: Optional[Square] = None
 
     def __repr__(self):
         return (
             f"{self.__class__.__name__}(FILE={self._file.name}, " f"RANK={self._rank})"
         )
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         """
         Compare with Location.
         :param other: Instance of :class:`Location`
@@ -33,22 +41,22 @@ class Location:
         return hash((self._file, self._rank))
 
     @property
-    def square(self):
+    def square(self) -> Optional[Square]:
         return self._square
 
     @square.setter
-    def square(self, value):
+    def square(self, value: Square):
         self._square = value
 
     @property
-    def file(self):
+    def file(self) -> Enum:
         return self._file
 
     @property
-    def rank(self):
+    def rank(self) -> int:
         return self._rank
 
-    def nextRank(self, direction):
+    def nextRank(self, direction) -> object:
         cur_rank = c.RANKS.index(self.rank)
         new_rank = c.RANKS[cur_rank + direction]
         return Location(self.file, new_rank)

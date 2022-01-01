@@ -1,10 +1,12 @@
 from abc import ABC, abstractmethod
-
+from typing import TYPE_CHECKING
 import pygame
 from pygame.locals import *
 
 import logic
 
+if TYPE_CHECKING:
+    from squares import Square
 
 class AbstractPiece(ABC, pygame.sprite.Sprite):
     """
@@ -96,7 +98,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         return self._square.location
 
     @property
-    def square(self):
+    def square(self) -> Square:
         """Property for what Square the piece is on.
         Returns: :class:`Square`."""
         return self._square
