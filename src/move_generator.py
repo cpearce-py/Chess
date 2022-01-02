@@ -104,10 +104,10 @@ class MoveGenerator:
             x, y = direction
             possible_pin = False
             friendly_on_ray = False
-            nextMove = logic.build(king.location, x, y)
-            while nextMove := board.map.get(nextMove):
-                ray.append(nextMove)
-                if piece := nextMove.piece:
+            next_move = logic.build(king.location, x, y)
+            while next_move := board.map.get(next_move):
+                ray.append(next_move)
+                if piece := next_move.piece:
                     if piece.color == friendly_col:
                         # Check for pin
                         if not friendly_on_ray:
@@ -126,13 +126,13 @@ class MoveGenerator:
                             possible_pin = True
                             if friendly_on_ray:
                                 self.pinsExistInPosition = True
-                                self.pinMoves.append(nextMove)
+                                self.pinMoves.append(next_move)
                             else:
                                 # if already in check, then this is double check.
                                 self.inDoubleCheck = self.inCheck
                                 self.inCheck = True
                                 break
-                nextMove = logic.build(nextMove.location, x, y)
+                next_move = logic.build(next_move.location, x, y)
 
             if possible_pin:
                 self.pinRays.append(ray)
@@ -214,6 +214,3 @@ class MoveGenerator:
             for ray in set_of_moves:
                 for square in ray:
                     square.isAttacked = True
-
-    def pawn_moves(self):
-        pass

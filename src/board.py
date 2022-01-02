@@ -1,3 +1,8 @@
+from __future__ import annotations
+from typing import (
+    Dict,
+    Optional,
+)
 import pygame
 
 import logic
@@ -84,7 +89,7 @@ class Board(pygame.sprite.Group):
         self._map = _map
         return self
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         attrs = (
             ("Light Pieces", len(self.light_pieces)),
             ("Dark Pieces", len(self.dark_pieces)),
@@ -92,7 +97,7 @@ class Board(pygame.sprite.Group):
         inners = ", ".join("%s=%r" % t for t in attrs)
         return f"<{self.__class__.__name__} {inners}>"
 
-    def get(self, location):
+    def get(self, location: Location) -> Optional[Square]:
         """Return square from board at given location"""
         return self.map.get(location, None)
 
@@ -168,7 +173,7 @@ class Board(pygame.sprite.Group):
         self.board_squares.update()
 
     @property
-    def map(self):
+    def map(self) -> Dict[Location, Square]:
         return self._map
 
     @property
