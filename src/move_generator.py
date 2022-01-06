@@ -3,6 +3,7 @@ import logging
 from typing import (
     TYPE_CHECKING,
     Set,
+    cast,
 )
 
 import logic
@@ -16,8 +17,9 @@ if TYPE_CHECKING:
     from location import Location
 
 log = logging.getLogger(__file__)
-f_handler = logging.FileHandler('chess.log')
+f_handler = logging.FileHandler("chess.log")
 f_handler.setLevel(logging.WARNING)
+log.addHandler(f_handler)
 
 
 """
@@ -46,7 +48,7 @@ class MoveGenerator:
         self.can_kingside_castle = False
 
         self.is_white_move = board.white_to_move
-        self.friendly_colour = board.color_to_move
+        self.friendly_colour = cast(c.Color, board.color_to_move)
         self.opponent_colour = logic.switch_turn(self.friendly_colour)
 
         self.generate_moves()
