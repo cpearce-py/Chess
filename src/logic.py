@@ -1,4 +1,4 @@
-from typing import List
+from typing import Iterable, Optional
 from location import Location
 import constants as c
 from move import Move
@@ -6,7 +6,7 @@ from move import Move
 __all__ = ("build", "switch_turn")
 
 
-def build(current, fileOffset, rankOffset):
+def build(current, fileOffset: int, rankOffset: int) -> Optional[Location]:
     """
     Generates a new Location class for where a given Location will end up
     based on a given file and rank offset.
@@ -28,11 +28,11 @@ def build(current, fileOffset, rankOffset):
         return None
 
 
-def switch_turn(turn):
-    return {c.Color.LIGHT: c.Color.DARK, c.Color.DARK: c.Color.LIGHT}.get(turn)
+def switch_turn(turn: c.Color) -> c.Color:
+    return {c.Color.LIGHT: c.Color.DARK, c.Color.DARK: c.Color.LIGHT}[turn]
 
 
-def convert(moves: List, piece, board):
+def convert(moves: Iterable, piece, board):
     piece_square = piece.square
     for move in moves:
         toSq = board.map.get(move)

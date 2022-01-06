@@ -1,19 +1,21 @@
 from __future__ import annotations
 import logging
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 import pygame
 
 import logic
 
 if TYPE_CHECKING:
     from squares import Square
+    import constants as c
 
 
 log = logging.getLogger(__file__)
 f_handler = logging.FileHandler("chess.log")
 f_handler.setLevel(logging.WARNING)
 log.addHandler(f_handler)
+
 
 class AbstractPiece(ABC, pygame.sprite.Sprite):
     """
@@ -23,7 +25,14 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
     :param pieceColor: `Color` Enum. (Color.LIGHT/Color.DARK).
     """
 
-    def __init__(self, name, pieceColor, image, square=None, *groups):
+    def __init__(
+        self,
+        name: str,
+        pieceColor: c.Color,
+        image: pygame.Surface,
+        square: Optional[Square] = None,
+        *groups,
+    ):
         super(AbstractPiece, self).__init__()
         self._name = name.lower()
         self._pieceColor = pieceColor
@@ -80,8 +89,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
     def selected(self, value):
         if not isinstance(value, bool):
             log.error(
-                f"{self.__class__.__name__}.selected attribute must be "
-                f"of type Bool"
+                f"{self.__class__.__name__}.selected attribute must be " f"of type Bool"
             )
         layer_group = [
             group
@@ -106,13 +114,18 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         return self._square.location
 
     @property
-    def square(self) -> "Square":
+    def square(self) -> Square:
         """Property for what Square the piece is on.
         Returns: :class:`Square`."""
         return self._square
 
     @square.setter
-    def square(self, square):
+    def square(self, square: Square):
+        if not isinstance(square, Square):
+            log.error(
+                f"{self.__class__.__name__}.square attribute nots to be set "
+                f"to an instance of Square"
+        )
         self._square = square
         if not square.piece == self:
             square.piece = self

@@ -1,5 +1,3 @@
-
-
 class Player:
     def __init__(self, is_white, board):
         self.is_white: bool = is_white
@@ -16,4 +14,4 @@ class Player:
 
     @property
     def is_white(self):
-       return self.is_white
+        return self.is_white

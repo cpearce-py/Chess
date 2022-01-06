@@ -2,13 +2,22 @@
 Base move module
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from enum import Enum, auto
+from typing import (
+    TYPE_CHECKING,
+    Optional,
+)
 
 import logic
 import constants as c
 from squares import Square
 from abstract_piece import AbstractPiece
+
+if TYPE_CHECKING:
+    from Pieces import Rook
 
 __all__ = ("Move", "MoveHandler", "Flag")
 
@@ -21,6 +30,7 @@ class Flag(Enum):
     ENPASSANT = auto()
     CASTLE = auto()
     PROMOTE = auto()
+    CHECK = auto()
     CHECKMATE = auto()
 
 
@@ -42,10 +52,10 @@ class MovePieceHolder:
     """
 
     moved_piece: AbstractPiece
-    _captured_piece: AbstractPiece = None
+    _captured_piece: Optional[AbstractPiece] = None
 
     @property
-    def captured_piece(self) -> AbstractPiece:
+    def captured_piece(self) -> Optional[AbstractPiece]:
         """Captured piece"""
         return self._captured_piece
 
@@ -61,15 +71,14 @@ class Move:
 
     from_sq: Square
     to_sq: Square
-    pieces: MovePieceHolder = None
-    piece_moved: AbstractPiece = None
-    piece_captured: AbstractPiece = None
+    pieces: Optional[MovePieceHolder] = None
     piece_attrs: dict = field(init=False)
     captured_piece_attrs: dict = field(init=False)
     flag: Enum = Flag.MOVE
 
     def __post_init__(self):
-        moved_piece = self.from_sq.piece
+        assert isinstance(self.from_sq.piece, AbstractPiece)
+        moved_piece: AbstractPiece = self.from_sq.piece
         self.pieces = MovePieceHolder(moved_piece)
         self.piece_attrs = _clean(**self.from_sq.piece.__dict__.copy())
         self.turn = moved_piece.color
@@ -84,6 +93,16 @@ class Move:
     def squares(self):
         """Return squares involved in move"""
         return (self.from_sq, self.to_sq)
+
+    @property
+    def moved_piece(self):
+        """Moved piece"""
+        return self.pieces.moved_piece
+
+    @property
+    def captured_piece(self):
+        """Captured piece"""
+        return self.pieces.captured_piece
 
     def __repr__(self):
         attrs = (
@@ -142,9 +161,9 @@ class MoveHandler:
         piece_moved = move.pieces.moved_piece
         piece_moved.set_attrs_from_dict(**move.piece_attrs)
 
-        piece_captured = move.piece_captured
+        piece_captured = move.captured_piece
         if piece_captured:
-            piece_captured.set_attrs_from_dict(**move.captured_piece_attrs)
+            piece_captured.set_attrs_from_dict(**move.pieces.captured_piece_attrs)
 
         self.board.set_piece(piece_moved, move.from_sq)
         self.board.set_piece(piece_captured, move.to_sq)

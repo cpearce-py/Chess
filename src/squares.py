@@ -1,14 +1,14 @@
-import pygame
 from enum import Enum
-from typing import (
-    TYPE_CHECKING,
-    Optional,
-)
+from typing import TYPE_CHECKING, Optional
+
+import pygame
+
 from constants import HEIGHT, WIDTH, Color
 from location import Location
 
 if TYPE_CHECKING:
     from abstract_piece import AbstractPiece
+
 
 class Square(pygame.sprite.Sprite):
     def __init__(self, SquareColor: Color, pos: Location, rect: pygame.Rect):
@@ -61,7 +61,7 @@ class Square(pygame.sprite.Sprite):
             self.image.fill(self._orig_color)
 
     @property
-    def isOccupied(self):
+    def isOccupied(self) -> bool:
         return self._isOccupied
 
     @property
@@ -100,17 +100,13 @@ class Square(pygame.sprite.Sprite):
         self._selected = value
 
     def select(self) -> None:
-        try:
+        if self.piece:
             self.piece.selected = True
-        except AttributeError:
-            pass
         self._selected = True
 
     def deselect(self) -> None:
-        try:
+        if self.piece:
             self.piece.selected = False
-        except AttributeError:
-            pass
         self._selected = False
 
     def __repr__(self) -> str:

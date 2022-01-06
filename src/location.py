@@ -11,6 +11,7 @@ import constants as c
 if TYPE_CHECKING:
     from squares import Square
 
+
 class Location:
     """Base Location class."""
 
@@ -42,7 +43,7 @@ class Location:
         return hash((self._file, self._rank))
 
     @property
-    def square(self):
+    def square(self) -> Square:
         return self._square
 
     @square.setter

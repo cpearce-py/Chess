@@ -1,7 +1,9 @@
 from __future__ import annotations
 from typing import (
+    TYPE_CHECKING,
     Dict,
     Optional,
+    Iterable,
 )
 import pygame
 
@@ -10,6 +12,10 @@ import constants as c
 from location import Location
 from squares import Square
 from fen import PositionInfo, START_FEN, load_from_fen
+
+if TYPE_CHECKING:
+    from abstract_piece import AbstractPiece
+    from squares import Square
 
 start_position = load_from_fen(START_FEN)
 
@@ -42,7 +48,7 @@ class Board(pygame.sprite.Group):
         self._dark_pieces = pygame.sprite.Group()
         self.board_squares = pygame.sprite.Group()
         self._map = {}
-        self.all_pieces = {
+        self.all_pieces: Dict[c.Color, Iterable[AbstractPiece]] = {
             c.Color.DARK: self._dark_pieces,
             c.Color.LIGHT: self._light_pieces,
         }
@@ -97,15 +103,16 @@ class Board(pygame.sprite.Group):
         inners = ", ".join("%s=%r" % t for t in attrs)
         return f"<{self.__class__.__name__} {inners}>"
 
-    def get(self, location: Location) -> Optional[Square]:
+    def get(self, location: Location) -> Square:
         """Return square from board at given location"""
-        return self.map.get(location, None)
+        return self.map[location]
 
-    def _get_piece(self, name, color):
+    def _get_piece(self, name, color) -> Iterable:
         pieces = self.all_pieces.get(color)
-        return list(filter(lambda x: x.name == name, pieces))
+        if pieces:
+            return list(filter(lambda x: x.name == name, pieces))
 
-    def king(self, color):
+    def king(self, color) -> AbstractPiece:
         """Return King piece of given color"""
         return self._get_piece("king", color)[0]
 
@@ -121,7 +128,7 @@ class Board(pygame.sprite.Group):
         """Return List[Rooks] pieces of given color"""
         return self._get_piece("rook", color)
 
-    def knights(self, color):
+    def knights(self, color) -> Iterable:
         """Return List[Knight] pieces of given color"""
         return self._get_piece("knight", color)
 
@@ -188,7 +195,7 @@ class Board(pygame.sprite.Group):
         for sqr in self.sprites():
             sqr.deselect()
 
-    def set_piece(self, piece, square):
+    def set_piece(self, piece, square: Square):
         square = self._map.get(square.location)
         square.piece = piece
         if piece:
