@@ -1,7 +1,24 @@
-from typing import Set
+from __future__ import annotations
+import logging
+from typing import (
+    TYPE_CHECKING,
+    Set,
+)
 
 import logic
+import squares as s
 from move import Move
+import constants as c
+
+if TYPE_CHECKING:
+    from Pieces import King
+    from board import Board
+    from location import Location
+
+log = logging.getLogger(__file__)
+f_handler = logging.FileHandler('chess.log')
+f_handler.setLevel(logging.WARNING)
+
 
 """
 Current methodology is this:
@@ -22,7 +39,7 @@ Current methodology is this:
 class MoveGenerator:
     """Class for generating available moves"""
 
-    def __init__(self, board):
+    def __init__(self, board: Board) -> None:
         self.board = board
         self.moves: Set[Move] = set()
         self.can_queenside_castle = False
@@ -70,18 +87,22 @@ class MoveGenerator:
         self.generate_king_moves()
         if self.inDoubleCheck:
             return self.moves
-        self.highlight(self.moves)
+        self.highlight(self.opponent_attacks)
 
         return self.moves
 
     def generate_king_moves(self):
+        """
+        Generate all possible king moves. This also deals with triggering
+        generation of opponent attacks. Might change this logic later as this
+        method is now dealing with a lot of other logic... will see.
+        """
         board = self.board
-        king = board.king(self.friendly_colour)
+        king: King = board.king(self.friendly_colour)
         self.generate_opponent_attacks()
         moves = king.converted_moves(board)
         for move in moves:
             self.moves.add(move)
-        # self.moves.add(moves)
         self.castle_rights = king.castle_rights
 
     def calculate_attacks(self):
@@ -159,9 +180,11 @@ class MoveGenerator:
                 self.inCheck = True
 
     def _get_sliding_directions(self, board, opponent_col):
-        """Setting up directions to check for pins. If there's a queen, we check
+        """
+        Setting up directions to check for pins. If there's a queen, we check
         for both diagonal and rook based pins. Otherwise, check for
-        bishops or rooks  on the board and their relative directions."""
+        bishops or rooks  on the board and their relative directions.
+        """
         directions = []
         if board.queen(opponent_col):
             directions.extend([(1, 1), (-1, 1), (1, -1), (-1, -1)])
