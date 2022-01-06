@@ -1,12 +1,19 @@
+from __future__ import annotations
+import logging
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 import pygame
-from pygame.locals import *
 
 import logic
 
 if TYPE_CHECKING:
     from squares import Square
+
+
+log = logging.getLogger(__file__)
+f_handler = logging.FileHandler("chess.log")
+f_handler.setLevel(logging.WARNING)
+log.addHandler(f_handler)
 
 class AbstractPiece(ABC, pygame.sprite.Sprite):
     """
@@ -42,11 +49,11 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         )
 
     @property
-    def alive(self):
+    def alive(self) -> bool:
         return self._alive
 
     @alive.setter
-    def alive(self, value):
+    def alive(self, value: bool) -> None:
         self._alive = value
 
     @property
@@ -72,8 +79,9 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
     @selected.setter
     def selected(self, value):
         if not isinstance(value, bool):
-            raise ValueError(
-                f"{self.__class__.__name__}.selected attribute must be of type Bool"
+            log.error(
+                f"{self.__class__.__name__}.selected attribute must be "
+                f"of type Bool"
             )
         layer_group = [
             group
@@ -139,6 +147,11 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         are needed. Ie. pawn promotion.
         """
         self.forceMove(square)
+
+    @abstractmethod
+    def getAttackMoves(self, board):
+        """Method to get all attack moves"""
+        raise NotImplementedError
 
     @abstractmethod
     def getValidMoves(self, board):
