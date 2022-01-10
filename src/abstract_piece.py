@@ -1,13 +1,14 @@
 from __future__ import annotations
+
 import logging
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Optional
+from squares import Square
 import pygame
 
 import logic
 
 if TYPE_CHECKING:
-    from squares import Square
     import constants as c
 
 
@@ -20,9 +21,6 @@ log.addHandler(f_handler)
 class AbstractPiece(ABC, pygame.sprite.Sprite):
     """
     Base Piece class.
-
-    :param name: `String` used to store name of subclassed pieces.
-    :param pieceColor: `Color` Enum. (Color.LIGHT/Color.DARK).
     """
 
     def __init__(
@@ -63,6 +61,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
 
     @alive.setter
     def alive(self, value: bool) -> None:
+        """Alive status of piece, doesn't deal with removing from Sprite groups"""
         self._alive = value
 
     @property
@@ -114,6 +113,14 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         return self._square.location
 
     @property
+    def file(self):
+        return self._square.location.file
+
+    @property
+    def rank(self):
+        return self._square.location.rank
+
+    @property
     def square(self) -> Square:
         """Property for what Square the piece is on.
         Returns: :class:`Square`."""
@@ -148,7 +155,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         if piece := target_square.piece:
             piece.alive = False
             piece.kill()
-        self.square.reset()
+        self.square.clear()
         target_square.piece = self
         self.square = target_square
         self.isFirstMove = False

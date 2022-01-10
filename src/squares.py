@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import Enum
 from typing import TYPE_CHECKING, Optional
 
@@ -33,7 +35,7 @@ class Square(pygame.sprite.Sprite):
 
         self._selected = False
 
-    def __eq__(self, other: object):
+    def __eq__(self, other: Square):
         return (
             isinstance(other, Square)
             and other._SquareColor == self._SquareColor
@@ -43,7 +45,8 @@ class Square(pygame.sprite.Sprite):
     def __hash__(self):
         return hash((self._SquareColor, self._Location))
 
-    def reset(self) -> None:
+    def clear(self) -> None:
+        """Empty square and reset attributes, doesn't deal with killing pieces."""
         self._piece = None
         self._isOccupied = False
         self.isAttacked = False

@@ -16,6 +16,7 @@ from fen import PositionInfo, START_FEN, load_from_fen
 if TYPE_CHECKING:
     from abstract_piece import AbstractPiece
     from squares import Square
+    from move import Move
 
 start_position = load_from_fen(START_FEN)
 
@@ -103,6 +104,9 @@ class Board(pygame.sprite.Group):
         inners = ", ".join("%s=%r" % t for t in attrs)
         return f"<{self.__class__.__name__} {inners}>"
 
+    def make_move(self, move: Move):
+        move.perform(self)
+
     def get(self, location: Location) -> Square:
         """Return square from board at given location"""
         return self.map[location]
@@ -136,7 +140,7 @@ class Board(pygame.sprite.Group):
         """Return List[Pawn] pieces of given color"""
         return self._get_piece("pawn", color)
 
-    def pieces(self, color):
+    def pieces(self, color: c.Color) -> Iterable[AbstractPiece]:
         return self.all_pieces.get(color)
 
     def kill_piece(self, piece):
