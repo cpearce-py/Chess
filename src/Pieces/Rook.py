@@ -1,11 +1,11 @@
 import logic
-from AbstractPiece import AbstractPiece
-from constants import Color, IMAGES
+from abstract_piece import AbstractPiece
+import constants as c
 
 
 class Rook(AbstractPiece):
     def __init__(self, pieceColor, name="Rook"):
-        img = IMAGES["bR"] if pieceColor == Color.DARK else IMAGES["wR"]
+        img = c.IMAGES["bR"] if pieceColor == c.Color.DARK else c.IMAGES["wR"]
         super().__init__(name, pieceColor, image=img)
 
     def getValidMoves(self, board):

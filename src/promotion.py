@@ -2,7 +2,10 @@
     Promotion.py
     Dealing with window creation and promotion
 """
+from __future__ import annotations
+
 import os
+from typing import List, Tuple, Union
 
 import pygame
 
@@ -95,7 +98,7 @@ class Layout:
         return f"<{self.__class__.__name__}, max_objects={self.max_objects}>"
 
     @property
-    def rect(self):
+    def rect(self) -> pygame.Rect:
         return self.popup_rect
 
     def reverse(self, value=True):
@@ -109,7 +112,7 @@ class Layout:
         for tile in tiles:
             self.add_tile(tile)
 
-    def move(self, amount, anchor="topleft"):
+    def move(self, amount: Union[List, Tuple]) -> None:
         """
         Move layout widget, and all it's containing tiles, by some coordinate.
 
@@ -159,7 +162,7 @@ class VLayout(Layout):
         width = c.SQ_SIZE
         super().__init__(max_objects=max_objects, height=height, width=width, **kwargs)
 
-    def add_tile(self, tile):
+    def add_tile(self, tile: Tile):
         self._tiles.add(tile)
         rect = self.popup_rect.move(self.position)
         number_of_tiles = len(self._tiles)
@@ -170,6 +173,7 @@ class VLayout(Layout):
 
 
 def _dummy_action(piece=None):
+    """Dummy action for clicable interfaces"""
     if piece:
         print(f"Clicked: {piece}")
         return
@@ -194,7 +198,7 @@ class Tile(pygame.sprite.Sprite):
 
     def __init__(
         self, image, bg_color, highlighted=None, action=_dummy_action, **kwargs
-    ):
+    ) -> None:
 
         self.name = kwargs.pop("name", "Piece")
         self._mouse_over = False
@@ -231,7 +235,8 @@ class Tile(pygame.sprite.Sprite):
         surface.blit(self.image, self.rect)
 
 
-def main():
+def main() -> None:
+    """Testing function"""
     IMG_FOLDER = os.path.join(os.path.dirname(__file__), "IMG")
 
     WHITE_PIECES = _setup_images(

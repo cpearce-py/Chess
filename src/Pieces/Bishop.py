@@ -1,10 +1,10 @@
-from constants import Color, IMAGES
-from AbstractPiece import AbstractPiece
+import constants as c
+from abstract_piece import AbstractPiece
 
 
 class Bishop(AbstractPiece):
     def __init__(self, pieceColor, name="Bishop"):
-        img = IMAGES["bB"] if pieceColor == Color.DARK else IMAGES["wB"]
+        img = c.IMAGES["bB"] if pieceColor == c.Color.DARK else c.IMAGES["wB"]
         super().__init__(name, pieceColor, image=img)
 
     def getValidMoves(self, board):

@@ -1,13 +1,29 @@
+from __future__ import annotations
+from typing import (
+    TYPE_CHECKING,
+    Type,
+    Mapping,
+    Iterable,
+    List,
+    Optional,
+)
 import pygame
 
 import logic
-from constants import RANKS, Color, Files, SQ_SIZE
+import constants as c
 from location import Location
-from Pieces import *
 from squares import Square
 from fen import PositionInfo, START_FEN, load_from_fen
 
+if TYPE_CHECKING:
+    from abstract_piece import AbstractPiece
+    from Pieces import Pawn, Rook, Queen, King, Bishop
+    from squares import Square
+    from move import Move
+
 start_position = load_from_fen(START_FEN)
+
+SpriteGroup = Iterable[pygame.sprite.Sprite]
 
 
 class Board(pygame.sprite.Group):
@@ -31,32 +47,32 @@ class Board(pygame.sprite.Group):
     """
 
     def __init__(self):
-        super().__init__(self)
+        super().__init__()
 
         self._render_pieces = pygame.sprite.LayeredUpdates()
         self._light_pieces = pygame.sprite.Group()
         self._dark_pieces = pygame.sprite.Group()
         self.board_squares = pygame.sprite.Group()
         self._map = {}
-        self.all_pieces = {
-            Color.DARK: self._dark_pieces,
-            Color.LIGHT: self._light_pieces,
+        self.all_pieces: Mapping[c.Color, SpriteGroup] = {
+            c.Color.DARK: self._dark_pieces,
+            c.Color.LIGHT: self._light_pieces,
         }
-        self.white_to_move = None
-        self.color_to_move = None
+        self.white_to_move: bool
+        self.color_to_move: c.Color
 
     def init(self, load_position: PositionInfo = start_position):
         """Initalises board inline."""
         self.white_to_move = load_position.whiteToMove
-        self.color_to_move = Color.LIGHT if self.white_to_move else Color.DARK
+        self.color_to_move = c.Color.LIGHT if self.white_to_move else c.Color.DARK
 
         pieces = load_position.squares
         _map = {}
 
-        for x, file in enumerate(Files):
-            colour = Color.DARK if x % 2 == 0 else Color.LIGHT
-            for y, rank in enumerate(RANKS):
-                rect = pygame.Rect(x * SQ_SIZE, y * SQ_SIZE, SQ_SIZE, SQ_SIZE)
+        for x, file in enumerate(c.Files):
+            colour = c.Color.DARK if x % 2 == 0 else c.Color.LIGHT
+            for y, rank in enumerate(c.RANKS):
+                rect = pygame.Rect(x * c.SQ_SIZE, y * c.SQ_SIZE, c.SQ_SIZE, c.SQ_SIZE)
 
                 pos = Location(file, rank)
                 square = Square(colour, pos, rect)
@@ -73,19 +89,19 @@ class Board(pygame.sprite.Group):
 
                     self._render_pieces.add(piece, layer=piece.layer)
 
-                    if piece.color == Color.DARK:
+                    if piece.color == c.Color.DARK:
                         self._dark_pieces.add(piece)
                     else:
                         self._light_pieces.add(piece)
 
                 self.add(square)
                 _map[pos] = square
-                colour = Color.LIGHT if colour == Color.DARK else Color.DARK
+                colour = c.Color.LIGHT if colour == c.Color.DARK else c.Color.DARK
 
         self._map = _map
         return self
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         attrs = (
             ("Light Pieces", len(self.light_pieces)),
             ("Dark Pieces", len(self.dark_pieces)),
@@ -93,40 +109,50 @@ class Board(pygame.sprite.Group):
         inners = ", ".join("%s=%r" % t for t in attrs)
         return f"<{self.__class__.__name__} {inners}>"
 
-    def get(self, location):
+    def make_move(self, move: Move):
+        move.perform(self)
+
+    def get(self, location: Location) -> Square:
         """Return square from board at given location"""
-        return self.map.get(location, None)
+        return self.map[location]
 
-    def _get_piece(self, name, color):
+    def _get_piece(self, name: str, color: c.Color) -> Optional[List[AbstractPiece]]:
         pieces = self.all_pieces.get(color)
-        return list(filter(lambda x: x.name == name, pieces))
+        if pieces:
+            return list(filter(lambda x: x.name == name, pieces))
 
-    def king(self, color):
+    def get_sliding(self, color: c.Color):
+        store = []
+        store.extend(self.queen(color))
+        store.extend(self.rooks(color))
+        store.extend(self.bishops(color))
+        return store
+
+    def king(self, color) -> King:
         """Return King piece of given color"""
         return self._get_piece("king", color)[0]
 
-    def queen(self, color):
+    def queen(self, color: c.Color) -> List[Queen]:
         """Return List[Queen] piece of given color"""
         return self._get_piece("queen", color)
 
-    def bishops(self, color):
+    def bishops(self, color: c.Color) -> List[Bishop]:
         """Return List[Bishop] pieces of given color"""
         return self._get_piece("bishop", color)
 
-    def rooks(self, color):
+    def rooks(self, color: c.Color) -> List[Rook]:
         """Return List[Rooks] pieces of given color"""
         return self._get_piece("rook", color)
 
-    def knights(self, color):
+    def knights(self, color: c.Color) -> List[Knight]:
         """Return List[Knight] pieces of given color"""
         return self._get_piece("knight", color)
 
-    def pawns(self, color):
+    def pawns(self, color: c.Color) -> List[Pawn]:
         """Return List[Pawn] pieces of given color"""
-        return self._get_piece("knight", color)
         return self._get_piece("pawn", color)
 
-    def pieces(self, color):
+    def pieces(self, color: c.Color) -> Iterable[Type[AbstractPiece]]:
         return self.all_pieces.get(color)
 
     def kill_piece(self, piece):
@@ -140,10 +166,10 @@ class Board(pygame.sprite.Group):
         return self.map.get(loc).currentPiece
 
     def getFile(self, square, direction):
-        curFile = Files(square.location.file.value)
-        newFile = Files(curFile.value + direction)
-        newLocation = Location(newFile, square.location.rank)
-        return self.map.get(newLocation)
+        cur_file = c.Files(square.location.file.value)
+        new_file = c.Files(cur_file.value + direction)
+        new_loc = Location(new_file, square.location.rank)
+        return self.map.get(new_loc)
 
     def getFileUp(self, square):
         return self.getFile(square, 1)
@@ -169,23 +195,9 @@ class Board(pygame.sprite.Group):
         self._render_pieces.update()
         self.board_squares.update()
 
-    def rank(self, row):
-        i = len(self._BOARD) - row
-        return self._BOARD[i]
-
-    def file(self, col):
-        file = []
-        for row in self._BOARD:
-            file.append(row[col])
-        return file
-
     @property
-    def map(self):
+    def map(self) -> Mapping[Location, Square]:
         return self._map
-
-    @property
-    def board(self):
-        return self._BOARD
 
     @property
     def light_pieces(self):
@@ -199,14 +211,14 @@ class Board(pygame.sprite.Group):
         for sqr in self.sprites():
             sqr.deselect()
 
-    def set_piece(self, piece, square):
+    def set_piece(self, piece, square: Square):
         square = self._map.get(square.location)
         square.piece = piece
         if piece:
             self.add_piece(piece)
 
     def add_piece(self, piece):
-        if piece.color == Color.DARK:
+        if piece.color == c.Color.DARK:
             self.dark_pieces.add(piece)
         else:
             self.light_pieces.add(piece)
@@ -216,33 +228,3 @@ class Board(pygame.sprite.Group):
         self.deselect()
         self.reset_squares()
         self.color_to_move = logic.switch_turn(self.color_to_move)
-
-    def load_from_fen(self, fen):
-        pieces = {}
-        pieceTypeFromSymbol = {
-            "k": King,
-            "p": Pawn,
-            "n": Knight,
-            "b": Bishop,
-            "r": Rook,
-            "q": Queen,
-        }
-        fenBoard = fen.split(" ")[0]
-        file = 0
-        rank = 7
-
-        for symbol in fenBoard:
-            if symbol == "/":
-                file = 0
-                rank -= 1
-            else:
-                if symbol.isnumeric():
-                    file += int(symbol)
-                else:
-                    piece_color = Color.LIGHT if symbol.isupper() else Color.DARK
-                    piece_type = pieceTypeFromSymbol.get(symbol.lower())
-                    loc = Location(Files(file + 1), rank + 1)
-                    pieces[loc] = piece_type(piece_color)
-                    file += 1
-
-        return pieces

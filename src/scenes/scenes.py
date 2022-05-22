@@ -1,3 +1,5 @@
+from __future__ import annotations
+from typing import Optional, List, Dict, TYPE_CHECKING
 from abc import ABC, abstractmethod
 from enum import Enum, auto
 
@@ -18,7 +20,7 @@ LIGHT_HIGHLIGHT = (252, 115, 120)
 DARK_HIGHLIGHT = (145, 62, 75)
 
 
-def _setup_promotion_images():
+def _setup_promotion_images() -> Dict[c.Color, List[pygame.Surface]]:
     """
     Filter out 4 pieces we want to display in promotion menu and order by
     most valuable.
@@ -36,7 +38,7 @@ def _setup_promotion_images():
     }
 
 
-_PIECES = _setup_promotion_images()
+_PIECES: Dict[c.Color, List[pygame.Surface]] = _setup_promotion_images()
 
 
 class Scene(ABC):
@@ -50,7 +52,7 @@ class Scene(ABC):
 
     def __init__(self):
         self.next = self
-        self.objects = pygame.sprite.Group()
+        self.objects: pygame.sprite.Group = pygame.sprite.Group()
 
     @abstractmethod
     def process_input(self, events, pressed_keys):
@@ -143,21 +145,22 @@ class SettingScene(Scene):
         self.objects.draw(screen)
 
 
-class State(Enum):
-
-    PLAYING = auto()
-    PROMOTING = auto()
-
-
 class GameScene(Scene):
     """Main chess game scene."""
+
+    class State(Enum):
+        """Internal state object for GameScene"""
+
+        PLAYING = auto()
+        PROMOTING = auto()
+        END_GAME = auto()
 
     def __init__(self):
         super().__init__()
         self.board = Board()
         self.game_handler = GameHandler(self.board, scene=self)
-        self.promotion_menu = None
-        self.state = State.PLAYING
+        self.promotion_menu = Layout()
+        self.state = GameScene.State.PLAYING
 
     def promote(self, colour):
         images = _PIECES.get(colour)
@@ -169,15 +172,17 @@ class GameScene(Scene):
             layout.add_tile(tile)
         layout.move(pygame.mouse.get_pos())
         self.promotion_menu = layout
-        self.state = State.PROMOTING
+        self.state = GameScene.State.PROMOTING
 
     def process_input(self, event):
-        if self.state == State.PROMOTING:
+        """Process input passed from main game loop"""
+        if self.state == GameScene.State.PROMOTING:
             self.promotion_menu.handle_event(event)
         else:
             self.game_handler.handle_events(event)
 
     def update(self):
+        """Update internal state"""
         try:
             self.promotion_menu.update()
         except AttributeError:
@@ -189,7 +194,5 @@ class GameScene(Scene):
         screen.fill(BLACK)
         self.board.draw(screen)
         self.objects.draw(screen)
-        try:
+        if self.state == GameScene.State.PROMOTING:
             self.promotion_menu.draw(screen)
-        except AttributeError:
-            pass

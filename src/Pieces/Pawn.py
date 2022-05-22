@@ -1,19 +1,30 @@
+from __future__ import annotations
+from typing import (
+    TYPE_CHECKING,
+    Iterator,
+)
 import logic
-from AbstractPiece import AbstractPiece
-from constants import IMAGES, Color
+from abstract_piece import AbstractPiece
+import constants as c
 
 from Pieces.Queen import Queen
 from move import Move, Flag
 
+if TYPE_CHECKING:
+    from location import Location
+
 
 class Pawn(AbstractPiece):
     def __init__(self, pieceColor, name="Pawn"):
-        img = IMAGES["bp"] if pieceColor == Color.DARK else IMAGES["wp"]
+        img = c.IMAGES["bp"] if pieceColor == c.Color.DARK else c.IMAGES["wp"]
         super().__init__(name, pieceColor, image=img)
         self.enpassant_able = False
 
     def __repr__(self):
-        return AbstractPiece().__repr__().join(f" enpassant_able={self.enpassant_able}")
+        return (
+            f"{self.__class__.__name__}({self._pieceColor},"
+            f"enpassant_able={self.enpassant_able})"
+        )
 
     def moveToSquare(self, square, board=None):
         if self.isFirstMove:
@@ -48,9 +59,9 @@ class Pawn(AbstractPiece):
         self.__class__ = piece
         self.__init__(self.color)
         # Add new Piece to the previous pieces groups!
-        self.add(groups)
+        self.add(*groups)
 
-        square.reset()
+        square.clear()
         self.square = square
 
     def getValidMoves(self, board):
@@ -91,30 +102,43 @@ class Pawn(AbstractPiece):
 
         return moveCandidates
 
-    def _getAllValidMoves(self, board):
+    def _getAllValidMoves(self, board) -> Iterator[Location]:
 
-        if self._pieceColor == Color.LIGHT:
+        if self._pieceColor == c.Color.LIGHT:
             if self.isFirstMove:
                 yield logic.build(self.location, fileOffset=0, rankOffset=2)
 
+            # straight ahead
             yield logic.build(self.location, fileOffset=0, rankOffset=1)
-            yield logic.build(self.location, fileOffset=1, rankOffset=1)
-            yield logic.build(self.location, fileOffset=-1, rankOffset=1)
+
+            if self.location.file.value == 1:
+                yield logic.build(self.location, fileOffset=1, rankOffset=1)
+            elif self.location.file.value == 8:
+                yield logic.build(self.location, fileOffset=-1, rankOffset=1)
+            else:
+                yield logic.build(self.location, fileOffset=1, rankOffset=1)
+                yield logic.build(self.location, fileOffset=-1, rankOffset=1)
 
         else:
             if self.isFirstMove:
                 yield logic.build(self.location, fileOffset=0, rankOffset=-2)
 
             yield logic.build(self.location, fileOffset=0, rankOffset=-1)
-            yield logic.build(self.location, fileOffset=1, rankOffset=-1)
-            yield logic.build(self.location, fileOffset=-1, rankOffset=-1)
+
+            if self.location.file.value == 1:
+                yield logic.build(self.location, fileOffset=1, rankOffset=-1)
+            elif self.location.file.value == 8:
+                yield logic.build(self.location, fileOffset=-1, rankOffset=-1)
+            else:
+                yield logic.build(self.location, fileOffset=1, rankOffset=-1)
+                yield logic.build(self.location, fileOffset=-1, rankOffset=-1)
 
     def getAttackMoves(self, board):
         """
         Get all attack moves for a pawn. Check for possible enpassant moves also.
         """
 
-        if self._pieceColor == Color.LIGHT:
+        if self._pieceColor == c.Color.LIGHT:
             move1 = logic.build(self.location, fileOffset=1, rankOffset=1)
             move2 = logic.build(self.location, fileOffset=-1, rankOffset=1)
             return [move1, move2]

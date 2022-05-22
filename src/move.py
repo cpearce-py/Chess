@@ -2,15 +2,29 @@
 Base move module
 """
 
-from dataclasses import dataclass, field
+from __future__ import annotations
+import logging
+from dataclasses import dataclass
 from enum import Enum, auto
+from typing import (
+    TYPE_CHECKING,
+    Optional,
+    cast,
+)
 
 import logic
-from constants import Color
+import constants as c
 from squares import Square
-from AbstractPiece import AbstractPiece
+from abstract_piece import AbstractPiece
 
-__all__ = ("Move", "MoveHandler", "Flag")
+if TYPE_CHECKING:
+    from Pieces import Rook
+
+__all__ = ("Move", "MoveHandler", "Flag", "EnpassantMove", "CastleMove")
+
+logger = logging.getLogger(__file__)
+f_handler = logging.FileHandler("chess.log")
+logger.addHandler(f_handler)
 
 
 class Flag(Enum):
@@ -21,6 +35,7 @@ class Flag(Enum):
     ENPASSANT = auto()
     CASTLE = auto()
     PROMOTE = auto()
+    CHECK = auto()
     CHECKMATE = auto()
 
 
@@ -42,10 +57,10 @@ class MovePieceHolder:
     """
 
     moved_piece: AbstractPiece
-    _captured_piece: AbstractPiece = None
+    _captured_piece: Optional[AbstractPiece] = None
 
     @property
-    def captured_piece(self) -> AbstractPiece:
+    def captured_piece(self) -> Optional[AbstractPiece]:
         """Captured piece"""
         return self._captured_piece
 
@@ -55,52 +70,97 @@ class MovePieceHolder:
         self._captured_piece_attrs = _clean(**piece.__dict__.copy())
 
 
-@dataclass
 class Move:
-    """Base move class"""
-
-    from_sq: Square
-    to_sq: Square
-    pieces: MovePieceHolder = None
-    piece_moved: AbstractPiece = None
-    piece_captured: AbstractPiece = None
-    piece_attrs: dict = field(init=False)
-    captured_piece_attrs: dict = field(init=False)
-    flag: Enum = Flag.MOVE
-
-    def __post_init__(self):
-        moved_piece = self.from_sq.piece
-        self.pieces = MovePieceHolder(moved_piece)
-        self.piece_attrs = _clean(**self.from_sq.piece.__dict__.copy())
-        self.turn = moved_piece.color
-        if captured_piece := self.to_sq.piece:
-            self.flag = Flag.CAPTURE
-            self.pieces.captured_piece = captured_piece
+    def __init__(self, from_sq: Square, to_sq: Square, flag: Flag = Flag.MOVE):
+        self.from_sq = from_sq
+        self.to_sq = to_sq
+        self.flag = flag
+        _moved_piece = cast(AbstractPiece, from_sq.piece)
+        self.pieces = MovePieceHolder(_moved_piece)
+        self.piece_attrs = _clean(**_moved_piece.__dict__.copy())
+        self.turn = _moved_piece.color
+        if self.to_sq.piece:
+            _captured_piece = self.to_sq.piece
+            self.pieces.captured_piece = _captured_piece
 
     def __hash__(self):
-        return hash((self.from_sq, self.to_sq, self.flag.name))
+        return hash((self.from_sq, self.to_sq))
+
+    def __eq__(self, other):
+        return (
+            self.to_sq.location == other.to_sq.location
+            and self.from_sq.location == other.from_sq.location
+        )
+
+    def perform(self, board):
+        logger.info("Performing move")
+        self.pieces.moved_piece.moveToSquare(self.to_sq, board)
 
     @property
     def squares(self):
         """Return squares involved in move"""
         return (self.from_sq, self.to_sq)
 
+    @property
+    def moved_piece(self):
+        """Moved piece"""
+        return self.pieces.moved_piece
+
+    @property
+    def captured_piece(self):
+        """Captured piece"""
+        return self.pieces.captured_piece
+
     def __repr__(self):
         attrs = (
             ("from", self.from_sq.location),
             ("to", self.to_sq.location),
-            ("flag", self.flag.name),
+            ("piece", self.pieces.moved_piece.name),
         )
         inners = ", ".join("%s=%r" % t for t in attrs)
         return f"<{self.__class__.__name__} {inners}>"
 
 
+class CastleMove(Move):
+    """Castling move"""
+
+    def __init__(self, from_sq: Square, to_sq, rook_sq: Square, rook: Rook) -> None:
+        super().__init__(from_sq, to_sq, Flag.CASTLE)
+        self.from_sq = from_sq
+        self.to_sq = to_sq
+        self.rook_sq = rook_sq
+        self.rook = rook
+
+    def perform(self, board):
+        """Plays the instance of `Move` on the given board"""
+        super().perform(board)
+        rook = self.rook
+        rook.moveToSquare(self.rook_sq)
+
+
+class EnpassantMove(Move):
+    def __init__(self, from_sq: Square, to_sq: Square, enpassanted_square: Square):
+        super().__init__(from_sq, to_sq, Flag.ENPASSANT)
+        self.enpassented_square = enpassanted_square
+
+    def perform(self, board):
+        super().perform(board)
+        self.enpassented_square.piece.kill()
+        self.enpassented_square.clear()
+
+
+class PromoteMove(Move):
+    def __init__(self, from_sq: Square, to_sq: Square):
+        super().__init__(from_sq, to_sq, Flag.PROMOTE)
+
+    def perform(self, board):
+        super().perform(board)
+
+
 class MoveHandler:
-    def __init__(self, board, whiteToMove=True):
+    def __init__(self, board, white_to_move=True):
         self.board = board
-        self.turn = Color.LIGHT if whiteToMove else Color.DARK
-        self.lKing = [x for x in self.board.light_pieces if x.name == "king"][0]
-        self.DKing = [x for x in self.board.dark_pieces if x.name == "king"][0]
+        self.turn = c.Color.LIGHT if white_to_move else c.Color.DARK
         self._pin_moves = []
         self.lights_moves = []
         self.darks_moves = []
@@ -144,12 +204,12 @@ class MoveHandler:
         piece_moved = move.pieces.moved_piece
         piece_moved.set_attrs_from_dict(**move.piece_attrs)
 
-        piece_captured = move.piece_captured
+        piece_captured = move.captured_piece
         if piece_captured:
-            piece_captured.set_attrs_from_dict(**move.captured_piece_attrs)
+            piece_captured.set_attrs_from_dict(**move.pieces.captured_piece_attrs)
 
-        self.board.set_piece(piece_moved, move.fromSq)
-        self.board.set_piece(piece_captured, move.toSq)
+        self.board.set_piece(piece_moved, move.from_sq)
+        self.board.set_piece(piece_captured, move.to_sq)
 
     def redo(self):
         """Replays move if one is available."""
@@ -179,7 +239,7 @@ class MoveHandler:
         if not turn:
             side = self.lights_moves + self.darks_moves
         else:
-            side = self.lights_moves if self.turn == Color.LIGHT else self.darks_moves
+            side = self.lights_moves if self.turn == c.Color.LIGHT else self.darks_moves
 
         for loc in side:
             if square := board.map.get(loc):

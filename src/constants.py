@@ -1,17 +1,21 @@
+import os
 from enum import Enum
+
 import pygame
 
 __all__ = (
+    "ROOT_DIR",
     "WIDTH",
     "HEIGHT",
     "DIMENSIONS",
     "SQ_SIZE",
     "RANKS",
-    "FILES",
+    "Files",
     "Color",
     "IMAGES",
 )
-
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+print(ROOT_DIR)
 WIDTH = HEIGHT = 512
 FPS = 60
 DIMENSIONS = 8
@@ -35,11 +39,11 @@ class Color(Enum):
     DARK = 2
 
 
-def _setupImages(path, pieces=None):
+def _setup_images(path, pieces=None):
     """
     Local method to load all our pieces images.
     """
-    _IMAGES = {}
+    images = {}
 
     if not pieces:
         pieces = [
@@ -58,11 +62,11 @@ def _setupImages(path, pieces=None):
         ]
 
     for piece in pieces:
-        _IMAGES[piece] = pygame.transform.scale(
+        images[piece] = pygame.transform.scale(
             pygame.image.load(f"{path}/{piece}.png"), (SQ_SIZE, SQ_SIZE)
         )
 
-    return _IMAGES
+    return images
 
 
-IMAGES = _setupImages("IMG")
+IMAGES = _setup_images(ROOT_DIR + "/IMG")

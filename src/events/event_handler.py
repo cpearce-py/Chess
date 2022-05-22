@@ -1,4 +1,11 @@
+from __future__ import annotations
 import sys
+from typing import (
+    TYPE_CHECKING,
+    Tuple,
+    Optional,
+    cast,
+)
 
 import pygame
 
@@ -6,18 +13,26 @@ import move_generator as mg
 from fen import START_FEN, PositionInfo, load_from_fen
 from move import Flag, Move, MoveHandler
 
+if TYPE_CHECKING:
+    from board import Board
+    from scenes.scenes import Scene
+    from squares import Square
+
 _load_position = load_from_fen(START_FEN)
 
 
 class GameHandler:
-    def __init__(self, board, scene, load_position: PositionInfo = _load_position):
+    def __init__(
+        self, board: Board, scene: Scene, load_position: PositionInfo = _load_position
+    ):
         self.clicks = []
         self.board = board
         self.board.init(load_position)
-        whiteToMove = load_position.whiteToMove
-        self.move_handler = MoveHandler(board, whiteToMove=whiteToMove)
+        white_to_move = load_position.whiteToMove
+        self.move_handler = MoveHandler(board, white_to_move=white_to_move)
         self.move_handler.generate_moves()
         self.move_generator = mg.MoveGenerator(board)
+        self.move_generator.generate_moves()
         self._scene = scene
 
     def handle_events(self, event):
@@ -34,7 +49,7 @@ class GameHandler:
             pygame.quit()
             sys.exit()
 
-    def check_mouse_click_event(self, event):
+    def check_mouse_click_event(self, event: pygame.event.Event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             square = self.hitSquare(event.pos)
 
@@ -48,12 +63,14 @@ class GameHandler:
             self.clicks.append(square)
 
             if len(self.clicks) == 2:
-                fromSq, toSq = self.clicks
-                if not fromSq.isOccupied:
+                from_sq, to_sq = self.clicks
+                if not from_sq.isOccupied:
                     self.reset_clicks()
                     return
-                user_move = Move(fromSq, toSq)
-                if self.move_handler.try_move(user_move):
+                user_move = Move(from_sq, to_sq)
+                if user_move in self.move_generator:
+                    user_move = self.move_generator.get_move(user_move)
+                    self.board.make_move(user_move)
                     self.end_turn()
                 else:
                     self.reset_clicks()
@@ -91,6 +108,7 @@ class GameHandler:
         End turn, recalculate possible moves in the new position.
         """
         self.board.end_turn()
+        self.board.deselect()
         self.clicks = []
         self.move_generator.generate_moves()
 
@@ -101,7 +119,7 @@ class GameHandler:
         self.board.deselect()
         self.clicks = []
 
-    def hitSquare(self, pos):
+    def hitSquare(self, pos: Tuple[int, int]) -> Optional[Square]:
         for square in self.board:
             if square.rect.collidepoint(pos):
                 return square
