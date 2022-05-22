@@ -26,6 +26,7 @@ logger = logging.getLogger(__file__)
 f_handler = logging.FileHandler("chess.log")
 logger.addHandler(f_handler)
 
+
 class Flag(Enum):
     """Different move types"""
 
@@ -70,13 +71,12 @@ class MovePieceHolder:
 
 
 class Move:
-
-    def __init__(self, from_sq: Square, to_sq: Square, flag: Flag=Flag.MOVE):
+    def __init__(self, from_sq: Square, to_sq: Square, flag: Flag = Flag.MOVE):
         self.from_sq = from_sq
         self.to_sq = to_sq
         self.flag = flag
         _moved_piece = cast(AbstractPiece, from_sq.piece)
-        self.pieces = MovePieceHolder(_moved_piece) # type: ignore
+        self.pieces = MovePieceHolder(_moved_piece)
         self.piece_attrs = _clean(**_moved_piece.__dict__.copy())
         self.turn = _moved_piece.color
         if self.to_sq.piece:
@@ -87,8 +87,10 @@ class Move:
         return hash((self.from_sq, self.to_sq))
 
     def __eq__(self, other):
-        return (self.to_sq.location == other.to_sq.location
-            and self.from_sq.location == other.from_sq.location)
+        return (
+            self.to_sq.location == other.to_sq.location
+            and self.from_sq.location == other.from_sq.location
+        )
 
     def perform(self, board):
         logger.info("Performing move")
@@ -137,7 +139,6 @@ class CastleMove(Move):
 
 
 class EnpassantMove(Move):
-
     def __init__(self, from_sq: Square, to_sq: Square, enpassanted_square: Square):
         super().__init__(from_sq, to_sq, Flag.ENPASSANT)
         self.enpassented_square = enpassanted_square
@@ -149,61 +150,11 @@ class EnpassantMove(Move):
 
 
 class PromoteMove(Move):
-
     def __init__(self, from_sq: Square, to_sq: Square):
         super().__init__(from_sq, to_sq, Flag.PROMOTE)
 
     def perform(self, board):
         super().perform(board)
-
-
-#@dataclass
-#class Move:
-#    """Base move class"""
-#
-#    from_sq: Square
-#    to_sq: Square
-#    pieces: Optional[MovePieceHolder] = None
-#    piece_attrs: dict = field(init=False)
-#    captured_piece_attrs: dict = field(init=False)
-#    flag: Enum = Flag.MOVE
-#
-#    def __post_init__(self):
-#        assert isinstance(self.from_sq.piece, AbstractPiece)
-#        moved_piece: AbstractPiece = self.from_sq.piece
-#        self.pieces = MovePieceHolder(moved_piece)
-#        self.piece_attrs = _clean(**self.from_sq.piece.__dict__.copy())
-#        self.turn = moved_piece.color
-#        if captured_piece := self.to_sq.piece:
-#            self.flag = Flag.CAPTURE
-#            self.pieces.captured_piece = captured_piece
-#
-#    def __hash__(self):
-#        return hash((self.from_sq, self.to_sq, self.flag.name))
-#
-#    @property
-#    def squares(self):
-#        """Return squares involved in move"""
-#        return (self.from_sq, self.to_sq)
-#
-#    @property
-#    def moved_piece(self):
-#        """Moved piece"""
-#        return self.pieces.moved_piece
-#
-#    @property
-#    def captured_piece(self):
-#        """Captured piece"""
-#        return self.pieces.captured_piece
-#
-#    def __repr__(self):
-#        attrs = (
-#            ("from", self.from_sq.location),
-#            ("to", self.to_sq.location),
-#            ("flag", self.flag.name),
-#        )
-#        inners = ", ".join("%s=%r" % t for t in attrs)
-#        return f"<{self.__class__.__name__} {inners}>"
 
 
 class MoveHandler:

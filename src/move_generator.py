@@ -2,24 +2,32 @@ from __future__ import annotations
 import logging
 from typing import (
     TYPE_CHECKING,
-    Set,
     cast,
+    Iterator,
+    List,
+    Tuple,
+    Iterable,
+    Optional,
+    Mapping,
 )
 
 import logic
-import squares as s
-from move import Move
+from squares import Square
+from move import Move, EnpassantMove, PromoteMove
 import constants as c
+from Pieces import Pawn
 
 if TYPE_CHECKING:
-    from Pieces import King
     from board import Board
     from location import Location
+    DirectionTuple = Tuple[int, int]
 
-log = logging.getLogger(__file__)
+
+log = logging.getLogger(__name__)
 f_handler = logging.FileHandler("chess.log")
-f_handler.setLevel(logging.WARNING)
 log.addHandler(f_handler)
+log.log(logging.INFO, "Setting up move_gen.")
+
 
 
 """
@@ -37,21 +45,34 @@ Current methodology is this:
     - If that move is in our set of possible moves, we allow the move to occur.
 """
 
+DIR_FOR_PIECE: Mapping[str, List[DirectionTuple]] = {
+    "queen":[(1, 1), (1, -1), (-1, -1), (-1, 1), (0, 1), (1, 0), (-1, 0), (0, -1)],
+    "rook": [(0, 1), (1, 0), (-1, 0), (0, -1)],
+    "bishop": [(1, 1), (1, -1), (-1, -1), (-1, 1)]
+}
+
 
 class MoveGenerator:
     """Class for generating available moves"""
 
     def __init__(self, board: Board) -> None:
         self.board = board
-        self.moves: Set[Move] = set()
+        self.moves: List[Move] = []
         self.can_queenside_castle = False
         self.can_kingside_castle = False
-
         self.is_white_move = board.white_to_move
         self.friendly_colour = cast(c.Color, board.color_to_move)
         self.opponent_colour = logic.switch_turn(self.friendly_colour)
-
         self.generate_moves()
+        self.__cached_move: Move
+        self.pin_with_direction: Mapping[Location, DirectionTuple] = {}
+
+    def __contains__(self, item: Move) -> bool:
+        for move in self.moves:
+            if move.squares == item.squares:
+                self.__cached_move = move
+                return True
+        return False
 
     @property
     def castle_rights(self):
@@ -66,7 +87,14 @@ class MoveGenerator:
         self.can_kingside_castle = rights[0]
         self.can_queenside_castle = rights[1]
 
-    def generate_moves(self) -> Set[Move]:
+    def get_move(self, temp_move: Move) -> Optional[Move]:
+        if self.__cached_move:
+            return self.__cached_move
+        for move in self.moves:
+            if move.squares == temp_move.squares:
+                return move
+
+    def generate_moves(self) -> List[Move]:
         """
         Function to generate all the possible moves for the current board
         position. This must be called after each move of a board when in playing
@@ -85,11 +113,34 @@ class MoveGenerator:
         """
 
         self.init()
-        self.calculate_attacks()
+        self.generate_attacks_on_king()
         self.generate_king_moves()
         if self.inDoubleCheck:
             return self.moves
-        self.highlight(self.opponent_attacks)
+
+        for pawn in self.board.pawns(self.friendly_colour):
+            if pawn.location in self.pin_with_direction:
+                dir = self.pin_with_direction[pawn.location]
+                if abs(dir[0]) == abs(dir[1]):
+                    # diagonal pin
+                    continue
+                if pawn.color == c.Color.LIGHT and dir == (0, 1):
+                    continue
+                elif pawn.color == c.Color.DARK and dir == (0, -1):
+                    continue
+                else:
+                    pass
+            self.get_pawn_moves(pawn)
+
+        for piece in self.board.get_sliding(self.friendly_colour):
+            directions = DIR_FOR_PIECE[piece.name]
+            if piece.location in self.pin_with_direction:
+                dir = self.pin_with_direction[piece.location]
+                opposite_dir = (-dir[0], -dir[1])
+                directions = [dir, opposite_dir]
+            self.get_sliding_moves(piece.square, directions)
+
+        self.highlight(self.moves)
 
         return self.moves
 
@@ -100,14 +151,14 @@ class MoveGenerator:
         method is now dealing with a lot of other logic... will see.
         """
         board = self.board
-        king: King = board.king(self.friendly_colour)
+        king = board.king(self.friendly_colour)
         self.generate_opponent_attacks()
         moves = king.converted_moves(board)
         for move in moves:
-            self.moves.add(move)
+            self.moves.append(move)
         self.castle_rights = king.castle_rights
 
-    def calculate_attacks(self):
+    def generate_attacks_on_king(self):
         board = self.board
         opponent_col = self.opponent_colour
         friendly_col = self.friendly_colour
@@ -115,10 +166,10 @@ class MoveGenerator:
         king = board.king(friendly_col)
         king_square = king.square
 
-        self.pinsExistInPosition = False
 
-        self.pinMoves = []
-        self.pinRays = []
+        self.pin_with_direction = {}
+        self.pin_moves = []
+        self.pin_rays = []
 
         directions = self._get_sliding_directions(board, opponent_col)
         for direction in directions:
@@ -148,8 +199,8 @@ class MoveGenerator:
                         ):
                             possible_pin = True
                             if friendly_on_ray:
-                                self.pinsExistInPosition = True
-                                self.pinMoves.append(next_move)
+                                self.pin_moves.append(next_move)
+                                break
                             else:
                                 # if already in check, then this is double check.
                                 self.inDoubleCheck = self.inCheck
@@ -158,7 +209,9 @@ class MoveGenerator:
                 next_move = logic.build(next_move.location, x, y)
 
             if possible_pin:
-                self.pinRays.append(ray)
+                for sqr in ray:
+                    self.pin_with_direction[sqr.location] = direction
+                self.pin_rays.extend(ray)
             if self.inDoubleCheck:
                 break
 
@@ -181,7 +234,7 @@ class MoveGenerator:
                 self.inDoubleCheck = self.inCheck
                 self.inCheck = True
 
-    def _get_sliding_directions(self, board, opponent_col):
+    def _get_sliding_directions(self, board: Board, opponent_col: c.Color) -> Iterable[DirectionTuple]:
         """
         Setting up directions to check for pins. If there's a queen, we check
         for both diagonal and rook based pins. Otherwise, check for
@@ -210,32 +263,136 @@ class MoveGenerator:
                 self.opponent_attacks.add(square)
 
     def init(self):
-        self.moves = set()
+        self.moves = []
         self.opponent_attacks = set()
         self.opponent_sliding_attacks = set()
         self.opponent_pawn_attacks = set()
 
         self.inCheck = False
         self.inDoubleCheck = False
-        self.pinsExistInPosition = False
 
         self.is_white_move = self.board.white_to_move
-        self.friendly_colour = self.board.color_to_move
+        self.friendly_colour = cast(c.Color, self.board.color_to_move)
         self.opponent_colour = logic.switch_turn(self.friendly_colour)
-        self.pinRays = []
+        self.pin_rays = []
 
     def highlight(self, set_of_moves=None):
-        if set_of_moves is None:
+        if not set_of_moves:
             return
-        if isinstance(set_of_moves, Set):
-            for move in set_of_moves:
-                move.to_sq.isAttacked = True
-            return
+        for x in set_of_moves:
+            if isinstance(x, Square):
+                x.isAttacked = True
+            elif isinstance(x, Move):
+                x.to_sq.isAttacked = True
+            elif isinstance(x, list):  # pinRays
+                for x_2 in x:
+                    x_2.isAttacked = True
+            else:
+                log.error("Can't highlight % as an attackable", x)
+                print(f"Can't highlight {x} as an attackable.")
 
-        try:
-            for square in set_of_moves:
-                square.isAttacked = True
-        except AttributeError:  # if pinRays is passed, we need to go 2 levels deep.
-            for ray in set_of_moves:
-                for square in ray:
-                    square.isAttacked = True
+    def _getKnightsMove(self, current: Location):
+        """
+        Method to append a position, type:`Location`, to given list. Based on
+        a knights movement.
+        """
+        board = self.board
+        choices = [2, -2, 1, -1]
+        for i in choices:
+            for j in choices:
+                if abs(j) == abs(i):
+                    continue
+
+                next_location = logic.build(current, i, j)
+                if not next_location:
+                    continue
+
+                sqr_attempt = board.get(next_location)
+                if sqr_attempt.piece:
+                    if sqr_attempt.piece.color == self.friendly_colour:
+                        break
+                    yield sqr_attempt
+                    break
+                yield sqr_attempt
+
+    def check_ray(self, ray: List[Location]) -> Iterator[Square]:
+        """
+        Generator method that moves along a given ray, checking if a square is
+        safe to move too. If so, yields the square (typically to be used in
+        generation of a `Move` class).
+        """
+        board = self.board
+        friendly_colour = self.friendly_colour
+        for loc in ray:
+            square = board.get(loc)
+            if square.piece:
+                if square.piece.color == friendly_colour:
+                    break
+                else:
+                    yield square
+                    break
+            else:
+                yield square
+
+    def get_sliding_moves(self, start_square: Square, directions: List[DirectionTuple]):
+        """
+        Method to create list of `Moves` from a given start square, based on a direction.
+        """
+        for direction in directions:
+            ray = logic.ray_from(start_square, direction)
+            for square in self.check_ray(ray):
+                move = Move(start_square, square)
+                self.moves.append(move)
+
+    def get_pawn_moves(self, pawn: Pawn) -> List[Move]:
+        start_square = pawn.square
+        moves = []
+
+        # Check enpassant:
+        for pos in [-1, 1]:
+            # Make sure we're not out of the boards range
+            if start_square.file.value + pos in [0, 9]:
+                continue
+            adjacent_loc = logic.build(pawn.location, pos, 0)
+            adjacent_square = self.board.get(adjacent_loc)  # type: ignore
+            if not adjacent_square:
+                continue
+            piece = adjacent_square.piece
+            if not piece:
+                continue
+            if (
+                isinstance(piece, Pawn)
+                and piece.color != pawn.color
+                and piece.enpassant_able
+            ):
+                if pawn.color == c.Color.LIGHT:
+                    enpassant_attack = logic.build(pawn.location, pos, 1)
+                else:
+                    enpassant_attack = logic.build(pawn.location, pos, -1)
+                enpassant_square = self.board.get(enpassant_attack)  # type: ignore
+
+                enpas_move = EnpassantMove(
+                    start_square, enpassant_square, adjacent_square
+                )
+                moves.append(enpas_move)
+
+        for loc in pawn._getAllValidMoves(self.board):
+            to_sq = self.board.get(loc)  # type: ignore
+
+            # Check if attack:
+            if loc.file != pawn.location.file:
+                if not to_sq.piece:
+                    continue
+                else:
+                    if to_sq.piece.color == self.friendly_colour:
+                        continue
+
+            if loc.rank in [1, 8]:  # type:ignore # Checking for promotions
+                move = PromoteMove(start_square, to_sq)
+                moves.append(move)
+                continue
+
+            moves.append(Move(start_square, to_sq))
+
+        self.moves.extend(moves)
+        return moves

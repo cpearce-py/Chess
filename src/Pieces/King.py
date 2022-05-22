@@ -156,17 +156,18 @@ class King(AbstractPiece):
 
                 if rejected:
                     continue
+                possibleMoves.append(move)
 
-                if (move.file.value - cur_sqr.file.value) == 2:
-                    rook_loc = logic.build(self.location, 3, 0)
-                    rook_piece = board.get(rook_loc).piece
-                    CastleMove(cur_sqr, move, rook_piece)  # type: ignore
-                else:  # (destFile - currentFile) == -2:
-                    rook = logic.build(self.location, -4, 0)  # type: ignore
-                move = board.get(move)
-                if move:
-                    move = Move(cur_sqr, move)
-                    possibleMoves.append(move)
+                # if (move.file.value - cur_sqr.file.value) == 2:
+                #     rook_loc = logic.build(self.location, 3, 0)
+                #     rook_piece = board.get(rook_loc).piece
+                #     CastleMove(cur_sqr, move, rook_piece)  # type: ignore
+                # else:  # (destFile - currentFile) == -2:
+                #     rook = logic.build(self.location, -4, 0)  # type: ignore
+                # move = board.get(move)
+                # if move:
+                #     move = Move(cur_sqr, move)
+                #     possibleMoves.append(move)
 
         return possibleMoves
 

@@ -1,9 +1,11 @@
 from __future__ import annotations
 from typing import (
     TYPE_CHECKING,
-    Dict,
-    Optional,
+    Type,
+    Mapping,
     Iterable,
+    List,
+    Optional,
 )
 import pygame
 
@@ -15,10 +17,13 @@ from fen import PositionInfo, START_FEN, load_from_fen
 
 if TYPE_CHECKING:
     from abstract_piece import AbstractPiece
+    from Pieces import Pawn, Rook, Queen, King, Bishop
     from squares import Square
     from move import Move
 
 start_position = load_from_fen(START_FEN)
+
+SpriteGroup = Iterable[pygame.sprite.Sprite]
 
 
 class Board(pygame.sprite.Group):
@@ -49,12 +54,12 @@ class Board(pygame.sprite.Group):
         self._dark_pieces = pygame.sprite.Group()
         self.board_squares = pygame.sprite.Group()
         self._map = {}
-        self.all_pieces: Dict[c.Color, Iterable[AbstractPiece]] = {
+        self.all_pieces: Mapping[c.Color, SpriteGroup] = {
             c.Color.DARK: self._dark_pieces,
             c.Color.LIGHT: self._light_pieces,
         }
-        self.white_to_move = None
-        self.color_to_move = None
+        self.white_to_move: bool
+        self.color_to_move: c.Color
 
     def init(self, load_position: PositionInfo = start_position):
         """Initalises board inline."""
@@ -111,36 +116,43 @@ class Board(pygame.sprite.Group):
         """Return square from board at given location"""
         return self.map[location]
 
-    def _get_piece(self, name, color) -> Iterable:
+    def _get_piece(self, name: str, color: c.Color) -> Optional[List[AbstractPiece]]:
         pieces = self.all_pieces.get(color)
         if pieces:
             return list(filter(lambda x: x.name == name, pieces))
 
-    def king(self, color) -> AbstractPiece:
+    def get_sliding(self, color: c.Color):
+        store = []
+        store.extend(self.queen(color))
+        store.extend(self.rooks(color))
+        store.extend(self.bishops(color))
+        return store
+
+    def king(self, color) -> King:
         """Return King piece of given color"""
         return self._get_piece("king", color)[0]
 
-    def queen(self, color):
+    def queen(self, color: c.Color) -> List[Queen]:
         """Return List[Queen] piece of given color"""
         return self._get_piece("queen", color)
 
-    def bishops(self, color):
+    def bishops(self, color: c.Color) -> List[Bishop]:
         """Return List[Bishop] pieces of given color"""
         return self._get_piece("bishop", color)
 
-    def rooks(self, color):
+    def rooks(self, color: c.Color) -> List[Rook]:
         """Return List[Rooks] pieces of given color"""
         return self._get_piece("rook", color)
 
-    def knights(self, color) -> Iterable:
+    def knights(self, color: c.Color) -> List[Knight]:
         """Return List[Knight] pieces of given color"""
         return self._get_piece("knight", color)
 
-    def pawns(self, color):
+    def pawns(self, color: c.Color) -> List[Pawn]:
         """Return List[Pawn] pieces of given color"""
         return self._get_piece("pawn", color)
 
-    def pieces(self, color: c.Color) -> Iterable[AbstractPiece]:
+    def pieces(self, color: c.Color) -> Iterable[Type[AbstractPiece]]:
         return self.all_pieces.get(color)
 
     def kill_piece(self, piece):
@@ -184,7 +196,7 @@ class Board(pygame.sprite.Group):
         self.board_squares.update()
 
     @property
-    def map(self) -> Dict[Location, Square]:
+    def map(self) -> Mapping[Location, Square]:
         return self._map
 
     @property

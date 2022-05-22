@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, cast
 from squares import Square
 import pygame
 
@@ -10,6 +10,7 @@ import logic
 
 if TYPE_CHECKING:
     import constants as c
+    from board import Board
 
 
 log = logging.getLogger(__file__)
@@ -40,7 +41,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
             self.image = image
 
         self.rect = self.image.get_rect(center=[100, 100])
-        self._square = square
+        self._square = cast(Square, square)
         self._isFirstMove = True
         self._selected = False
         self._layer = 0
@@ -132,7 +133,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
             log.error(
                 f"{self.__class__.__name__}.square attribute nots to be set "
                 f"to an instance of Square"
-        )
+            )
         self._square = square
         if not square.piece == self:
             square.piece = self
@@ -144,7 +145,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
                 pass
             setattr(self, key, value)
 
-    def forceMove(self, target_square):
+    def forceMove(self, target_square: Square):
         """
         This method shouldn't be overwritten!
         It deals with cleanup and the basic process of moving a piece to a
@@ -152,16 +153,16 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
 
         :param square: Instance of :class:`Square` square to move to.
         """
-        if piece := target_square.piece:
-            piece.alive = False
-            piece.kill()
+        if enemy := target_square.piece:
+            enemy.alive = False
+            enemy.kill()
         self.square.clear()
         target_square.piece = self
         self.square = target_square
         self.isFirstMove = False
         self.rect.center = target_square.rect.center
 
-    def moveToSquare(self, square, board=None):
+    def moveToSquare(self, square: Square, board: Board = None):
         """
         Method is aimed at being overwritten when certain requirements
         are needed. Ie. pawn promotion.
@@ -169,7 +170,7 @@ class AbstractPiece(ABC, pygame.sprite.Sprite):
         self.forceMove(square)
 
     @abstractmethod
-    def getAttackMoves(self, board):
+    def getAttackMoves(self, board: Board):
         """Method to get all attack moves"""
         raise NotImplementedError
 

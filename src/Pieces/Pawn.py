@@ -13,6 +13,7 @@ from move import Move, Flag
 if TYPE_CHECKING:
     from location import Location
 
+
 class Pawn(AbstractPiece):
     def __init__(self, pieceColor, name="Pawn"):
         img = c.IMAGES["bp"] if pieceColor == c.Color.DARK else c.IMAGES["wp"]

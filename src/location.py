@@ -2,7 +2,6 @@ from __future__ import annotations
 from enum import Enum
 from typing import (
     TYPE_CHECKING,
-    Optional,
 )
 
 
@@ -20,7 +19,7 @@ class Location:
             raise ValueError("Please pass file arg as Files. Enum")
         self._file = file
         self._rank = rank
-        self._square: Optional[Square] = None
+        self._square: Square
 
     def __repr__(self):
         return (

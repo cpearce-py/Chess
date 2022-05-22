@@ -5,6 +5,7 @@ import constants as c
 from move import Move
 
 if TYPE_CHECKING:
+    from board import Board
     from squares import Square
 
 __all__ = ("build", "switch_turn", "is_valid")
@@ -26,7 +27,7 @@ def build(current: Location, fileOffset: int, rankOffset: int) -> Location:
     new_rank = current.rank + rankOffset
 
     if not is_valid(new_file) or not is_valid(new_rank):
-        return None
+        return None # type: ignore
 
     return Location(c.Files(new_file), new_rank)
 
@@ -69,6 +70,17 @@ def ray_from(start: Union[Location, Square], direction: Direction):
                 ray.append(loc)
 
     return ray[1:]
+
+
+def square_is_capturable(start: Union[Square, Location], direction: Direction, board: Board) -> bool:
+
+    if isinstance(start, Square):
+        start = start.location
+
+    file_offset = direction[0]
+    rank_offset = direction[1]
+    new_square = build(start, rank_offset, file_offset)
+    return True
 
 
 def switch_turn(turn: c.Color) -> c.Color:

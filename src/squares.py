@@ -68,11 +68,11 @@ class Square(pygame.sprite.Sprite):
         return self._isOccupied
 
     @property
-    def piece(self) -> Optional["AbstractPiece"]:
+    def piece(self) -> Optional[AbstractPiece]:
         return self._piece
 
     @piece.setter
-    def piece(self, piece: Optional["AbstractPiece"]) -> None:
+    def piece(self, piece: AbstractPiece) -> None:
         self._piece = piece
         self._isOccupied = True if piece else False
         if piece and piece.square != self:
