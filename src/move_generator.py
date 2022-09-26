@@ -140,6 +140,12 @@ class MoveGenerator:
                 directions = [dir, opposite_dir]
             self.get_sliding_moves(piece.square, directions)
 
+        for knight in self.board.knights(self.friendly_colour):
+            if knight.location in self.pin_with_direction:
+                continue
+            self._getKnightsMove(knight.location)
+
+
         self.highlight(self.moves)
 
         return self.moves
@@ -293,8 +299,7 @@ class MoveGenerator:
 
     def _getKnightsMove(self, current: Location):
         """
-        Method to append a position, type:`Location`, to given list. Based on
-        a knights movement.
+        Returns a generator of possible knight moves based on given location.
         """
         board = self.board
         choices = [2, -2, 1, -1]
