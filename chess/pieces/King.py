@@ -2,10 +2,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Set
 
 import logic
-from abstract_piece import AbstractPiece
+from pieces import AbstractPiece
 from constants import IMAGES, Color
 from squares import Square
-from move import Move, CastleMove
+from move import Move
 
 if TYPE_CHECKING:
     from board import Board

@@ -15,10 +15,10 @@ from typing import (
 import logic
 import constants as c
 from squares import Square
-from abstract_piece import AbstractPiece
+from pieces.abstract_piece import AbstractPiece
 
 if TYPE_CHECKING:
-    from Pieces import Rook
+    from pieces import Rook
 
 __all__ = ("Move", "MoveHandler", "Flag", "EnpassantMove", "CastleMove")
 

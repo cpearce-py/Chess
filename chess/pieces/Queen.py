@@ -1,16 +1,20 @@
-import constants as c
-from abstract_piece import AbstractPiece
+from pieces import AbstractPiece
+from constants import Color, IMAGES
 
 
-class Bishop(AbstractPiece):
-    def __init__(self, pieceColor, name="Bishop"):
-        img = c.IMAGES["bB"] if pieceColor == c.Color.DARK else c.IMAGES["wB"]
+class Queen(AbstractPiece):
+    def __init__(self, pieceColor, name="Queen"):
+        img = IMAGES["bQ"] if pieceColor == Color.DARK else IMAGES["wQ"]
         super().__init__(name, pieceColor, image=img)
 
     def getValidMoves(self, board):
         moveCandidates = []
         _map = board.map
         current = self.location
+        self._getFileCandidates(moveCandidates, _map, current, offset=1)
+        self._getFileCandidates(moveCandidates, _map, current, offset=-1)
+        self._getRankCandidates(moveCandidates, _map, current, offset=1)
+        self._getRankCandidates(moveCandidates, _map, current, offset=-1)
         self._getDiagonalCandidates(moveCandidates, _map, current, 1, 1)
         self._getDiagonalCandidates(moveCandidates, _map, current, 1, -1)
         self._getDiagonalCandidates(moveCandidates, _map, current, -1, -1)

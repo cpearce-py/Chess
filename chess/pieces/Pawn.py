@@ -4,10 +4,9 @@ from typing import (
     Iterator,
 )
 import logic
-from abstract_piece import AbstractPiece
+from pieces import AbstractPiece
+from pieces.Queen import Queen
 import constants as c
-
-from Pieces.Queen import Queen
 from move import Move, Flag
 
 if TYPE_CHECKING:
